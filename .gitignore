@@ -23,6 +23,7 @@ docs/
 /storage/*.key
 /storage/pail
 /storage/phpstan
+/coverage
 /vendor
 _ide_helper.php
 Homestead.json
