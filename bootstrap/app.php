@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Middleware\EnsureInstalled;
+use App\Http\Middleware\EnsureNotInstalled;
+use App\Http\Middleware\EnsureUserHasRole;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\SetLocale;
 use Illuminate\Foundation\Application;
@@ -21,7 +24,11 @@ return Application::configure(basePath: dirname(__DIR__))
             AddLinkHeadersForPreloadedAssets::class,
         ]);
 
-        //
+        $middleware->alias([
+            'installed' => EnsureInstalled::class,
+            'not-installed' => EnsureNotInstalled::class,
+            'role' => EnsureUserHasRole::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

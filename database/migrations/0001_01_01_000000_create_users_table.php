@@ -17,6 +17,12 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            // Defaults to the least-privileged role: every real code path
+            // (installer, staff management) sets this explicitly, so the
+            // default is only a fail-safe for any insert that doesn't.
+            $table->string('role')->default('kitchen');
+            $table->string('two_factor_secret')->nullable();
+            $table->timestamp('two_factor_confirmed_at')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
