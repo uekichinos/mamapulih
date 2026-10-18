@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    tags: ['v*']
+  schedule:
+    - cron: '0 18 * * *' # 2am Malaysia time
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PHP_VERSION: '8.5'
+  NODE_VERSION: '22'
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: shivammathur/setup-php@v2
+        with: { php-version: '${{ env.PHP_VERSION }}', coverage: none }
+      - uses: actions/setup-node@v5
+        with: { node-version: '${{ env.NODE_VERSION }}', cache: npm }
+      - run: composer install --no-interaction --prefer-dist
+      - run: npm ci
+      - run: vendor/bin/pint --test
+      - run: vendor/bin/phpstan analyse --no-progress
+      - run: npm run lint
+      - run: npm run format
+      - run: npm run typecheck
+      - run: npm run i18n:check
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: shivammathur/setup-php@v2
+        with: { php-version: '${{ env.PHP_VERSION }}' }
+      - run: composer install --no-interaction --prefer-dist
+      - run: composer audit
+      - uses: actions/setup-node@v5
+        with: { node-version: '${{ env.NODE_VERSION }}', cache: npm }
+      - run: npm ci
+      - run: npm audit --audit-level=low
+
+  backend-tests:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_DB: mamapulih_test
+          POSTGRES_USER: app
+          POSTGRES_PASSWORD: secret
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-retries 10
+    env:
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: mamapulih_test
+      DB_USERNAME: app
+      DB_PASSWORD: secret
+    steps:
+      - uses: actions/checkout@v5
+      - uses: shivammathur/setup-php@v2
+        with: { php-version: '${{ env.PHP_VERSION }}', coverage: pcov }
+      - run: composer install --no-interaction --prefer-dist
+      - run: cp .env.example .env && php artisan key:generate
+      - run: php artisan test --parallel --coverage --min=70
+
+  frontend-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with: { node-version: '${{ env.NODE_VERSION }}', cache: npm }
+      - run: npm ci
+      - run: npm run test -- --coverage
+
+  build:
+    needs: [quality, security, backend-tests, frontend-tests]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: shivammathur/setup-php@v2
+        with: { php-version: '${{ env.PHP_VERSION }}' }
+      - uses: actions/setup-node@v5
+        with: { node-version: '${{ env.NODE_VERSION }}', cache: npm }
+      - run: composer install --no-interaction --prefer-dist --no-dev --optimize-autoloader
+      - run: npm ci
+      - run: npm run build

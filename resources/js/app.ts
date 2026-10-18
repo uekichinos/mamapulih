@@ -1,0 +1,39 @@
+import '../css/app.css';
+import './bootstrap';
+
+import { createInertiaApp, router } from '@inertiajs/vue3';
+import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
+import { createApp, DefineComponent, h } from 'vue';
+import { ZiggyVue } from '../../vendor/tightenco/ziggy';
+import { i18n } from './i18n';
+
+const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+
+function applyLocale(locale: unknown): void {
+    if (locale === 'en' || locale === 'ms') {
+        i18n.global.locale.value = locale;
+    }
+}
+
+router.on('navigate', (event) => applyLocale(event.detail.page.props.locale));
+
+createInertiaApp({
+    title: (title) => `${title} - ${appName}`,
+    resolve: (name) =>
+        resolvePageComponent(
+            `./Pages/${name}.vue`,
+            import.meta.glob<DefineComponent>('./Pages/**/*.vue'),
+        ),
+    setup({ el, App, props, plugin }) {
+        applyLocale(props.initialPage.props.locale);
+
+        createApp({ render: () => h(App, props) })
+            .use(plugin)
+            .use(ZiggyVue)
+            .use(i18n)
+            .mount(el);
+    },
+    progress: {
+        color: '#4B5563',
+    },
+});
