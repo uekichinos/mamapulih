@@ -29,7 +29,9 @@ php artisan key:generate
 npm run dev
 ```
 
-The app will be available at the URL in `APP_URL` (default `http://localhost:8000`).
+The app will be available at the URL in `APP_URL` (default `http://localhost:8000`). Mailpit's UI (catches local outgoing mail) is at `http://localhost:8025`.
+
+> **Git Bash on Windows:** the `./vendor/bin/sail` wrapper script doesn't recognise Git Bash (`MINGW64`) as a shell and will refuse to run. Use `docker compose exec laravel.test <command>` instead, e.g. `docker compose exec laravel.test php artisan migrate`. WSL2 and macOS/Linux shells are unaffected.
 
 ### Quality checks
 

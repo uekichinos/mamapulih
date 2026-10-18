@@ -24,6 +24,7 @@ docs/
 /storage/pail
 /storage/phpstan
 /coverage
+/.claude
 /vendor
 _ide_helper.php
 Homestead.json
