@@ -17,7 +17,7 @@ class EnsureTwoFactorIsSetUp
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = $request->user();
+        $user = $request->user('web');
 
         if ($user?->mustSetUpTwoFactor()) {
             return redirect()->route('two-factor.setup');

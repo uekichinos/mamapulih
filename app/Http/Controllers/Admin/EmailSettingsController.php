@@ -40,7 +40,7 @@ class EmailSettingsController extends Controller
     {
         $this->smtp->applyToRuntimeConfig();
 
-        Mail::to(Auth::user())->send(new SmtpTestMail);
+        Mail::to(Auth::guard('web')->user())->send(new SmtpTestMail);
 
         return back()->with('status', 'test-sent');
     }

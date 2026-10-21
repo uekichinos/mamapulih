@@ -5,7 +5,7 @@ use App\Http\Controllers\Auth\TwoFactorSetupController;
 use App\Http\Controllers\Install\InstallController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
+use App\Models\Package;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -24,9 +24,10 @@ Route::middleware('installed')->group(function () {
 
     Route::get('/', function () {
         return Inertia::render('Welcome', [
-            'canLogin' => Route::has('login'),
-            'laravelVersion' => Application::VERSION,
-            'phpVersion' => PHP_VERSION,
+            'packages' => Package::query()
+                ->where('active', true)
+                ->with(['variants' => fn ($q) => $q->where('active', true)])
+                ->get(),
         ]);
     });
 
@@ -62,4 +63,5 @@ Route::middleware('installed')->group(function () {
 
     require __DIR__.'/admin.php';
     require __DIR__.'/auth.php';
+    require __DIR__.'/customer.php';
 });

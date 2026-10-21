@@ -19,7 +19,7 @@ class TwoFactorSetupController extends Controller
 
     public function show(Request $request): Response
     {
-        $user = $request->user();
+        $user = $request->user('web');
 
         if ($user->hasTwoFactorEnabled()) {
             return Inertia::render('Auth/TwoFactorSetup', [
@@ -53,7 +53,7 @@ class TwoFactorSetupController extends Controller
             return back()->withErrors(['code' => __('auth.two_factor_invalid_code')]);
         }
 
-        $user = $request->user();
+        $user = $request->user('web');
 
         $user->forceFill([
             'two_factor_secret' => $secret,
@@ -69,7 +69,7 @@ class TwoFactorSetupController extends Controller
 
     public function destroy(Request $request): RedirectResponse
     {
-        $user = $request->user();
+        $user = $request->user('web');
 
         abort_if($user->isOwner(), 403, 'Two-factor authentication is required for the Owner account.');
 

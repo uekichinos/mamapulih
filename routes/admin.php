@@ -2,7 +2,10 @@
 
 use App\Http\Controllers\Admin\AddonController;
 use App\Http\Controllers\Admin\AuditLogController;
+use App\Http\Controllers\Admin\BookingApprovalController;
+use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\BusinessProfileController;
+use App\Http\Controllers\Admin\CapacityController;
 use App\Http\Controllers\Admin\ClosureDayController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EmailSettingsController;
@@ -36,4 +39,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', 'role:ow
     Route::resource('staff', StaffUserController::class)->except(['show']);
 
     Route::get('/audit-log', [AuditLogController::class, 'index'])->name('audit-log.index');
+
+    Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
+    Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');
+    Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
+    Route::get('/bookings/{booking}', [BookingController::class, 'show'])->name('bookings.show');
+
+    Route::get('/booking-approvals', [BookingApprovalController::class, 'index'])->name('booking-approvals.index');
+    Route::post('/booking-approvals/{booking}/approve', [BookingApprovalController::class, 'approve'])->name('booking-approvals.approve');
+    Route::post('/booking-approvals/{booking}/reject', [BookingApprovalController::class, 'reject'])->name('booking-approvals.reject');
+
+    Route::get('/capacity', [CapacityController::class, 'index'])->name('capacity.index');
 });

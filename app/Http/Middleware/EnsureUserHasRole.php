@@ -14,7 +14,7 @@ class EnsureUserHasRole
      */
     public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        $user = $request->user();
+        $user = $request->user('web');
 
         abort_if($user === null, 403);
 

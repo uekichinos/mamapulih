@@ -31,6 +31,15 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => EnsureUserHasRole::class,
             'force-2fa' => EnsureTwoFactorIsSetUp::class,
         ]);
+
+        // The base Authenticate middleware always redirects guests to the
+        // route named "login" (staff). Customer routes need their own
+        // login page instead.
+        $middleware->redirectGuestsTo(
+            fn (Request $request) => $request->routeIs('customer.*')
+                ? route('customer.login')
+                : route('login'),
+        );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

@@ -31,10 +31,10 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
-        $user = Auth::user();
+        $user = Auth::guard('web')->user();
 
         if ($user->hasTwoFactorEnabled()) {
-            Auth::logout();
+            Auth::guard('web')->logout();
 
             $request->session()->regenerate();
             $request->session()->put('two_factor.user_id', $user->id);

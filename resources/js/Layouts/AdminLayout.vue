@@ -11,6 +11,9 @@ const showingNavigationDropdown = ref(false);
 
 const navLinks = [
     { label: 'Dashboard', route: 'admin.dashboard' },
+    { label: 'Approvals', route: 'admin.booking-approvals.index' },
+    { label: 'Bookings', route: 'admin.bookings.index' },
+    { label: 'Capacity', route: 'admin.capacity.index' },
     { label: 'Packages', route: 'admin.packages.index' },
     { label: 'Add-ons', route: 'admin.addons.index' },
     { label: 'Zones', route: 'admin.zones.index' },

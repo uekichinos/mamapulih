@@ -5,6 +5,7 @@ namespace App\Domain\Audit;
 use App\Models\AuditLog;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class AuditLogger
 {
@@ -20,7 +21,10 @@ class AuditLogger
         ?User $actor = null,
     ): AuditLog {
         return AuditLog::query()->create([
-            'actor_id' => is_null($actor) ? auth()->id() : $actor->id,
+            // actor_id has an FK to `users` (staff) — never resolve this
+            // against the ambient default guard, which can be shifted to
+            // `customers` by that guard being the one currently signed in.
+            'actor_id' => is_null($actor) ? Auth::guard('web')->id() : $actor->id,
             'action' => $action,
             'subject_type' => $subject?->getMorphClass(),
             'subject_id' => $subject?->getKey(),

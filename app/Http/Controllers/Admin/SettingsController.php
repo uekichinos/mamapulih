@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Domain\Audit\AuditLogger;
+use App\Domain\Booking\BookingPolicy;
 use App\Domain\Settings\SettingsManager;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\SettingsRequest;
@@ -12,32 +13,22 @@ use Inertia\Response;
 
 class SettingsController extends Controller
 {
-    private const DEFAULTS = [
-        'deposit_type' => 'percentage',
-        'deposit_amount' => 20,
-        'balance_due_days_before_start' => 3,
-        'start_notice_days' => 2,
-        'approval_hold_hours' => 24,
-        'regular_capacity' => 4,
-        'buffer_capacity' => 2,
-        'twins_slots' => 1,
-    ];
-
     public function __construct(
         private SettingsManager $settings,
+        private BookingPolicy $policy,
         private AuditLogger $audit,
     ) {}
 
     public function edit(): Response
     {
         return Inertia::render('Admin/Settings/Edit', [
-            'settings' => $this->settings->get('booking', self::DEFAULTS),
+            'settings' => $this->policy->current(),
         ]);
     }
 
     public function update(SettingsRequest $request): RedirectResponse
     {
-        $before = $this->settings->get('booking', self::DEFAULTS);
+        $before = $this->policy->current();
 
         $this->settings->set('booking', $request->validated());
 
