@@ -9,7 +9,7 @@ test('login screen can be rendered', function () {
 });
 
 test('users can authenticate using the login screen', function () {
-    $user = User::factory()->create();
+    $user = User::factory()->withoutTwoFactor()->create();
 
     $response = $this->post('/login', [
         'email' => $user->email,
@@ -18,6 +18,18 @@ test('users can authenticate using the login screen', function () {
 
     $this->assertAuthenticated();
     $response->assertRedirect(route('dashboard', absolute: false));
+});
+
+test('users with two-factor enabled are sent to the challenge instead of being logged in', function () {
+    $user = User::factory()->create();
+
+    $response = $this->post('/login', [
+        'email' => $user->email,
+        'password' => 'password',
+    ]);
+
+    $this->assertGuest();
+    $response->assertRedirect(route('two-factor.challenge'));
 });
 
 test('users can not authenticate with invalid password', function () {

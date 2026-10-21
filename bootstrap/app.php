@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\EnsureInstalled;
 use App\Http\Middleware\EnsureNotInstalled;
+use App\Http\Middleware\EnsureTwoFactorIsSetUp;
 use App\Http\Middleware\EnsureUserHasRole;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\SetLocale;
@@ -28,6 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'installed' => EnsureInstalled::class,
             'not-installed' => EnsureNotInstalled::class,
             'role' => EnsureUserHasRole::class,
+            'force-2fa' => EnsureTwoFactorIsSetUp::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

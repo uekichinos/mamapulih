@@ -13,7 +13,7 @@ use App\Http\Controllers\Admin\VariantController;
 use App\Http\Controllers\Admin\ZoneController;
 use Illuminate\Support\Facades\Route;
 
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', 'role:owner'])->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', 'role:owner', 'force-2fa'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/business-profile', [BusinessProfileController::class, 'edit'])->name('business-profile.edit');

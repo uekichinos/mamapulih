@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Auth\TwoFactorChallengeController;
+use App\Http\Controllers\Auth\TwoFactorSetupController;
 use App\Http\Controllers\Install\InstallController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\ProfileController;
@@ -36,12 +38,26 @@ Route::middleware('installed')->group(function () {
         // Kitchen has no screens of its own yet (prep sheet arrives in a
         // later sprint), so just show a holding page rather than a dead end.
         return Inertia::render('Dashboard');
-    })->middleware(['auth', 'verified'])->name('dashboard');
+    })->middleware(['auth', 'verified', 'force-2fa'])->name('dashboard');
 
-    Route::middleware('auth')->group(function () {
+    Route::middleware(['auth', 'force-2fa'])->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    });
+
+    // 2FA setup is reachable without the force-2fa gate (it's the way out of it).
+    Route::middleware('auth')->group(function () {
+        Route::get('/two-factor-setup', [TwoFactorSetupController::class, 'show'])->name('two-factor.setup');
+        Route::post('/two-factor-setup/confirm', [TwoFactorSetupController::class, 'confirm'])->name('two-factor.setup.confirm');
+        Route::delete('/two-factor-setup', [TwoFactorSetupController::class, 'destroy'])->name('two-factor.setup.destroy');
+    });
+
+    // The challenge happens between password auth and a real session, so
+    // the user is still a guest as far as the auth guard is concerned.
+    Route::middleware('guest')->group(function () {
+        Route::get('/two-factor-challenge', [TwoFactorChallengeController::class, 'show'])->name('two-factor.challenge');
+        Route::post('/two-factor-challenge', [TwoFactorChallengeController::class, 'store'])->name('two-factor.challenge.store');
     });
 
     require __DIR__.'/admin.php';

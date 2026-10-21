@@ -33,6 +33,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'two_factor_confirmed_at' => 'datetime',
+            'two_factor_secret' => 'encrypted',
             'password' => 'hashed',
             'role' => UserRole::class,
         ];
@@ -51,5 +52,13 @@ class User extends Authenticatable
     public function hasTwoFactorEnabled(): bool
     {
         return ! is_null($this->two_factor_confirmed_at);
+    }
+
+    /**
+     * P16: 2FA is mandatory for Owner, optional for Kitchen.
+     */
+    public function mustSetUpTwoFactor(): bool
+    {
+        return $this->isOwner() && ! $this->hasTwoFactorEnabled();
     }
 }
