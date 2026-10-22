@@ -13,6 +13,8 @@ it('saves booking settings as a new version each time', function () {
         'balance_due_days_before_start' => 3,
         'start_notice_days' => 2,
         'approval_hold_hours' => 24,
+        'payment_deadline_hours' => 48,
+        'consent_expiry_hours' => 48,
         'regular_capacity' => 4,
         'buffer_capacity' => 2,
         'twins_slots' => 1,

@@ -20,6 +20,7 @@ const navLinks = [
     { label: 'Closures', route: 'admin.closure-days.index' },
     { label: 'Staff', route: 'admin.staff.index' },
     { label: 'Settings', route: 'admin.settings.edit' },
+    { label: 'Payment settings', route: 'admin.payment-settings.edit' },
     { label: 'Audit log', route: 'admin.audit-log.index' },
 ];
 </script>

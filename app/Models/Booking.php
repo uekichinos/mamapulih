@@ -6,9 +6,13 @@ use App\Enums\BookingStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 
 /**
  * @property BookingStatus $status
+ * @property Carbon|null $start_date
+ * @property Carbon|null $end_date
+ * @property Carbon|null $payment_due_at
  */
 class Booking extends Model
 {
@@ -32,6 +36,11 @@ class Booking extends Model
         'policy_snapshot',
         'created_by',
         'projected_period',
+        'actual_birth_type',
+        'start_date',
+        'end_date',
+        'payment_option',
+        'payment_due_at',
     ];
 
     protected function casts(): array
@@ -42,6 +51,9 @@ class Booking extends Model
             'status' => BookingStatus::class,
             'approved_at' => 'datetime',
             'policy_snapshot' => 'array',
+            'start_date' => 'date',
+            'end_date' => 'date',
+            'payment_due_at' => 'datetime',
         ];
     }
 
@@ -83,5 +95,29 @@ class Booking extends Model
     public function addons(): HasMany
     {
         return $this->hasMany(BookingAddon::class);
+    }
+
+    /**
+     * @return HasMany<Payment, $this>
+     */
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    /**
+     * @return HasMany<PlanChange, $this>
+     */
+    public function planChanges(): HasMany
+    {
+        return $this->hasMany(PlanChange::class);
+    }
+
+    /**
+     * @return HasMany<Refund, $this>
+     */
+    public function refunds(): HasMany
+    {
+        return $this->hasMany(Refund::class);
     }
 }

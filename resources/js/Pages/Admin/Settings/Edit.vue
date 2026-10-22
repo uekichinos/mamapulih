@@ -13,6 +13,8 @@ const props = defineProps<{
         balance_due_days_before_start: number;
         start_notice_days: number;
         approval_hold_hours: number;
+        payment_deadline_hours: number;
+        consent_expiry_hours: number;
         regular_capacity: number;
         buffer_capacity: number;
         twins_slots: 1 | 2;
@@ -87,15 +89,39 @@ const submit = () => form.put(route('admin.settings.update'));
                 </div>
             </div>
 
-            <div>
-                <InputLabel for="approval_hold_hours" value="Approval hold time (hours)" />
-                <TextInput
-                    id="approval_hold_hours"
-                    v-model.number="form.approval_hold_hours"
-                    type="number"
-                    class="mt-1 block w-full"
-                />
-                <InputError class="mt-2" :message="form.errors.approval_hold_hours" />
+            <div class="grid grid-cols-3 gap-4">
+                <div>
+                    <InputLabel for="approval_hold_hours" value="Approval hold time (hours)" />
+                    <TextInput
+                        id="approval_hold_hours"
+                        v-model.number="form.approval_hold_hours"
+                        type="number"
+                        class="mt-1 block w-full"
+                    />
+                    <InputError class="mt-2" :message="form.errors.approval_hold_hours" />
+                </div>
+
+                <div>
+                    <InputLabel for="payment_deadline_hours" value="Payment deadline (hours)" />
+                    <TextInput
+                        id="payment_deadline_hours"
+                        v-model.number="form.payment_deadline_hours"
+                        type="number"
+                        class="mt-1 block w-full"
+                    />
+                    <InputError class="mt-2" :message="form.errors.payment_deadline_hours" />
+                </div>
+
+                <div>
+                    <InputLabel for="consent_expiry_hours" value="Consent link expiry (hours)" />
+                    <TextInput
+                        id="consent_expiry_hours"
+                        v-model.number="form.consent_expiry_hours"
+                        type="number"
+                        class="mt-1 block w-full"
+                    />
+                    <InputError class="mt-2" :message="form.errors.consent_expiry_hours" />
+                </div>
             </div>
 
             <div class="grid grid-cols-3 gap-4">

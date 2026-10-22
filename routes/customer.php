@@ -3,7 +3,10 @@
 use App\Http\Controllers\Customer\Auth\AuthenticatedCustomerSessionController;
 use App\Http\Controllers\Customer\Auth\RegisteredCustomerController;
 use App\Http\Controllers\Customer\BookingController;
+use App\Http\Controllers\Customer\ConsentController;
 use App\Http\Controllers\Customer\MyBookingController;
+use App\Http\Controllers\Customer\PaymentController;
+use App\Http\Controllers\Customer\StartController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest:customers')->group(function () {
@@ -29,4 +32,15 @@ Route::middleware('auth:customers')->group(function () {
     });
 
     Route::get('/my-booking', [MyBookingController::class, 'show'])->name('customer.my-booking');
+
+    Route::get('/payment', [PaymentController::class, 'show'])->name('customer.payment');
+    Route::post('/payment', [PaymentController::class, 'store']);
+
+    Route::get('/start', [StartController::class, 'show'])->name('customer.start');
+    Route::post('/start', [StartController::class, 'store']);
+    Route::post('/start/confirm', [StartController::class, 'confirm'])->name('customer.start.confirm');
 });
+
+// Public, token-secured — no customer login required to view/decide.
+Route::get('/consent/{token}', [ConsentController::class, 'show'])->name('customer.consent.show');
+Route::post('/consent/{token}', [ConsentController::class, 'store'])->name('customer.consent.store');

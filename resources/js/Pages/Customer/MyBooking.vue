@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import CustomerLayout from '@/Layouts/CustomerLayout.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { Head, Link } from '@inertiajs/vue3';
 
 interface Booking {
@@ -17,6 +18,7 @@ interface Booking {
 
 defineProps<{
     booking: Booking | null;
+    balanceDue: number | null;
 }>();
 
 const statusLabel: Record<string, string> = {
@@ -84,11 +86,25 @@ const money = (sen: number) => (sen / 100).toFixed(2);
                 >
             </div>
             <div
+                v-if="balanceDue"
+                class="flex justify-between"
+            >
+                <span class="text-gray-500 dark:text-gray-400">Balance due</span>
+                <span class="text-gray-900 dark:text-gray-100">RM {{ money(balanceDue) }}</span>
+            </div>
+            <div
                 v-if="booking.status === 'rejected' && booking.rejection_reason"
                 class="rounded-md bg-red-50 p-3 text-red-700 dark:bg-red-900/30 dark:text-red-300"
             >
                 {{ booking.rejection_reason }}
             </div>
+
+            <Link v-if="booking.status === 'awaiting_payment'" :href="route('customer.payment')">
+                <PrimaryButton>Pay now</PrimaryButton>
+            </Link>
+            <Link v-else-if="booking.status === 'reserved'" :href="route('customer.start')">
+                <PrimaryButton>Start my package</PrimaryButton>
+            </Link>
         </div>
     </CustomerLayout>
 </template>

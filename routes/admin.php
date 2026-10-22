@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\ClosureDayController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\EmailSettingsController;
 use App\Http\Controllers\Admin\PackageController;
+use App\Http\Controllers\Admin\PaymentSettingsController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\StaffUserController;
 use App\Http\Controllers\Admin\VariantController;
@@ -50,4 +51,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', 'role:ow
     Route::post('/booking-approvals/{booking}/reject', [BookingApprovalController::class, 'reject'])->name('booking-approvals.reject');
 
     Route::get('/capacity', [CapacityController::class, 'index'])->name('capacity.index');
+
+    Route::get('/payment-settings', [PaymentSettingsController::class, 'edit'])->name('payment-settings.edit');
+    Route::put('/payment-settings', [PaymentSettingsController::class, 'update'])->name('payment-settings.update');
+
+    Route::post('/bookings/{booking}/payments', [BookingController::class, 'recordPayment'])->name('bookings.payments.store');
+    Route::post('/bookings/{booking}/refunds/{refund}/mark-paid', [BookingController::class, 'markRefundPaid'])->name('bookings.refunds.mark-paid');
+    Route::post('/bookings/{booking}/resend-consent', [BookingController::class, 'resendConsent'])->name('bookings.resend-consent');
 });

@@ -17,6 +17,8 @@ class SettingsRequest extends FormRequest
             'balance_due_days_before_start' => ['required', 'integer', 'min:0'],
             'start_notice_days' => ['required', 'integer', 'min:0'],
             'approval_hold_hours' => ['required', 'integer', 'min:1'],
+            'payment_deadline_hours' => ['required', 'integer', 'min:1'],
+            'consent_expiry_hours' => ['required', 'integer', 'min:1'],
             'regular_capacity' => ['required', 'integer', 'min:1'],
             'buffer_capacity' => ['required', 'integer', 'min:0'],
             'twins_slots' => ['required', 'in:1,2'],
