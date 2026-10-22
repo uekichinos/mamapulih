@@ -18,6 +18,7 @@ it('saves booking settings as a new version each time', function () {
         'regular_capacity' => 4,
         'buffer_capacity' => 2,
         'twins_slots' => 1,
+        'pause_limit_count' => 2,
     ];
 
     $this->actingAs($owner)->put(route('admin.settings.update'), $payload)->assertRedirect();

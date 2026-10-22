@@ -5,6 +5,7 @@ namespace App\Domain\Booking;
 use App\Domain\Audit\AuditLogger;
 use App\Domain\Capacity\CapacityFullException;
 use App\Domain\Capacity\CapacityService;
+use App\Domain\Kitchen\BookingDayGenerator;
 use App\Enums\BookingStatus;
 use App\Models\Addon;
 use App\Models\Address;
@@ -24,6 +25,7 @@ class BookingService
     public function __construct(
         private CapacityService $capacity,
         private BookingPolicy $policy,
+        private BookingDayGenerator $bookingDays,
         private AuditLogger $audit,
     ) {}
 
@@ -165,6 +167,33 @@ class BookingService
         ]);
 
         $this->audit->record('booking.rejected', $booking, $before, $booking->toArray(), $admin);
+
+        return $booking;
+    }
+
+    /**
+     * Admin-done extension: adds days to the end of an already-started
+     * booking. The extra charge is recorded separately as an
+     * `extension`-type payment on the booking's payment screen.
+     */
+    public function extend(Booking $booking, int $days, User $admin): Booking
+    {
+        abort_if($days < 1, 422, 'Extension must be at least one day.');
+        abort_unless(in_array($booking->status, [BookingStatus::Active, BookingStatus::Paused], true), 422, 'Only an active or paused booking can be extended.');
+
+        $before = $booking->toArray();
+        $oldEnd = $booking->end_date->copy();
+        $newEnd = $oldEnd->copy()->addDays($days);
+
+        $booking->update([
+            'duration_days' => $booking->duration_days + $days,
+            'end_date' => $newEnd,
+            'price_sen' => $booking->price_sen + ($booking->daily_rate_sen * $days),
+        ]);
+
+        $this->bookingDays->extendTail($booking, $oldEnd->copy()->addDay(), $newEnd);
+
+        $this->audit->record('booking.extended', $booking, $before, $booking->toArray(), $admin);
 
         return $booking;
     }

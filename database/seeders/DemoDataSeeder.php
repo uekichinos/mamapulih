@@ -50,8 +50,8 @@ class DemoDataSeeder extends Seeder
             return;
         }
 
-        $standardRotation = MenuRotation::query()->firstOrCreate(['name' => 'Standard']);
-        $csecRotation = MenuRotation::query()->firstOrCreate(['name' => 'C-Sec']);
+        $standardRotation = MenuRotation::query()->create(['name' => ['en' => 'Standard', 'ms' => 'Standard']]);
+        $csecRotation = MenuRotation::query()->create(['name' => ['en' => 'C-Sec', 'ms' => 'C-Sec']]);
 
         $standard = Package::query()->create([
             'name' => ['en' => 'Standard (Normal birth)', 'ms' => 'Standard (Bersalin normal)'],

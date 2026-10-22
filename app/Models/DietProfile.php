@@ -5,6 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property array<int, string>|null $allergies
+ * @property array<int, string>|null $exclusions
+ */
 class DietProfile extends Model
 {
     protected $fillable = ['customer_id', 'allergies', 'exclusions', 'notes'];

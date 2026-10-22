@@ -4,6 +4,7 @@ namespace App\Domain\Booking;
 
 use App\Domain\Audit\AuditLogger;
 use App\Domain\Capacity\CapacityService;
+use App\Domain\Kitchen\BookingDayGenerator;
 use App\Domain\Payments\PaymentService;
 use App\Enums\BookingStatus;
 use App\Models\Booking;
@@ -16,6 +17,7 @@ class StartService
         private CapacityService $capacity,
         private ConsentService $consents,
         private PaymentService $payments,
+        private BookingDayGenerator $bookingDays,
         private AuditLogger $audit,
     ) {}
 
@@ -57,6 +59,8 @@ class StartService
         $before = $booking->toArray();
         $booking->update(['end_date' => $period['end'], 'status' => BookingStatus::Active]);
         $this->audit->record('booking.started', $booking, $before, $booking->toArray());
+
+        $this->bookingDays->generateFor($booking->refresh());
 
         return $booking;
     }

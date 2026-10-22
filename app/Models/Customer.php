@@ -10,6 +10,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 /**
  * @use HasFactory<CustomerFactory>
+ *
+ * @property DietProfile|null $dietProfile
  */
 class Customer extends Authenticatable
 {

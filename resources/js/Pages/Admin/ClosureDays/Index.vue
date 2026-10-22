@@ -2,6 +2,7 @@
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import DangerButton from '@/Components/DangerButton.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 
 defineProps<{
@@ -9,6 +10,7 @@ defineProps<{
         id: number;
         date: string;
         reason: string | null;
+        affected_count: number;
     }>;
 }>();
 
@@ -17,6 +19,8 @@ const destroy = (id: number) => {
         router.delete(route('admin.closure-days.destroy', id));
     }
 };
+
+const notify = (id: number) => router.post(route('admin.closure-days.notify', id));
 </script>
 
 <template>
@@ -43,6 +47,7 @@ const destroy = (id: number) => {
                     <tr>
                         <th class="px-4 py-3">Date</th>
                         <th class="px-4 py-3">Reason</th>
+                        <th class="px-4 py-3">Affected bookings</th>
                         <th class="px-4 py-3"></th>
                     </tr>
                 </thead>
@@ -52,12 +57,16 @@ const destroy = (id: number) => {
                         <td class="px-4 py-3 text-gray-600 dark:text-gray-400">
                             {{ day.reason ?? '—' }}
                         </td>
+                        <td class="px-4 py-3 text-gray-600 dark:text-gray-400">{{ day.affected_count }}</td>
                         <td class="px-4 py-3 text-right">
+                            <SecondaryButton v-if="day.affected_count > 0" class="mr-2" @click="notify(day.id)">
+                                Notify customers
+                            </SecondaryButton>
                             <DangerButton @click="destroy(day.id)">Remove</DangerButton>
                         </td>
                     </tr>
                     <tr v-if="closureDays.length === 0">
-                        <td colspan="3" class="px-4 py-6 text-center text-gray-500">
+                        <td colspan="4" class="px-4 py-6 text-center text-gray-500">
                             No upcoming closure days.
                         </td>
                     </tr>

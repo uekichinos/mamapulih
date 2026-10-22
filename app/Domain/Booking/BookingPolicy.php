@@ -22,6 +22,7 @@ class BookingPolicy
         'regular_capacity' => 4,
         'buffer_capacity' => 2,
         'twins_slots' => 1,
+        'pause_limit_count' => 2,
     ];
 
     public function __construct(private SettingsManager $settings) {}
@@ -70,6 +71,11 @@ class BookingPolicy
     public function startNoticeDays(): int
     {
         return (int) $this->current()['start_notice_days'];
+    }
+
+    public function pauseLimitCount(): int
+    {
+        return (int) $this->current()['pause_limit_count'];
     }
 
     /**

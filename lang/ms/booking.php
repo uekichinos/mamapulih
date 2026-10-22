@@ -6,5 +6,6 @@ return [
     'slot_full' => 'Tarikh itu sudah penuh. Sila cuba salah satu tarikh di bawah.',
     'variant_unavailable' => 'Pilihan pakej itu tidak tersedia.',
     'closure_day' => 'Dapur tutup pada hari itu. Sila pilih hari buka seterusnya.',
+    'pause_limit_exceeded' => 'Tempahan ini telah menggunakan had tangguh. Pengecualian perubatan diperlukan untuk menangguh lagi.',
 
 ];

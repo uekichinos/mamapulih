@@ -6,6 +6,7 @@ use App\Domain\Booking\BookingPolicy;
 use App\Domain\Booking\BookingService;
 use App\Domain\Capacity\CapacityFullException;
 use App\Domain\Capacity\CapacityService;
+use App\Enums\DietTag;
 use App\Http\Controllers\Controller;
 use App\Models\Addon;
 use App\Models\Booking;
@@ -14,6 +15,7 @@ use App\Models\Variant;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -119,6 +121,7 @@ class BookingController extends Controller
 
         return Inertia::render('Customer/Booking/Details', [
             'draft' => $request->session()->get(self::DRAFT_KEY),
+            'dietTags' => $this->dietTagOptions(),
         ]);
     }
 
@@ -134,7 +137,9 @@ class BookingController extends Controller
             'address.postcode' => ['required', 'string', 'max:10'],
             'address.notes' => ['nullable', 'string', 'max:255'],
             'diet.allergies' => ['array'],
+            'diet.allergies.*' => [Rule::in(DietTag::values())],
             'diet.exclusions' => ['array'],
+            'diet.exclusions.*' => [Rule::in(DietTag::values())],
             'diet.notes' => ['nullable', 'string', 'max:1000'],
         ]);
 
@@ -192,5 +197,13 @@ class BookingController extends Controller
         }
 
         return null;
+    }
+
+    /**
+     * @return array<int, array{value: string, label: string}>
+     */
+    private function dietTagOptions(): array
+    {
+        return array_map(fn (DietTag $tag) => ['value' => $tag->value, 'label' => $tag->label()], DietTag::cases());
     }
 }

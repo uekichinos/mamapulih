@@ -32,6 +32,14 @@ interface PlanChange {
     consent: { expires_at: string; decision: string | null } | null;
 }
 
+interface Pause {
+    id: number;
+    from_date: string;
+    to_date: string;
+    reason: string;
+    limit_overridden: boolean;
+}
+
 interface Booking {
     id: number;
     ref_no: string;
@@ -59,6 +67,7 @@ interface Booking {
     payments: Payment[];
     refunds: Refund[];
     planChanges: PlanChange[];
+    pauses: Pause[];
 }
 
 const props = defineProps<{
@@ -103,6 +112,28 @@ const markRefundPaid = (refundId: number) => {
 
 const resendConsent = () =>
     useForm({}).post(route('admin.bookings.resend-consent', props.booking.id));
+
+const pauseForm = useForm({
+    days: 1,
+    reason: 'normal' as 'normal' | 'medical',
+    override_limit: false,
+});
+
+const pause = () => {
+    pauseForm.post(route('admin.bookings.pause', props.booking.id), {
+        onSuccess: () => pauseForm.reset(),
+    });
+};
+
+const resume = () => useForm({}).post(route('admin.bookings.resume', props.booking.id));
+
+const extendForm = useForm({ days: 1 });
+
+const extend = () => {
+    extendForm.post(route('admin.bookings.extend', props.booking.id), {
+        onSuccess: () => extendForm.reset(),
+    });
+};
 </script>
 
 <template>
@@ -322,6 +353,53 @@ const resendConsent = () =>
                         >
                     </div>
                 </div>
+            </div>
+
+            <div
+                v-if="['active', 'paused'].includes(booking.status)"
+                class="rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800 sm:col-span-2"
+            >
+                <h2 class="mb-2 font-medium text-gray-800 dark:text-gray-200">Pause / resume / extend</h2>
+
+                <div v-if="booking.pauses.length" class="mb-3 space-y-1">
+                    <p v-for="p in booking.pauses" :key="p.id" class="text-sm text-gray-600 dark:text-gray-400">
+                        {{ p.from_date }} → {{ p.to_date }} ({{ p.reason }}<span v-if="p.limit_overridden">, override</span>)
+                    </p>
+                </div>
+
+                <SecondaryButton v-if="booking.status === 'paused'" @click="resume">Resume now</SecondaryButton>
+
+                <form v-else class="flex flex-wrap items-end gap-3" @submit.prevent="pause">
+                    <div>
+                        <InputLabel for="pause-days" value="Pause for (days)" />
+                        <TextInput id="pause-days" v-model="pauseForm.days" type="number" min="1" class="mt-1 block w-24" />
+                    </div>
+                    <div>
+                        <InputLabel for="pause-reason" value="Reason" />
+                        <select
+                            id="pause-reason"
+                            v-model="pauseForm.reason"
+                            class="mt-1 block w-full rounded-md border-gray-300 text-sm shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                        >
+                            <option value="normal">Normal</option>
+                            <option value="medical">Medical</option>
+                        </select>
+                    </div>
+                    <label class="flex items-center gap-2 pb-2 text-sm text-gray-700 dark:text-gray-300">
+                        <input v-model="pauseForm.override_limit" type="checkbox" />
+                        Override pause limit
+                    </label>
+                    <PrimaryButton :disabled="pauseForm.processing">Pause</PrimaryButton>
+                    <InputError :message="pauseForm.errors.days" />
+                </form>
+
+                <form class="mt-4 flex items-end gap-3" @submit.prevent="extend">
+                    <div>
+                        <InputLabel for="extend-days" value="Extend by (days)" />
+                        <TextInput id="extend-days" v-model="extendForm.days" type="number" min="1" class="mt-1 block w-24" />
+                    </div>
+                    <SecondaryButton :disabled="extendForm.processing" type="submit">Extend</SecondaryButton>
+                </form>
             </div>
         </div>
     </AdminLayout>

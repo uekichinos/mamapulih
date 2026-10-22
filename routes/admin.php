@@ -8,9 +8,14 @@ use App\Http\Controllers\Admin\BusinessProfileController;
 use App\Http\Controllers\Admin\CapacityController;
 use App\Http\Controllers\Admin\ClosureDayController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\DeliveryListController;
+use App\Http\Controllers\Admin\DishController;
 use App\Http\Controllers\Admin\EmailSettingsController;
+use App\Http\Controllers\Admin\MenuRotationController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\PaymentSettingsController;
+use App\Http\Controllers\Admin\PrepSheetController;
+use App\Http\Controllers\Admin\RotationDayController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\StaffUserController;
 use App\Http\Controllers\Admin\VariantController;
@@ -37,7 +42,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', 'role:ow
     Route::resource('addons', AddonController::class)->except(['show']);
     Route::resource('zones', ZoneController::class)->except(['show']);
     Route::resource('closure-days', ClosureDayController::class)->except(['show', 'edit', 'update']);
+    Route::post('/closure-days/{closureDay}/notify', [ClosureDayController::class, 'notify'])->name('closure-days.notify');
     Route::resource('staff', StaffUserController::class)->except(['show']);
+
+    Route::resource('dishes', DishController::class)->except(['show']);
+    Route::resource('menu-rotations', MenuRotationController::class)->except(['show']);
+    Route::resource('menu-rotations.rotation-days', RotationDayController::class)
+        ->except(['show', 'index', 'create', 'edit'])
+        ->shallow();
+
+    Route::get('/kitchen/prep-sheet', [PrepSheetController::class, 'index'])->name('kitchen.prep-sheet');
+    Route::get('/delivery-lists', [DeliveryListController::class, 'index'])->name('delivery-lists.index');
 
     Route::get('/audit-log', [AuditLogController::class, 'index'])->name('audit-log.index');
 
@@ -58,4 +73,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', 'role:ow
     Route::post('/bookings/{booking}/payments', [BookingController::class, 'recordPayment'])->name('bookings.payments.store');
     Route::post('/bookings/{booking}/refunds/{refund}/mark-paid', [BookingController::class, 'markRefundPaid'])->name('bookings.refunds.mark-paid');
     Route::post('/bookings/{booking}/resend-consent', [BookingController::class, 'resendConsent'])->name('bookings.resend-consent');
+    Route::post('/bookings/{booking}/pause', [BookingController::class, 'pause'])->name('bookings.pause');
+    Route::post('/bookings/{booking}/resume', [BookingController::class, 'resume'])->name('bookings.resume');
+    Route::post('/bookings/{booking}/extend', [BookingController::class, 'extend'])->name('bookings.extend');
 });

@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Domain\Booking\BookingService;
 use App\Domain\Booking\ConsentService;
+use App\Domain\Booking\PauseLimitExceededException;
+use App\Domain\Booking\PauseService;
 use App\Domain\Capacity\CapacityFullException;
 use App\Domain\Payments\PaymentService;
+use App\Enums\DietTag;
 use App\Http\Controllers\Controller;
 use App\Models\Addon;
 use App\Models\Booking;
@@ -15,6 +18,7 @@ use App\Models\Refund;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -24,6 +28,7 @@ class BookingController extends Controller
         private BookingService $bookings,
         private PaymentService $payments,
         private ConsentService $consents,
+        private PauseService $pauses,
     ) {}
 
     public function index(): Response
@@ -43,6 +48,7 @@ class BookingController extends Controller
         $booking->load([
             'customer', 'variant.package', 'address.zone', 'addons.addon', 'approver',
             'payments.recorder', 'refunds', 'planChanges.toVariant', 'planChanges.consent',
+            'pauses.approver',
         ]);
 
         return Inertia::render('Admin/Bookings/Show', [
@@ -108,6 +114,45 @@ class BookingController extends Controller
         return back()->with('status', 'consent-resent');
     }
 
+    public function pause(Request $request, Booking $booking): RedirectResponse
+    {
+        $data = $request->validate([
+            'days' => ['required', 'integer', 'min:1'],
+            'reason' => ['required', 'in:normal,medical'],
+            'override_limit' => ['boolean'],
+        ]);
+
+        try {
+            $this->pauses->pause(
+                $booking,
+                $data['days'],
+                $data['reason'],
+                Auth::guard('web')->user(),
+                $data['override_limit'] ?? false,
+            );
+        } catch (PauseLimitExceededException $e) {
+            return back()->withErrors(['days' => $e->getMessage()]);
+        }
+
+        return back()->with('status', 'paused');
+    }
+
+    public function resume(Booking $booking): RedirectResponse
+    {
+        $this->pauses->resume($booking, Auth::guard('web')->user());
+
+        return back()->with('status', 'resumed');
+    }
+
+    public function extend(Request $request, Booking $booking): RedirectResponse
+    {
+        $data = $request->validate(['days' => ['required', 'integer', 'min:1']]);
+
+        $this->bookings->extend($booking, $data['days'], Auth::guard('web')->user());
+
+        return back()->with('status', 'extended');
+    }
+
     public function create(): Response
     {
         $packages = Package::query()
@@ -120,6 +165,7 @@ class BookingController extends Controller
         return Inertia::render('Admin/Bookings/Create', [
             'packages' => $packages,
             'addons' => $addons,
+            'dietTags' => array_map(fn (DietTag $tag) => ['value' => $tag->value, 'label' => $tag->label()], DietTag::cases()),
         ]);
     }
 
@@ -138,7 +184,9 @@ class BookingController extends Controller
             'address.postcode' => ['required', 'string', 'max:10'],
             'address.notes' => ['nullable', 'string', 'max:255'],
             'diet.allergies' => ['array'],
+            'diet.allergies.*' => [Rule::in(DietTag::values())],
             'diet.exclusions' => ['array'],
+            'diet.exclusions.*' => [Rule::in(DietTag::values())],
             'diet.notes' => ['nullable', 'string', 'max:1000'],
             'addons' => ['array'],
             'addons.*.addon_id' => ['required', 'integer', 'exists:addons,id'],

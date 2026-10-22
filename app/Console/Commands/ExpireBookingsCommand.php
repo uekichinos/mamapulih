@@ -13,7 +13,7 @@ class ExpireBookingsCommand extends Command
 {
     protected $signature = 'mamapulih:expire-bookings';
 
-    protected $description = 'Expire bookings past their approval-hold or payment deadline, and plan changes whose consent link has expired';
+    protected $description = 'Expire bookings past their approval-hold or payment deadline, auto-resume elapsed pauses, and expire plan changes whose consent link has expired';
 
     public function __construct(
         private BookingPolicy $policy,
@@ -45,6 +45,17 @@ class ExpireBookingsCommand extends Command
             $this->expire($booking, 'booking.expired.payment_deadline');
         }
 
+        $resumedPauses = Booking::query()
+            ->where('status', BookingStatus::Paused)
+            ->get()
+            ->filter(fn (Booking $booking) => (bool) $booking->pauses()->latest('to_date')->first()?->to_date->isPast());
+
+        foreach ($resumedPauses as $booking) {
+            $before = $booking->toArray();
+            $booking->update(['status' => BookingStatus::Active]);
+            $this->audit->record('booking.resumed.auto', $booking, $before, $booking->toArray());
+        }
+
         $expiredConsents = PlanChange::query()
             ->where('status', 'awaiting_consent')
             ->whereHas('consent', fn ($q) => $q->whereNull('decision')->where('expires_at', '<', now()))
@@ -56,9 +67,10 @@ class ExpireBookingsCommand extends Command
         }
 
         $this->components->info(sprintf(
-            '%d approval(s), %d payment(s), %d consent(s) expired.',
+            '%d approval(s), %d payment(s) expired; %d pause(s) auto-resumed; %d consent(s) expired.',
             $expiredApprovals->count(),
             $expiredPayments->count(),
+            $resumedPauses->count(),
             $expiredConsents->count(),
         ));
 

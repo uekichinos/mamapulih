@@ -23,6 +23,7 @@ interface Package {
 defineProps<{
     packages: Package[];
     addons: { id: number; name: Record<string, string>; price_sen: number }[];
+    dietTags: { value: string; label: string }[];
 }>();
 
 const form = useForm({
@@ -32,7 +33,7 @@ const form = useForm({
     is_twins: false,
     edd: '',
     address: { line1: '', line2: '', postcode: '', notes: '' },
-    diet: { allergies: '', exclusions: '', notes: '' },
+    diet: { allergies: [] as string[], exclusions: [] as string[], notes: '' },
 });
 
 const selectVariant = (variant: Variant) => {
@@ -42,20 +43,7 @@ const selectVariant = (variant: Variant) => {
 
 const money = (sen: number) => (sen / 100).toFixed(2);
 
-const submit = () => {
-    form.transform((data) => ({
-        ...data,
-        diet: {
-            ...data.diet,
-            allergies: data.diet.allergies
-                ? data.diet.allergies.split(',').map((s: string) => s.trim())
-                : [],
-            exclusions: data.diet.exclusions
-                ? data.diet.exclusions.split(',').map((s: string) => s.trim())
-                : [],
-        },
-    })).post(route('admin.bookings.store'));
-};
+const submit = () => form.post(route('admin.bookings.store'));
 </script>
 
 <template>
@@ -172,20 +160,22 @@ const submit = () => {
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <InputLabel for="allergies" value="Allergies (comma separated)" />
-                    <TextInput
-                        id="allergies"
-                        v-model="form.diet.allergies"
-                        class="mt-1 block w-full"
-                    />
+                    <InputLabel value="Allergies" />
+                    <div class="mt-2 flex flex-wrap gap-3">
+                        <label v-for="tag in dietTags" :key="tag.value" class="flex items-center gap-1 text-sm text-gray-700 dark:text-gray-300">
+                            <input v-model="form.diet.allergies" type="checkbox" :value="tag.value" />
+                            {{ tag.label }}
+                        </label>
+                    </div>
                 </div>
                 <div>
-                    <InputLabel for="exclusions" value="Exclusions (comma separated)" />
-                    <TextInput
-                        id="exclusions"
-                        v-model="form.diet.exclusions"
-                        class="mt-1 block w-full"
-                    />
+                    <InputLabel value="Exclusions" />
+                    <div class="mt-2 flex flex-wrap gap-3">
+                        <label v-for="tag in dietTags" :key="tag.value" class="flex items-center gap-1 text-sm text-gray-700 dark:text-gray-300">
+                            <input v-model="form.diet.exclusions" type="checkbox" :value="tag.value" />
+                            {{ tag.label }}
+                        </label>
+                    </div>
                 </div>
             </div>
 

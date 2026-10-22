@@ -18,6 +18,7 @@ const props = defineProps<{
         regular_capacity: number;
         buffer_capacity: number;
         twins_slots: 1 | 2;
+        pause_limit_count: number;
     };
 }>();
 
@@ -158,6 +159,17 @@ const submit = () => form.put(route('admin.settings.update'));
                         <option :value="2">2 slots</option>
                     </select>
                     <InputError class="mt-2" :message="form.errors.twins_slots" />
+                </div>
+
+                <div>
+                    <InputLabel for="pause_limit_count" value="Pause limit (times)" />
+                    <TextInput
+                        id="pause_limit_count"
+                        v-model.number="form.pause_limit_count"
+                        type="number"
+                        class="mt-1 block w-full"
+                    />
+                    <InputError class="mt-2" :message="form.errors.pause_limit_count" />
                 </div>
             </div>
 

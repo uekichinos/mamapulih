@@ -6,5 +6,6 @@ return [
     'slot_full' => 'That date is fully booked. Please try one of the dates below.',
     'variant_unavailable' => 'That package option is not available.',
     'closure_day' => 'The kitchen is closed that day. Please pick the next open day.',
+    'pause_limit_exceeded' => 'This booking has already used its pause allowance. A medical override is needed to pause again.',
 
 ];

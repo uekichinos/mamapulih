@@ -120,4 +120,20 @@ class Booking extends Model
     {
         return $this->hasMany(Refund::class);
     }
+
+    /**
+     * @return HasMany<BookingDay, $this>
+     */
+    public function bookingDays(): HasMany
+    {
+        return $this->hasMany(BookingDay::class);
+    }
+
+    /**
+     * @return HasMany<Pause, $this>
+     */
+    public function pauses(): HasMany
+    {
+        return $this->hasMany(Pause::class);
+    }
 }

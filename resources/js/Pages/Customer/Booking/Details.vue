@@ -8,6 +8,7 @@ import { Head, useForm } from '@inertiajs/vue3';
 
 defineProps<{
     draft: Record<string, unknown>;
+    dietTags: { value: string; label: string }[];
 }>();
 
 const form = useForm({
@@ -18,26 +19,13 @@ const form = useForm({
         notes: '',
     },
     diet: {
-        allergies: '' as string,
-        exclusions: '' as string,
+        allergies: [] as string[],
+        exclusions: [] as string[],
         notes: '',
     },
 });
 
-const submit = () => {
-    form.transform((data) => ({
-        ...data,
-        diet: {
-            ...data.diet,
-            allergies: data.diet.allergies
-                ? data.diet.allergies.split(',').map((s: string) => s.trim())
-                : [],
-            exclusions: data.diet.exclusions
-                ? data.diet.exclusions.split(',').map((s: string) => s.trim())
-                : [],
-        },
-    })).post(route('customer.booking.details'));
-};
+const submit = () => form.post(route('customer.booking.details'));
 </script>
 
 <template>
@@ -51,12 +39,7 @@ const submit = () => {
         <form class="space-y-4" @submit.prevent="submit">
             <div>
                 <InputLabel for="line1" value="Address" />
-                <TextInput
-                    id="line1"
-                    v-model="form.address.line1"
-                    class="mt-1 block w-full"
-                    required
-                />
+                <TextInput id="line1" v-model="form.address.line1" class="mt-1 block w-full" required />
                 <InputError class="mt-2" :message="form.errors['address.line1']" />
             </div>
 
@@ -67,36 +50,33 @@ const submit = () => {
 
             <div>
                 <InputLabel for="postcode" value="Postcode" />
-                <TextInput
-                    id="postcode"
-                    v-model="form.address.postcode"
-                    class="mt-1 block w-full"
-                    required
-                />
+                <TextInput id="postcode" v-model="form.address.postcode" class="mt-1 block w-full" required />
                 <InputError class="mt-2" :message="form.errors['address.postcode']" />
             </div>
 
             <div>
                 <InputLabel for="address-notes" value="Delivery notes (optional)" />
-                <TextInput
-                    id="address-notes"
-                    v-model="form.address.notes"
-                    class="mt-1 block w-full"
-                />
+                <TextInput id="address-notes" v-model="form.address.notes" class="mt-1 block w-full" />
             </div>
 
             <div class="border-t border-gray-200 pt-4 dark:border-gray-700">
-                <InputLabel for="allergies" value="Allergies (comma separated)" />
-                <TextInput id="allergies" v-model="form.diet.allergies" class="mt-1 block w-full" />
+                <InputLabel value="Allergies" />
+                <div class="mt-2 flex flex-wrap gap-3">
+                    <label v-for="tag in dietTags" :key="tag.value" class="flex items-center gap-1 text-sm text-gray-700 dark:text-gray-300">
+                        <input v-model="form.diet.allergies" type="checkbox" :value="tag.value" />
+                        {{ tag.label }}
+                    </label>
+                </div>
             </div>
 
             <div>
-                <InputLabel for="exclusions" value="Food exclusions (comma separated)" />
-                <TextInput
-                    id="exclusions"
-                    v-model="form.diet.exclusions"
-                    class="mt-1 block w-full"
-                />
+                <InputLabel value="Food exclusions / dislikes" />
+                <div class="mt-2 flex flex-wrap gap-3">
+                    <label v-for="tag in dietTags" :key="tag.value" class="flex items-center gap-1 text-sm text-gray-700 dark:text-gray-300">
+                        <input v-model="form.diet.exclusions" type="checkbox" :value="tag.value" />
+                        {{ tag.label }}
+                    </label>
+                </div>
             </div>
 
             <div>

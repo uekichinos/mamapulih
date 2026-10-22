@@ -4,7 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
+/**
+ * @property Carbon $date
+ */
 class ClosureDay extends Model
 {
     protected $fillable = ['date', 'scope', 'reason', 'source', 'created_by'];

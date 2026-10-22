@@ -22,6 +22,7 @@ class SettingsRequest extends FormRequest
             'regular_capacity' => ['required', 'integer', 'min:1'],
             'buffer_capacity' => ['required', 'integer', 'min:0'],
             'twins_slots' => ['required', 'in:1,2'],
+            'pause_limit_count' => ['required', 'integer', 'min:0'],
         ];
     }
 }
