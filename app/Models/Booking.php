@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\BookingSensitiveFlag;
 use App\Enums\BookingStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,12 +11,17 @@ use Illuminate\Support\Carbon;
 
 /**
  * @property BookingStatus $status
+ * @property BookingSensitiveFlag $sensitive_flag
  * @property Carbon|null $start_date
  * @property Carbon|null $end_date
  * @property Carbon|null $payment_due_at
  */
 class Booking extends Model
 {
+    protected $attributes = [
+        'sensitive_flag' => 'none',
+    ];
+
     protected $fillable = [
         'ref_no',
         'customer_id',
@@ -41,6 +47,8 @@ class Booking extends Model
         'end_date',
         'payment_option',
         'payment_due_at',
+        'sensitive_flag',
+        'sensitive_reason',
     ];
 
     protected function casts(): array
@@ -49,12 +57,24 @@ class Booking extends Model
             'edd' => 'date',
             'is_twins' => 'boolean',
             'status' => BookingStatus::class,
+            'sensitive_flag' => BookingSensitiveFlag::class,
+            'sensitive_reason' => 'encrypted',
             'approved_at' => 'datetime',
             'policy_snapshot' => 'array',
             'start_date' => 'date',
             'end_date' => 'date',
             'payment_due_at' => 'datetime',
         ];
+    }
+
+    /**
+     * The message-safety rule: never send an automatic message for a
+     * booking marked compassionate, medical-paused, or do-not-contact —
+     * nor for a customer who has opted out entirely.
+     */
+    public function canReceiveAutomaticMessages(): bool
+    {
+        return ! $this->sensitive_flag->blocksAutomaticMessages() && ! $this->customer->do_not_contact;
     }
 
     /**
@@ -119,6 +139,14 @@ class Booking extends Model
     public function refunds(): HasMany
     {
         return $this->hasMany(Refund::class);
+    }
+
+    /**
+     * @return HasMany<PaymentReceipt, $this>
+     */
+    public function paymentReceipts(): HasMany
+    {
+        return $this->hasMany(PaymentReceipt::class);
     }
 
     /**

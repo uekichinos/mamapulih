@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Domain\Booking\BookingService;
+use App\Domain\Booking\CancellationService;
 use App\Domain\Booking\ConsentService;
 use App\Domain\Booking\PauseLimitExceededException;
 use App\Domain\Booking\PauseService;
 use App\Domain\Capacity\CapacityFullException;
+use App\Domain\Notifications\CustomerMailer;
+use App\Domain\Notifications\RefundIssuedMail;
 use App\Domain\Payments\PaymentService;
 use App\Enums\DietTag;
 use App\Http\Controllers\Controller;
@@ -14,13 +17,16 @@ use App\Models\Addon;
 use App\Models\Booking;
 use App\Models\Customer;
 use App\Models\Package;
+use App\Models\PaymentReceipt;
 use App\Models\Refund;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 use Inertia\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class BookingController extends Controller
 {
@@ -29,6 +35,8 @@ class BookingController extends Controller
         private PaymentService $payments,
         private ConsentService $consents,
         private PauseService $pauses,
+        private CancellationService $cancellations,
+        private CustomerMailer $mailer,
     ) {}
 
     public function index(): Response
@@ -36,7 +44,8 @@ class BookingController extends Controller
         $bookings = Booking::query()
             ->with(['customer', 'variant.package'])
             ->latest()
-            ->paginate(20);
+            ->paginate(20)
+            ->withQueryString();
 
         return Inertia::render('Admin/Bookings/Index', [
             'bookings' => $bookings,
@@ -47,7 +56,7 @@ class BookingController extends Controller
     {
         $booking->load([
             'customer', 'variant.package', 'address.zone', 'addons.addon', 'approver',
-            'payments.recorder', 'refunds', 'planChanges.toVariant', 'planChanges.consent',
+            'payments.recorder', 'paymentReceipts', 'refunds', 'planChanges.toVariant', 'planChanges.consent',
             'pauses.approver',
         ]);
 
@@ -101,15 +110,23 @@ class BookingController extends Controller
             'paid_at' => now(),
         ]);
 
+        $this->mailer->send($booking, fn () => new RefundIssuedMail($refund));
+
         return back()->with('status', 'refund-marked-paid');
+    }
+
+    public function downloadReceipt(Booking $booking, PaymentReceipt $receipt): StreamedResponse
+    {
+        abort_unless($receipt->booking_id === $booking->id, 404);
+
+        return Storage::disk('local')->download($receipt->path, $receipt->original_name);
     }
 
     public function resendConsent(Booking $booking): RedirectResponse
     {
         $planChange = $booking->planChanges()->where('status', 'awaiting_consent')->latest()->firstOrFail();
 
-        $planChange->consent?->delete();
-        $this->consents->sendConsentLink($planChange->fresh());
+        $this->consents->resend($planChange);
 
         return back()->with('status', 'consent-resent');
     }
@@ -151,6 +168,25 @@ class BookingController extends Controller
         $this->bookings->extend($booking, $data['days'], Auth::guard('web')->user());
 
         return back()->with('status', 'extended');
+    }
+
+    public function cancel(Request $request, Booking $booking): RedirectResponse
+    {
+        $data = $request->validate([
+            'type' => ['required', 'in:normal,compassionate,do_not_contact'],
+            'reason' => ['nullable', 'string', 'max:1000'],
+            'override_amount' => ['nullable', 'numeric', 'min:0'],
+        ]);
+
+        $this->cancellations->cancel(
+            $booking,
+            Auth::guard('web')->user(),
+            $data['type'],
+            $data['reason'] ?? null,
+            isset($data['override_amount']) ? (int) round($data['override_amount'] * 100) : null,
+        );
+
+        return back()->with('status', 'cancelled');
     }
 
     public function create(): Response

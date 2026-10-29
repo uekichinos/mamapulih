@@ -73,7 +73,7 @@ it('refuses to submit when the draft is incomplete', function () {
         ->assertRedirect(route('customer.booking.build'));
 });
 
-it('rejects an address outside any delivery zone', function () {
+it('rejects an address outside any delivery zone at the details step, before review', function () {
     [$variant] = bookingCatalog();
     $customer = Customer::factory()->create();
 
@@ -87,10 +87,32 @@ it('rejects an address outside any delivery zone', function () {
         'edd' => now()->addDays(30)->toDateString(),
     ]);
 
-    $this->actingAs($customer, 'customers')->post(route('customer.booking.details'), [
-        'address' => ['line1' => 'No 1, Jalan Test', 'postcode' => '99999'],
-        'diet' => [],
+    $this->actingAs($customer, 'customers')
+        ->post(route('customer.booking.details'), [
+            'address' => ['line1' => 'No 1, Jalan Test', 'postcode' => '99999'],
+            'diet' => [],
+        ])
+        ->assertSessionHasErrors('address.postcode');
+});
+
+it('still rejects at final submit if the zone was removed after the details step', function () {
+    [$variant] = bookingCatalog();
+    $customer = Customer::factory()->create();
+
+    $this->actingAs($customer, 'customers')->post(route('customer.booking.build'), [
+        'variant_id' => $variant->id,
+        'expected_birth_type' => 'normal',
+        'is_twins' => false,
     ]);
+    $this->actingAs($customer, 'customers')->post(route('customer.booking.slot'), [
+        'edd' => now()->addDays(30)->toDateString(),
+    ]);
+    $this->actingAs($customer, 'customers')->post(route('customer.booking.details'), [
+        'address' => ['line1' => 'No 1, Jalan Test', 'postcode' => '40000'],
+        'diet' => [],
+    ])->assertRedirect(route('customer.booking.review'));
+
+    Zone::query()->where('name', 'Shah Alam')->delete();
 
     $this->actingAs($customer, 'customers')
         ->post(route('customer.booking.submit'))

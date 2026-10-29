@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Domain\Audit\AuditLogger;
 use App\Domain\Kitchen\ClosureNoticeMail;
 use App\Domain\Kitchen\ClosureShiftService;
-use App\Domain\Settings\SmtpSettings;
+use App\Domain\Notifications\CustomerMailer;
 use App\Enums\BookingStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\ClosureDayRequest;
@@ -13,7 +13,6 @@ use App\Models\Booking;
 use App\Models\ClosureDay;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -22,7 +21,7 @@ class ClosureDayController extends Controller
     public function __construct(
         private AuditLogger $audit,
         private ClosureShiftService $shifts,
-        private SmtpSettings $smtp,
+        private CustomerMailer $mailer,
     ) {}
 
     public function index(): Response
@@ -30,13 +29,15 @@ class ClosureDayController extends Controller
         $closureDays = ClosureDay::query()
             ->where('date', '>=', now()->toDateString())
             ->orderBy('date')
-            ->get();
-
-        return Inertia::render('Admin/ClosureDays/Index', [
-            'closureDays' => $closureDays->map(fn (ClosureDay $day) => [
+            ->paginate(20)
+            ->withQueryString()
+            ->through(fn (ClosureDay $day) => [
                 ...$day->toArray(),
                 'affected_count' => $this->affectedBookings($day)->count(),
-            ]),
+            ]);
+
+        return Inertia::render('Admin/ClosureDays/Index', [
+            'closureDays' => $closureDays,
         ]);
     }
 
@@ -64,10 +65,8 @@ class ClosureDayController extends Controller
     {
         $bookings = $this->affectedBookings($closureDay)->get();
 
-        $this->smtp->applyToRuntimeConfig();
-
         foreach ($bookings as $booking) {
-            Mail::to($booking->customer->email)->send(new ClosureNoticeMail($booking, $closureDay));
+            $this->mailer->send($booking, fn () => new ClosureNoticeMail($booking, $closureDay));
         }
 
         $this->audit->record('closure_day.notified', $closureDay, after: ['notified_count' => $bookings->count()]);
@@ -78,8 +77,7 @@ class ClosureDayController extends Controller
     /**
      * Same window check as ClosureShiftService: either the daterange
      * (not-yet-started bookings) or start/end dates (already-started).
-     */
-    /**
+     *
      * @return Builder<Booking>
      */
     private function affectedBookings(ClosureDay $closureDay): Builder

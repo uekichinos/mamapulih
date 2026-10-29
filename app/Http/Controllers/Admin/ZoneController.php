@@ -17,7 +17,7 @@ class ZoneController extends Controller
     public function index(): Response
     {
         return Inertia::render('Admin/Zones/Index', [
-            'zones' => Zone::query()->orderBy('name')->get(),
+            'zones' => Zone::query()->orderBy('name')->paginate(20)->withQueryString(),
         ]);
     }
 

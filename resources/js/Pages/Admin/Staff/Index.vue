@@ -1,16 +1,22 @@
 <script setup lang="ts">
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import DangerButton from '@/Components/DangerButton.vue';
+import DropdownButton from '@/Components/DropdownButton.vue';
+import DropdownLink from '@/Components/DropdownLink.vue';
+import Pagination from '@/Components/Pagination.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import RowActions from '@/Components/RowActions.vue';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 
 defineProps<{
-    staff: Array<{
-        id: number;
-        name: string;
-        email: string;
-        role: 'owner' | 'kitchen';
-    }>;
+    staff: {
+        data: Array<{
+            id: number;
+            name: string;
+            email: string;
+            role: 'owner' | 'kitchen';
+        }>;
+        links: Array<{ url: string | null; label: string; active: boolean }>;
+    };
 }>();
 
 const page = usePage();
@@ -27,16 +33,16 @@ const destroy = (id: number) => {
         <Head title="Staff" />
 
         <div class="mb-6 flex items-center justify-between">
-            <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Staff</h1>
+            <h1 class="font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">Staff</h1>
             <Link :href="route('admin.staff.create')">
                 <PrimaryButton>New staff account</PrimaryButton>
             </Link>
         </div>
 
-        <div class="overflow-hidden rounded-lg bg-white shadow-sm dark:bg-gray-800">
+        <div class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
             <table class="w-full text-left text-sm">
                 <thead
-                    class="border-b border-gray-200 text-gray-500 dark:border-gray-700 dark:text-gray-400"
+                    class="border-b border-gray-100 text-xs font-bold uppercase tracking-wide text-gray-400 dark:border-gray-800 dark:text-gray-400"
                 >
                     <tr>
                         <th class="px-4 py-3">Name</th>
@@ -45,8 +51,8 @@ const destroy = (id: number) => {
                         <th class="px-4 py-3"></th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                    <tr v-for="member in staff" :key="member.id">
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+                    <tr v-for="member in staff.data" :key="member.id">
                         <td class="px-4 py-3 text-gray-900 dark:text-gray-100">
                             {{ member.name }}
                         </td>
@@ -57,22 +63,22 @@ const destroy = (id: number) => {
                             {{ member.role }}
                         </td>
                         <td class="px-4 py-3 text-right">
-                            <Link
-                                :href="route('admin.staff.edit', member.id)"
-                                class="mr-3 text-indigo-600 hover:text-indigo-700"
-                            >
-                                Edit
-                            </Link>
-                            <DangerButton
-                                v-if="member.id !== page.props.auth.user.id"
-                                @click="destroy(member.id)"
-                            >
-                                Remove
-                            </DangerButton>
+                            <RowActions>
+                                <DropdownLink :href="route('admin.staff.edit', member.id)">Edit</DropdownLink>
+                                <DropdownButton
+                                    v-if="member.id !== page.props.auth.user.id"
+                                    class="text-red-600 dark:text-red-400"
+                                    @click="destroy(member.id)"
+                                >
+                                    Remove
+                                </DropdownButton>
+                            </RowActions>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
+
+        <Pagination :links="staff.links" />
     </AdminLayout>
 </template>

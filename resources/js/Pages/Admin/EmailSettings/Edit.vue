@@ -4,6 +4,7 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
+import SelectInput from '@/Components/SelectInput.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, router, useForm } from '@inertiajs/vue3';
 
@@ -37,7 +38,7 @@ const sendTest = () => router.post(route('admin.email-settings.test'));
     <AdminLayout>
         <Head title="Email settings" />
 
-        <h1 class="mb-6 text-2xl font-semibold text-gray-900 dark:text-gray-100">
+        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
             Email (SMTP) settings
         </h1>
 
@@ -62,15 +63,11 @@ const sendTest = () => router.post(route('admin.email-settings.test'));
 
                 <div>
                     <InputLabel for="encryption" value="Encryption" />
-                    <select
-                        id="encryption"
-                        v-model="form.encryption"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
-                    >
+                    <SelectInput id="encryption" v-model="form.encryption" class="mt-1">
                         <option value="tls">TLS</option>
                         <option value="ssl">SSL</option>
                         <option value="none">None</option>
-                    </select>
+                    </SelectInput>
                     <InputError class="mt-2" :message="form.errors.encryption" />
                 </div>
             </div>

@@ -17,7 +17,7 @@ class PackageController extends Controller
     public function index(): Response
     {
         return Inertia::render('Admin/Packages/Index', [
-            'packages' => Package::query()->withCount('variants')->orderBy('id')->get(),
+            'packages' => Package::query()->withCount('variants')->orderBy('id')->paginate(20)->withQueryString(),
         ]);
     }
 

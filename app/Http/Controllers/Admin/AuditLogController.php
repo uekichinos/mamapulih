@@ -15,7 +15,7 @@ class AuditLogController extends Controller
             'logs' => AuditLog::query()
                 ->with('actor:id,name')
                 ->latest('created_at')
-                ->paginate(25)
+                ->paginate(20)
                 ->withQueryString(),
         ]);
     }

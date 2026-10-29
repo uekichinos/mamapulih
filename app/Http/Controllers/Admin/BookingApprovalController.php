@@ -22,7 +22,8 @@ class BookingApprovalController extends Controller
             ->with(['customer', 'variant.package'])
             ->where('status', BookingStatus::PendingApproval)
             ->oldest()
-            ->get();
+            ->paginate(20)
+            ->withQueryString();
 
         return Inertia::render('Admin/BookingApprovals/Index', [
             'bookings' => $bookings,

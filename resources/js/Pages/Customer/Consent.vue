@@ -12,8 +12,8 @@ const props = defineProps<{
     token: string;
     planChange: {
         amount_sen: number;
-        fromVariant: { birth_type: string; duration_days: number };
-        toVariant: { birth_type: string; duration_days: number };
+        from_variant: { birth_type: string; duration_days: number };
+        to_variant: { birth_type: string; duration_days: number };
     } | null;
 }>();
 
@@ -44,15 +44,15 @@ const decide = (decision: 'agree' | 'decline') => {
         </div>
 
         <div v-else-if="planChange" class="space-y-4">
-            <h1 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            <h1 class="font-display text-lg font-extrabold text-gray-900 dark:text-gray-50">
                 Confirm your plan
             </h1>
 
             <p class="text-sm text-gray-600 dark:text-gray-400">
                 Your baby's birth type was
-                {{ planChange.fromVariant.birth_type === 'csec' ? 'C-sec' : 'Normal' }}
+                {{ planChange.from_variant.birth_type === 'csec' ? 'C-sec' : 'Normal' }}
                 in your booking, but turned out to be
-                {{ planChange.toVariant.birth_type === 'csec' ? 'C-sec' : 'Normal' }}.
+                {{ planChange.to_variant.birth_type === 'csec' ? 'C-sec' : 'Normal' }}.
             </p>
 
             <p class="text-sm text-gray-700 dark:text-gray-300">

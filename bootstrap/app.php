@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withSchedule(function (Schedule $schedule): void {
         $schedule->command('mamapulih:expire-bookings')->everyFifteenMinutes();
+        $schedule->command('mamapulih:send-reminders')->daily();
     })
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [

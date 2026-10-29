@@ -18,7 +18,7 @@ class DishController extends Controller
     public function index(): Response
     {
         return Inertia::render('Admin/Dishes/Index', [
-            'dishes' => Dish::query()->orderBy('id')->get(),
+            'dishes' => Dish::query()->orderBy('id')->paginate(20)->withQueryString(),
         ]);
     }
 

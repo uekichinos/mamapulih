@@ -25,7 +25,9 @@ const form = useForm({
     address: props.profile.address ?? '',
     timezone: props.profile.timezone,
     currency: props.profile.currency,
-    default_locale: props.profile.default_locale,
+    // BM is removed from the UI; always save English as the default
+    // language regardless of what was previously set.
+    default_locale: 'en',
 });
 
 const submit = () => form.put(route('admin.business-profile.update'));
@@ -35,7 +37,7 @@ const submit = () => form.put(route('admin.business-profile.update'));
     <AdminLayout>
         <Head title="Business profile" />
 
-        <h1 class="mb-6 text-2xl font-semibold text-gray-900 dark:text-gray-100">
+        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
             Business profile
         </h1>
 
@@ -74,12 +76,12 @@ const submit = () => form.put(route('admin.business-profile.update'));
                     id="address"
                     v-model="form.address"
                     rows="3"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                 ></textarea>
                 <InputError class="mt-2" :message="form.errors.address" />
             </div>
 
-            <div class="grid grid-cols-3 gap-4">
+            <div class="grid grid-cols-2 gap-4">
                 <div>
                     <InputLabel for="timezone" value="Timezone" />
                     <TextInput
@@ -100,19 +102,6 @@ const submit = () => form.put(route('admin.business-profile.update'));
                         required
                     />
                     <InputError class="mt-2" :message="form.errors.currency" />
-                </div>
-
-                <div>
-                    <InputLabel for="default_locale" value="Default language" />
-                    <select
-                        id="default_locale"
-                        v-model="form.default_locale"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
-                    >
-                        <option value="en">English</option>
-                        <option value="ms">Bahasa Melayu</option>
-                    </select>
-                    <InputError class="mt-2" :message="form.errors.default_locale" />
                 </div>
             </div>
 

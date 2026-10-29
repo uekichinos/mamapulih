@@ -17,7 +17,7 @@ class AddonController extends Controller
     public function index(): Response
     {
         return Inertia::render('Admin/Addons/Index', [
-            'addons' => Addon::query()->orderBy('id')->get(),
+            'addons' => Addon::query()->orderBy('id')->paginate(20)->withQueryString(),
         ]);
     }
 

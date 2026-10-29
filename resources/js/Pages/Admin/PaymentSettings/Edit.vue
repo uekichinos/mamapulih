@@ -28,14 +28,20 @@ const onQrChange = (event: Event) => {
     form.qr_image = (event.target as HTMLInputElement).files?.[0] ?? null;
 };
 
-const submit = () => form.put(route('admin.payment-settings.update'));
+const submit = () => {
+    // BM input is hidden from the UI; mirror the English value so the
+    // (unchanged) backend validation, which still requires both locales,
+    // keeps passing.
+    form.instructions.ms = form.instructions.en;
+    form.put(route('admin.payment-settings.update'));
+};
 </script>
 
 <template>
     <AdminLayout>
         <Head title="Payment settings" />
 
-        <h1 class="mb-6 text-2xl font-semibold text-gray-900 dark:text-gray-100">
+        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
             Payment settings
         </h1>
 
@@ -94,25 +100,14 @@ const submit = () => form.put(route('admin.payment-settings.update'));
             </div>
 
             <div>
-                <InputLabel for="instructions_en" value="Payment instructions (English)" />
+                <InputLabel for="instructions_en" value="Payment instructions" />
                 <textarea
                     id="instructions_en"
                     v-model="form.instructions.en"
                     rows="3"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                 ></textarea>
                 <InputError class="mt-2" :message="form.errors['instructions.en']" />
-            </div>
-
-            <div>
-                <InputLabel for="instructions_ms" value="Payment instructions (Bahasa Melayu)" />
-                <textarea
-                    id="instructions_ms"
-                    v-model="form.instructions.ms"
-                    rows="3"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
-                ></textarea>
-                <InputError class="mt-2" :message="form.errors['instructions.ms']" />
             </div>
 
             <div class="flex items-center gap-4">

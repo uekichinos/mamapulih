@@ -19,7 +19,7 @@ class StaffUserController extends Controller
     public function index(): Response
     {
         return Inertia::render('Admin/Staff/Index', [
-            'staff' => User::query()->orderBy('name')->get(),
+            'staff' => User::query()->orderBy('name')->paginate(20)->withQueryString(),
         ]);
     }
 

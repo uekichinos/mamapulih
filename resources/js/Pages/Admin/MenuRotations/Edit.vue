@@ -25,7 +25,13 @@ const form = useForm({
     name: { ...props.menuRotation.name },
 });
 
-const submit = () => form.put(route('admin.menu-rotations.update', props.menuRotation.id));
+const submit = () => {
+    // BM input is hidden from the UI; mirror the English value so the
+    // (unchanged) backend validation, which still requires both locales,
+    // keeps passing.
+    form.name.ms = form.name.en;
+    form.put(route('admin.menu-rotations.update', props.menuRotation.id));
+};
 
 const dishFor = (dayNo: number, meal: string): number | null => {
     const match = props.rotationDays.find((rd) => rd.day_no === dayNo && rd.meal === meal);
@@ -50,41 +56,34 @@ const setDish = (dayNo: number, meal: string, event: Event) => {
     <AdminLayout>
         <Head title="Edit menu rotation" />
 
-        <h1 class="mb-6 text-2xl font-semibold text-gray-900 dark:text-gray-100">Edit menu rotation</h1>
+        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">Edit menu rotation</h1>
 
         <form class="mb-8 max-w-xl space-y-4" @submit.prevent="submit">
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <InputLabel for="name_en" value="Name (English)" />
-                    <TextInput id="name_en" v-model="form.name.en" class="mt-1 block w-full" required />
-                    <InputError class="mt-2" :message="form.errors['name.en']" />
-                </div>
-                <div>
-                    <InputLabel for="name_ms" value="Name (Bahasa Melayu)" />
-                    <TextInput id="name_ms" v-model="form.name.ms" class="mt-1 block w-full" required />
-                    <InputError class="mt-2" :message="form.errors['name.ms']" />
-                </div>
+            <div>
+                <InputLabel for="name_en" value="Name" />
+                <TextInput id="name_en" v-model="form.name.en" class="mt-1 block w-full" required />
+                <InputError class="mt-2" :message="form.errors['name.en']" />
             </div>
             <PrimaryButton :disabled="form.processing">Save name</PrimaryButton>
         </form>
 
-        <h2 class="mb-4 text-lg font-medium text-gray-800 dark:text-gray-200">Weekly rotation</h2>
+        <h2 class="mb-4 font-display text-sm font-bold text-gray-900 dark:text-gray-50">Weekly rotation</h2>
 
-        <div class="overflow-hidden rounded-lg bg-white shadow-sm dark:bg-gray-800">
+        <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
             <table class="w-full text-left text-sm">
-                <thead class="border-b border-gray-200 text-gray-500 dark:border-gray-700 dark:text-gray-400">
+                <thead class="border-b border-gray-100 text-xs font-bold uppercase tracking-wide text-gray-400 dark:border-gray-800 dark:text-gray-400">
                     <tr>
                         <th class="px-4 py-3">Day</th>
                         <th v-for="meal in meals" :key="meal" class="px-4 py-3 capitalize">{{ meal }}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
                     <tr v-for="day in days" :key="day">
                         <td class="px-4 py-3 text-gray-900 dark:text-gray-100">Day {{ day }}</td>
                         <td v-for="meal in meals" :key="meal" class="px-4 py-3">
                             <select
                                 :value="dishFor(day, meal)"
-                                class="block w-full rounded-md border-gray-300 text-sm shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                                class="block w-full rounded-lg border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:focus:border-indigo-500 dark:focus:ring-indigo-500"
                                 @change="(e) => setDish(day, meal, e)"
                             >
                                 <option :value="null">—</option>

@@ -3,13 +3,12 @@
 namespace App\Domain\Booking;
 
 use App\Domain\Audit\AuditLogger;
-use App\Domain\Settings\SmtpSettings;
+use App\Domain\Notifications\CustomerMailer;
 use App\Models\Booking;
 use App\Models\Consent;
 use App\Models\PlanChange;
 use App\Models\Variant;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class ConsentService
@@ -19,7 +18,7 @@ class ConsentService
     public function __construct(
         private BookingPolicy $policy,
         private AuditLogger $audit,
-        private SmtpSettings $smtp,
+        private CustomerMailer $mailer,
     ) {}
 
     /**
@@ -77,12 +76,21 @@ class ConsentService
             'terms_version' => self::TERMS_VERSION,
         ]);
 
-        if (filled($booking->customer->email)) {
-            $this->smtp->applyToRuntimeConfig();
-            Mail::to($booking->customer->email)->send(new ConsentMail($planChange, $token));
-        }
+        $this->mailer->send($booking, fn () => new ConsentMail($planChange, $token));
 
         return $consent;
+    }
+
+    /**
+     * Replaces an unresolved consent with a fresh token/expiry and
+     * re-sends the link — used both for the admin's manual "resend" and
+     * the scheduled "consent expiring soon" reminder.
+     */
+    public function resend(PlanChange $planChange): Consent
+    {
+        $planChange->consent?->delete();
+
+        return $this->sendConsentLink($planChange->fresh());
     }
 
     public function decide(Consent $consent, string $decision, Request $request): PlanChange

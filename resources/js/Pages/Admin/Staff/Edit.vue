@@ -3,6 +3,7 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SelectInput from '@/Components/SelectInput.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 
@@ -29,7 +30,7 @@ const submit = () => form.put(route('admin.staff.update', props.staff.id));
     <AdminLayout>
         <Head title="Edit staff account" />
 
-        <h1 class="mb-6 text-2xl font-semibold text-gray-900 dark:text-gray-100">
+        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
             Edit staff account
         </h1>
 
@@ -54,14 +55,10 @@ const submit = () => form.put(route('admin.staff.update', props.staff.id));
 
             <div>
                 <InputLabel for="role" value="Role" />
-                <select
-                    id="role"
-                    v-model="form.role"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
-                >
+                <SelectInput id="role" v-model="form.role" class="mt-1">
                     <option value="kitchen">Kitchen</option>
                     <option value="owner">Owner</option>
-                </select>
+                </SelectInput>
                 <InputError class="mt-2" :message="form.errors.role" />
             </div>
 

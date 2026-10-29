@@ -1,11 +1,17 @@
 <script setup lang="ts">
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import Checkbox from '@/Components/Checkbox.vue';
+import DangerButton from '@/Components/DangerButton.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
+import SelectInput from '@/Components/SelectInput.vue';
+import StatusBadge from '@/Components/StatusBadge.vue';
 import TextInput from '@/Components/TextInput.vue';
+import { formatDate, formatDateTime } from '@/lib/formatDate';
 import { Head, useForm } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
 interface Payment {
     id: number;
@@ -15,6 +21,12 @@ interface Payment {
     method: string | null;
     reference: string | null;
     recorder: { name: string } | null;
+}
+
+interface PaymentReceipt {
+    id: number;
+    original_name: string;
+    created_at: string;
 }
 
 interface Refund {
@@ -28,7 +40,7 @@ interface PlanChange {
     id: number;
     status: string;
     amount_sen: number;
-    toVariant: { birth_type: string };
+    to_variant: { birth_type: string };
     consent: { expires_at: string; decision: string | null } | null;
 }
 
@@ -65,8 +77,9 @@ interface Booking {
     addons: { addon: { name: Record<string, string> }; qty: number; price_sen: number }[];
     approver: { name: string } | null;
     payments: Payment[];
+    payment_receipts: PaymentReceipt[];
     refunds: Refund[];
-    planChanges: PlanChange[];
+    plan_changes: PlanChange[];
     pauses: Pause[];
 }
 
@@ -77,6 +90,42 @@ const props = defineProps<{
 }>();
 
 const money = (sen: number) => (sen / 100).toFixed(2);
+
+const statusTones: Record<string, 'accent' | 'success' | 'warning' | 'danger' | 'info' | 'neutral'> = {
+    waitlisted: 'neutral',
+    pending_approval: 'warning',
+    rejected: 'danger',
+    awaiting_payment: 'info',
+    expired: 'neutral',
+    reserved: 'accent',
+    active: 'success',
+    paused: 'warning',
+    completed: 'neutral',
+    cancelled: 'danger',
+};
+
+const statusLabel = (status: string) =>
+    status
+        .split('_')
+        .map((word) => word[0].toUpperCase() + word.slice(1))
+        .join(' ');
+
+const INACTIVE_STATUSES = ['cancelled', 'completed', 'rejected', 'expired'];
+const isInactive = (status: string) => INACTIVE_STATUSES.includes(status);
+
+const approve = () => useForm({}).post(route('admin.booking-approvals.approve', props.booking.id));
+
+const rejecting = ref(false);
+const rejectForm = useForm({ reason: '' });
+
+const reject = () => {
+    rejectForm.post(route('admin.booking-approvals.reject', props.booking.id), {
+        onSuccess: () => {
+            rejecting.value = false;
+            rejectForm.reset();
+        },
+    });
+};
 
 const paymentForm = useForm({
     type: 'full',
@@ -127,6 +176,22 @@ const pause = () => {
 
 const resume = () => useForm({}).post(route('admin.bookings.resume', props.booking.id));
 
+const cancelForm = useForm({
+    type: 'normal' as 'normal' | 'compassionate' | 'do_not_contact',
+    reason: '',
+    override_amount: '',
+});
+
+const cancel = () => {
+    if (! confirm('Cancel this booking? This cannot be undone.')) {
+        return;
+    }
+
+    cancelForm.post(route('admin.bookings.cancel', props.booking.id), {
+        onSuccess: () => cancelForm.reset(),
+    });
+};
+
 const extendForm = useForm({ days: 1 });
 
 const extend = () => {
@@ -140,20 +205,23 @@ const extend = () => {
     <AdminLayout>
         <Head :title="`Booking ${booking.ref_no}`" />
 
-        <h1 class="mb-6 text-2xl font-semibold text-gray-900 dark:text-gray-100">
-            Booking {{ booking.ref_no }}
-        </h1>
+        <div class="mb-6 flex items-center gap-3">
+            <h1 class="font-mono text-lg font-semibold text-gray-900 dark:text-gray-100">
+                {{ booking.ref_no }}
+            </h1>
+            <StatusBadge :tone="statusTones[booking.status] ?? 'neutral'">{{ statusLabel(booking.status) }}</StatusBadge>
+        </div>
 
         <div class="grid gap-6 sm:grid-cols-2">
-            <div class="rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800">
-                <h2 class="mb-2 font-medium text-gray-800 dark:text-gray-200">Customer</h2>
+            <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">Customer</h2>
                 <p class="text-sm text-gray-600 dark:text-gray-400">{{ booking.customer.name }}</p>
                 <p class="text-sm text-gray-600 dark:text-gray-400">{{ booking.customer.email }}</p>
                 <p class="text-sm text-gray-600 dark:text-gray-400">{{ booking.customer.phone }}</p>
             </div>
 
-            <div class="rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800">
-                <h2 class="mb-2 font-medium text-gray-800 dark:text-gray-200">Plan</h2>
+            <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">Plan</h2>
                 <p class="text-sm text-gray-600 dark:text-gray-400">
                     {{ booking.variant.package.name.en }}
                 </p>
@@ -163,18 +231,18 @@ const extend = () => {
                     {{ booking.meal_plan === 'lunch_dinner' ? 'Lunch + Dinner' : 'Lunch only' }}
                     <span v-if="booking.is_twins">· Twins</span>
                 </p>
-                <p class="text-sm text-gray-600 dark:text-gray-400">EDD: {{ booking.edd }}</p>
+                <p class="text-sm text-gray-600 dark:text-gray-400">EDD: {{ formatDate(booking.edd) }}</p>
                 <p v-if="booking.start_date" class="text-sm text-gray-600 dark:text-gray-400">
-                    Start {{ booking.start_date }} → End {{ booking.end_date }}
+                    Start {{ formatDate(booking.start_date) }} → End {{ formatDate(booking.end_date) }}
                 </p>
-                <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                <p class="font-mono text-sm font-semibold tabular-nums text-gray-900 dark:text-gray-100">
                     RM {{ money(booking.price_sen) }} (paid RM {{ money(amountPaid) }}, balance RM
                     {{ money(balanceDue) }})
                 </p>
             </div>
 
-            <div v-if="booking.address" class="rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800">
-                <h2 class="mb-2 font-medium text-gray-800 dark:text-gray-200">Delivery</h2>
+            <div v-if="booking.address" class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">Delivery</h2>
                 <p class="text-sm text-gray-600 dark:text-gray-400">
                     {{ booking.address.line1
                     }}<span v-if="booking.address.line2">, {{ booking.address.line2 }}</span
@@ -188,9 +256,9 @@ const extend = () => {
 
             <div
                 v-if="booking.addons.length"
-                class="rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800"
+                class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
             >
-                <h2 class="mb-2 font-medium text-gray-800 dark:text-gray-200">Add-ons</h2>
+                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">Add-ons</h2>
                 <p
                     v-for="(line, i) in booking.addons"
                     :key="i"
@@ -200,24 +268,44 @@ const extend = () => {
                 </p>
             </div>
 
-            <div class="rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800">
-                <h2 class="mb-2 font-medium text-gray-800 dark:text-gray-200">Status</h2>
-                <p class="text-sm text-gray-600 dark:text-gray-400">{{ booking.status }}</p>
-                <p v-if="booking.approver" class="text-sm text-gray-600 dark:text-gray-400">
+            <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
+                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">Status</h2>
+                <StatusBadge :tone="statusTones[booking.status] ?? 'neutral'">{{ statusLabel(booking.status) }}</StatusBadge>
+                <p v-if="booking.approver" class="mt-2 text-sm text-gray-600 dark:text-gray-400">
                     Approved by {{ booking.approver.name }}
                 </p>
                 <p v-if="booking.rejection_reason" class="text-sm text-red-600 dark:text-red-400">
                     {{ booking.rejection_reason }}
                 </p>
+
+                <div v-if="booking.status === 'pending_approval'" class="mt-3 space-y-3">
+                    <div class="flex items-center gap-2">
+                        <PrimaryButton type="button" @click="approve">Approve</PrimaryButton>
+                        <DangerButton type="button" @click="rejecting = !rejecting">Reject</DangerButton>
+                    </div>
+
+                    <div v-if="rejecting" class="flex items-center gap-2">
+                        <TextInput
+                            v-model="rejectForm.reason"
+                            type="text"
+                            placeholder="Reason for rejection"
+                            class="flex-1"
+                        />
+                        <DangerButton type="button" @click="reject">Confirm reject</DangerButton>
+                    </div>
+                </div>
             </div>
 
-            <div class="rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800 sm:col-span-2">
-                <h2 class="mb-2 font-medium text-gray-800 dark:text-gray-200">Payments</h2>
+            <div
+                v-if="!isInactive(booking.status) || booking.payments.length"
+                class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900 sm:col-span-2"
+            >
+                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">Payments</h2>
                 <table v-if="booking.payments.length" class="w-full text-left text-sm">
-                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
                         <tr v-for="payment in booking.payments" :key="payment.id">
-                            <td class="py-1 text-gray-600 dark:text-gray-400">
-                                {{ payment.payment_date }}
+                            <td class="whitespace-nowrap py-1 text-gray-600 dark:text-gray-400">
+                                {{ formatDate(payment.payment_date) }}
                             </td>
                             <td class="py-1 text-gray-600 dark:text-gray-400">
                                 {{ payment.type }}
@@ -228,7 +316,7 @@ const extend = () => {
                             <td class="py-1 text-gray-600 dark:text-gray-400">
                                 {{ payment.reference }}
                             </td>
-                            <td class="py-1 text-right text-gray-900 dark:text-gray-100">
+                            <td class="py-1 text-right font-mono tabular-nums text-gray-900 dark:text-gray-100">
                                 RM {{ money(payment.amount_sen) }}
                             </td>
                         </tr>
@@ -237,22 +325,19 @@ const extend = () => {
                 <p v-else class="text-sm text-gray-500">No payments recorded yet.</p>
 
                 <form
-                    class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-5"
+                    v-if="!isInactive(booking.status)"
+                    class="mt-4 grid grid-cols-2 gap-3 border-t border-gray-100 pt-4 sm:grid-cols-5 dark:border-gray-800"
                     @submit.prevent="recordPayment"
                 >
                     <div>
                         <InputLabel for="pay-type" value="Type" />
-                        <select
-                            id="pay-type"
-                            v-model="paymentForm.type"
-                            class="mt-1 block w-full rounded-md border-gray-300 text-sm shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
-                        >
+                        <SelectInput id="pay-type" v-model="paymentForm.type" class="mt-1">
                             <option value="full">Full</option>
                             <option value="deposit">Deposit</option>
                             <option value="balance">Balance</option>
                             <option value="plan_change">Plan change</option>
                             <option value="extension">Extension</option>
-                        </select>
+                        </SelectInput>
                     </div>
                     <div>
                         <InputLabel for="pay-amount" value="Amount (RM)" />
@@ -299,16 +384,43 @@ const extend = () => {
             </div>
 
             <div
-                v-if="booking.planChanges.length"
-                class="rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800 sm:col-span-2"
+                v-if="booking.payment_receipts.length"
+                class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900 sm:col-span-2"
             >
-                <h2 class="mb-2 font-medium text-gray-800 dark:text-gray-200">Plan changes</h2>
+                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">
+                    Receipts uploaded by customer
+                </h2>
+                <ul class="divide-y divide-gray-100 text-sm dark:divide-gray-800">
+                    <li
+                        v-for="receipt in booking.payment_receipts"
+                        :key="receipt.id"
+                        class="flex items-center justify-between py-1.5"
+                    >
+                        <span class="text-gray-700 dark:text-gray-300">{{ receipt.original_name }}</span>
+                        <span class="flex items-center gap-3">
+                            <span class="text-gray-500 dark:text-gray-400">{{ formatDateTime(receipt.created_at) }}</span>
+                            <a
+                                :href="route('admin.bookings.receipts.download', [booking.id, receipt.id])"
+                                class="font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
+                            >
+                                Download
+                            </a>
+                        </span>
+                    </li>
+                </ul>
+            </div>
+
+            <div
+                v-if="booking.plan_changes.length"
+                class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900 sm:col-span-2"
+            >
+                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">Plan changes</h2>
                 <div
-                    v-for="pc in booking.planChanges"
+                    v-for="pc in booking.plan_changes"
                     :key="pc.id"
                     class="text-sm text-gray-600 dark:text-gray-400"
                 >
-                    To {{ pc.toVariant.birth_type === 'csec' ? 'C-sec' : 'Normal' }}, RM
+                    To {{ pc.to_variant.birth_type === 'csec' ? 'C-sec' : 'Normal' }}, RM
                     {{ money(pc.amount_sen) }} — {{ pc.status }}
                     <SecondaryButton
                         v-if="pc.status === 'awaiting_consent'"
@@ -322,30 +434,30 @@ const extend = () => {
 
             <div
                 v-if="booking.refunds.length"
-                class="rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800 sm:col-span-2"
+                class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900 sm:col-span-2"
             >
-                <h2 class="mb-2 font-medium text-gray-800 dark:text-gray-200">Refunds</h2>
+                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">Refunds</h2>
                 <div v-for="refund in booking.refunds" :key="refund.id" class="mb-3 text-sm">
                     <p class="text-gray-600 dark:text-gray-400">
                         {{ refund.reason }} — RM {{ money(refund.amount_sen) }} —
                         {{ refund.status }}
                     </p>
-                    <div v-if="refund.status === 'pending'" class="mt-2 flex items-center gap-2">
-                        <input
+                    <div v-if="refund.status === 'pending'" class="mt-2 flex flex-wrap items-center gap-2">
+                        <TextInput
                             v-model="refundForm(refund.id).method"
                             type="text"
                             placeholder="Method"
-                            class="rounded-md border-gray-300 text-sm shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                            class="w-36"
                         />
-                        <input
+                        <TextInput
                             v-model="refundForm(refund.id).reference"
                             type="text"
                             placeholder="Reference"
-                            class="rounded-md border-gray-300 text-sm shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                            class="w-40"
                         />
                         <input
                             type="file"
-                            class="text-sm"
+                            class="text-sm text-gray-600 dark:text-gray-400"
                             @change="(e) => onProofChange(refund.id, e)"
                         />
                         <SecondaryButton @click="markRefundPaid(refund.id)"
@@ -357,13 +469,13 @@ const extend = () => {
 
             <div
                 v-if="['active', 'paused'].includes(booking.status)"
-                class="rounded-lg bg-white p-4 shadow-sm dark:bg-gray-800 sm:col-span-2"
+                class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900 sm:col-span-2"
             >
-                <h2 class="mb-2 font-medium text-gray-800 dark:text-gray-200">Pause / resume / extend</h2>
+                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">Pause / resume / extend</h2>
 
                 <div v-if="booking.pauses.length" class="mb-3 space-y-1">
                     <p v-for="p in booking.pauses" :key="p.id" class="text-sm text-gray-600 dark:text-gray-400">
-                        {{ p.from_date }} → {{ p.to_date }} ({{ p.reason }}<span v-if="p.limit_overridden">, override</span>)
+                        {{ formatDate(p.from_date) }} → {{ formatDate(p.to_date) }} ({{ p.reason }}<span v-if="p.limit_overridden">, override</span>)
                     </p>
                 </div>
 
@@ -376,17 +488,13 @@ const extend = () => {
                     </div>
                     <div>
                         <InputLabel for="pause-reason" value="Reason" />
-                        <select
-                            id="pause-reason"
-                            v-model="pauseForm.reason"
-                            class="mt-1 block w-full rounded-md border-gray-300 text-sm shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
-                        >
+                        <SelectInput id="pause-reason" v-model="pauseForm.reason" class="mt-1">
                             <option value="normal">Normal</option>
                             <option value="medical">Medical</option>
-                        </select>
+                        </SelectInput>
                     </div>
                     <label class="flex items-center gap-2 pb-2 text-sm text-gray-700 dark:text-gray-300">
-                        <input v-model="pauseForm.override_limit" type="checkbox" />
+                        <Checkbox v-model:checked="pauseForm.override_limit" />
                         Override pause limit
                     </label>
                     <PrimaryButton :disabled="pauseForm.processing">Pause</PrimaryButton>
@@ -399,6 +507,41 @@ const extend = () => {
                         <TextInput id="extend-days" v-model="extendForm.days" type="number" min="1" class="mt-1 block w-24" />
                     </div>
                     <SecondaryButton :disabled="extendForm.processing" type="submit">Extend</SecondaryButton>
+                </form>
+            </div>
+
+            <div
+                v-if="!isInactive(booking.status)"
+                class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900 sm:col-span-2"
+            >
+                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">Cancel booking</h2>
+
+                <form class="flex flex-wrap items-end gap-3" @submit.prevent="cancel">
+                    <div>
+                        <InputLabel for="cancel-type" value="Type" />
+                        <SelectInput id="cancel-type" v-model="cancelForm.type" class="mt-1">
+                            <option value="normal">Normal</option>
+                            <option value="compassionate">Compassionate</option>
+                            <option value="do_not_contact">Do not contact</option>
+                        </SelectInput>
+                    </div>
+                    <div class="min-w-[16rem] flex-1">
+                        <InputLabel for="cancel-reason" value="Reason (internal)" />
+                        <TextInput id="cancel-reason" v-model="cancelForm.reason" class="mt-1 block w-full" />
+                    </div>
+                    <div>
+                        <InputLabel for="cancel-override" value="Override refund (RM, optional)" />
+                        <TextInput
+                            id="cancel-override"
+                            v-model="cancelForm.override_amount"
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            class="mt-1 block w-32"
+                        />
+                    </div>
+                    <PrimaryButton :disabled="cancelForm.processing">Cancel booking</PrimaryButton>
+                    <InputError :message="cancelForm.errors.type" />
                 </form>
             </div>
         </div>

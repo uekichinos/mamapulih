@@ -22,7 +22,7 @@ class MenuRotationController extends Controller
     public function index(): Response
     {
         return Inertia::render('Admin/MenuRotations/Index', [
-            'menuRotations' => MenuRotation::query()->orderBy('id')->get(),
+            'menuRotations' => MenuRotation::query()->orderBy('id')->paginate(20)->withQueryString(),
         ]);
     }
 

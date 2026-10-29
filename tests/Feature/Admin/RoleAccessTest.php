@@ -20,10 +20,10 @@ it('redirects an owner from /dashboard straight into the admin area', function (
     $this->actingAs($owner)->get(route('dashboard'))->assertRedirect(route('admin.dashboard'));
 });
 
-it('shows a kitchen user the plain dashboard instead of a dead end', function () {
+it('redirects a kitchen user from /dashboard straight to the prep sheet', function () {
     $kitchen = User::factory()->kitchen()->create();
 
-    $this->actingAs($kitchen)->get(route('dashboard'))->assertOk();
+    $this->actingAs($kitchen)->get(route('dashboard'))->assertRedirect(route('admin.kitchen.prep-sheet'));
 });
 
 it('blocks guests from the admin area', function () {

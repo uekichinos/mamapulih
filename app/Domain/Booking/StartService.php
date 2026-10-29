@@ -5,6 +5,8 @@ namespace App\Domain\Booking;
 use App\Domain\Audit\AuditLogger;
 use App\Domain\Capacity\CapacityService;
 use App\Domain\Kitchen\BookingDayGenerator;
+use App\Domain\Notifications\CustomerMailer;
+use App\Domain\Notifications\StartConfirmedMail;
 use App\Domain\Payments\PaymentService;
 use App\Enums\BookingStatus;
 use App\Models\Booking;
@@ -18,6 +20,7 @@ class StartService
         private ConsentService $consents,
         private PaymentService $payments,
         private BookingDayGenerator $bookingDays,
+        private CustomerMailer $mailer,
         private AuditLogger $audit,
     ) {}
 
@@ -61,6 +64,8 @@ class StartService
         $this->audit->record('booking.started', $booking, $before, $booking->toArray());
 
         $this->bookingDays->generateFor($booking->refresh());
+
+        $this->mailer->send($booking, fn () => new StartConfirmedMail($booking));
 
         return $booking;
     }

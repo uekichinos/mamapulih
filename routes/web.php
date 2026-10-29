@@ -36,8 +36,10 @@ Route::middleware('installed')->group(function () {
             return redirect()->route('admin.dashboard');
         }
 
-        // Kitchen has no screens of its own yet (prep sheet arrives in a
-        // later sprint), so just show a holding page rather than a dead end.
+        if (auth()->user()->isKitchen()) {
+            return redirect()->route('admin.kitchen.prep-sheet');
+        }
+
         return Inertia::render('Dashboard');
     })->middleware(['auth', 'verified', 'force-2fa'])->name('dashboard');
 

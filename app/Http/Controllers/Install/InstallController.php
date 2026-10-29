@@ -65,9 +65,18 @@ class InstallController extends Controller
         }
 
         Artisan::call('migrate', ['--force' => true]);
+        $output = Artisan::output();
+
+        // Needed for uploaded files (e.g. the payment QR image) to be
+        // reachable at all — without it, Storage::disk('public')->url()
+        // points at a path with nothing serving it.
+        if (! file_exists(public_path('storage'))) {
+            Artisan::call('storage:link');
+            $output .= Artisan::output();
+        }
 
         return Inertia::render('Install/Database', [
-            'output' => Artisan::output(),
+            'output' => $output,
         ]);
     }
 

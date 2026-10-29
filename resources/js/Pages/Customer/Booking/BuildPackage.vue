@@ -66,7 +66,7 @@ const submit = () => form.post(route('customer.booking.build'));
     <CustomerLayout>
         <Head title="Build your package" />
 
-        <h1 class="mb-4 text-xl font-semibold text-gray-900 dark:text-gray-100">
+        <h1 class="mb-4 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
             Build your package
         </h1>
 
@@ -74,7 +74,7 @@ const submit = () => form.post(route('customer.booking.build'));
             <div
                 v-for="pkg in packages"
                 :key="pkg.id"
-                class="rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+                class="rounded-2xl border border-gray-200 bg-white shadow-sm p-4 dark:border-gray-800 dark:bg-gray-900"
             >
                 <h2 class="mb-2 font-medium text-gray-800 dark:text-gray-200">{{ pkg.name.en }}</h2>
 
@@ -85,7 +85,7 @@ const submit = () => form.post(route('customer.booking.build'));
                     :class="
                         form.variant_id === variant.id
                             ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30'
-                            : 'border-gray-200 dark:border-gray-700'
+                            : 'border-gray-200 dark:border-gray-800 dark:bg-gray-900'
                     "
                 >
                     <span class="flex items-center gap-3">
@@ -120,7 +120,7 @@ const submit = () => form.post(route('customer.booking.build'));
 
             <div
                 v-if="addons.length"
-                class="rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+                class="rounded-2xl border border-gray-200 bg-white shadow-sm p-4 dark:border-gray-800 dark:bg-gray-900"
             >
                 <h2 class="mb-2 font-medium text-gray-800 dark:text-gray-200">Add-ons</h2>
                 <label

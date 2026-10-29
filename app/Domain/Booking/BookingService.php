@@ -6,10 +6,17 @@ use App\Domain\Audit\AuditLogger;
 use App\Domain\Capacity\CapacityFullException;
 use App\Domain\Capacity\CapacityService;
 use App\Domain\Kitchen\BookingDayGenerator;
+use App\Domain\Notifications\BookingApprovedMail;
+use App\Domain\Notifications\BookingRejectedMail;
+use App\Domain\Notifications\BookingSubmittedMail;
+use App\Domain\Notifications\CustomerMailer;
+use App\Domain\Notifications\NewBookingToReviewMail;
+use App\Domain\Settings\SmtpSettings;
 use App\Enums\BookingStatus;
 use App\Models\Addon;
 use App\Models\Address;
 use App\Models\Booking;
+use App\Models\BusinessProfile;
 use App\Models\Customer;
 use App\Models\DietProfile;
 use App\Models\User;
@@ -17,6 +24,7 @@ use App\Models\Variant;
 use App\Models\Zone;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -26,6 +34,8 @@ class BookingService
         private CapacityService $capacity,
         private BookingPolicy $policy,
         private BookingDayGenerator $bookingDays,
+        private CustomerMailer $mailer,
+        private SmtpSettings $smtp,
         private AuditLogger $audit,
     ) {}
 
@@ -138,8 +148,23 @@ class BookingService
 
             $this->audit->record('booking.created', $booking, after: $booking->toArray(), actor: $createdBy);
 
+            $this->mailer->send($booking, fn () => new BookingSubmittedMail($booking));
+            $this->notifyBusinessOfNewBooking($booking);
+
             return $booking;
         });
+    }
+
+    private function notifyBusinessOfNewBooking(Booking $booking): void
+    {
+        $businessEmail = BusinessProfile::current()->email;
+
+        if (blank($businessEmail)) {
+            return;
+        }
+
+        $this->smtp->applyToRuntimeConfig();
+        Mail::to($businessEmail)->send(new NewBookingToReviewMail($booking));
     }
 
     public function approve(Booking $booking, User $admin): Booking
@@ -154,6 +179,8 @@ class BookingService
 
         $this->audit->record('booking.approved', $booking, $before, $booking->toArray(), $admin);
 
+        $this->mailer->send($booking, fn () => new BookingApprovedMail($booking));
+
         return $booking;
     }
 
@@ -167,6 +194,8 @@ class BookingService
         ]);
 
         $this->audit->record('booking.rejected', $booking, $before, $booking->toArray(), $admin);
+
+        $this->mailer->send($booking, fn () => new BookingRejectedMail($booking));
 
         return $booking;
     }

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
+ * @property array<string, string> $name
  * @property array<int, string> $tags
  */
 class Dish extends Model

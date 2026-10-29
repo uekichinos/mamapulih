@@ -32,9 +32,14 @@ Route::middleware('auth:customers')->group(function () {
     });
 
     Route::get('/my-booking', [MyBookingController::class, 'show'])->name('customer.my-booking');
+    Route::post('/my-booking/cancel', [MyBookingController::class, 'cancel'])->name('customer.my-booking.cancel');
+    Route::get('/my-booking/receipts/{receipt}', [MyBookingController::class, 'viewReceipt'])->name('customer.my-booking.receipts.view');
+    Route::get('/my-booking/schedule', [MyBookingController::class, 'schedule'])->name('customer.my-booking.schedule');
+    Route::get('/my-booking/{booking}', [MyBookingController::class, 'showArchived'])->name('customer.my-booking.archive');
 
     Route::get('/payment', [PaymentController::class, 'show'])->name('customer.payment');
     Route::post('/payment', [PaymentController::class, 'store']);
+    Route::post('/payment/receipt', [PaymentController::class, 'uploadReceipt'])->name('customer.payment.receipt');
 
     Route::get('/start', [StartController::class, 'show'])->name('customer.start');
     Route::post('/start', [StartController::class, 'store']);

@@ -4,6 +4,10 @@ namespace App\Console\Commands;
 
 use App\Domain\Audit\AuditLogger;
 use App\Domain\Booking\BookingPolicy;
+use App\Domain\Notifications\ApprovalExpiredMail;
+use App\Domain\Notifications\CustomerMailer;
+use App\Domain\Notifications\ResumedMail;
+use App\Enums\BookingSensitiveFlag;
 use App\Enums\BookingStatus;
 use App\Models\Booking;
 use App\Models\PlanChange;
@@ -17,6 +21,7 @@ class ExpireBookingsCommand extends Command
 
     public function __construct(
         private BookingPolicy $policy,
+        private CustomerMailer $mailer,
         private AuditLogger $audit,
     ) {
         parent::__construct();
@@ -51,9 +56,18 @@ class ExpireBookingsCommand extends Command
             ->filter(fn (Booking $booking) => (bool) $booking->pauses()->latest('to_date')->first()?->to_date->isPast());
 
         foreach ($resumedPauses as $booking) {
+            $wasMedical = $booking->sensitive_flag === BookingSensitiveFlag::Medical;
+
             $before = $booking->toArray();
-            $booking->update(['status' => BookingStatus::Active]);
+            $booking->update([
+                'status' => BookingStatus::Active,
+                'sensitive_flag' => $wasMedical ? BookingSensitiveFlag::None : $booking->sensitive_flag,
+            ]);
             $this->audit->record('booking.resumed.auto', $booking, $before, $booking->toArray());
+
+            if (! $booking->sensitive_flag->blocksAutomaticMessages()) {
+                $this->mailer->sendRegardless($booking, fn () => new ResumedMail($booking));
+            }
         }
 
         $expiredConsents = PlanChange::query()
@@ -82,5 +96,7 @@ class ExpireBookingsCommand extends Command
         $before = $booking->toArray();
         $booking->update(['status' => BookingStatus::Expired]);
         $this->audit->record($action, $booking, $before, $booking->toArray());
+
+        $this->mailer->send($booking, fn () => new ApprovalExpiredMail($booking));
     }
 }

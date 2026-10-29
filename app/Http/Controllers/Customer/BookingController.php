@@ -12,6 +12,7 @@ use App\Models\Addon;
 use App\Models\Booking;
 use App\Models\Package;
 use App\Models\Variant;
+use App\Models\Zone;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -122,6 +123,7 @@ class BookingController extends Controller
         return Inertia::render('Customer/Booking/Details', [
             'draft' => $request->session()->get(self::DRAFT_KEY),
             'dietTags' => $this->dietTagOptions(),
+            'deliverablePostcodes' => $this->deliverablePostcodes(),
         ]);
     }
 
@@ -134,7 +136,16 @@ class BookingController extends Controller
         $data = $request->validate([
             'address.line1' => ['required', 'string', 'max:255'],
             'address.line2' => ['nullable', 'string', 'max:255'],
-            'address.postcode' => ['required', 'string', 'max:10'],
+            'address.postcode' => [
+                'required',
+                'string',
+                'max:10',
+                function (string $attribute, mixed $value, callable $fail): void {
+                    if (! Zone::query()->whereJsonContains('postcodes', $value)->exists()) {
+                        $fail(__('booking.postcode_not_in_zone'));
+                    }
+                },
+            ],
             'address.notes' => ['nullable', 'string', 'max:255'],
             'diet.allergies' => ['array'],
             'diet.allergies.*' => [Rule::in(DietTag::values())],
@@ -205,5 +216,23 @@ class BookingController extends Controller
     private function dietTagOptions(): array
     {
         return array_map(fn (DietTag $tag) => ['value' => $tag->value, 'label' => $tag->label()], DietTag::cases());
+    }
+
+    /**
+     * Every postcode currently covered by a delivery zone, so the customer
+     * can check before filling in the rest of the address rather than
+     * only finding out it's undeliverable after submitting the form.
+     *
+     * @return array<int, string>
+     */
+    private function deliverablePostcodes(): array
+    {
+        return Zone::query()
+            ->pluck('postcodes')
+            ->flatten()
+            ->unique()
+            ->sort()
+            ->values()
+            ->all();
     }
 }

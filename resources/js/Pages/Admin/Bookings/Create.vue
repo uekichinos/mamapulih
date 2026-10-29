@@ -50,7 +50,7 @@ const submit = () => form.post(route('admin.bookings.store'));
     <AdminLayout>
         <Head title="Create booking" />
 
-        <h1 class="mb-6 text-2xl font-semibold text-gray-900 dark:text-gray-100">Create booking</h1>
+        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">Create booking</h1>
 
         <form class="max-w-2xl space-y-6" @submit.prevent="submit">
             <div class="grid grid-cols-3 gap-4">
@@ -90,7 +90,7 @@ const submit = () => form.post(route('admin.bookings.store'));
                 :key="pkg.id"
                 class="rounded-lg border border-gray-200 p-4 dark:border-gray-700"
             >
-                <h2 class="mb-2 font-medium text-gray-800 dark:text-gray-200">{{ pkg.name.en }}</h2>
+                <h2 class="mb-2 font-display text-sm font-bold text-gray-900 dark:text-gray-50">{{ pkg.name.en }}</h2>
                 <label
                     v-for="variant in pkg.variants"
                     :key="variant.id"

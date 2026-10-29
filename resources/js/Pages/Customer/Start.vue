@@ -5,18 +5,22 @@ import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 
-defineProps<{
-    booking: { start_date: string | null };
+const props = defineProps<{
+    booking: { edd: string; start_date: string | null };
     minStartDate: string;
     pendingConsent: boolean;
     balanceDue: number;
     canConfirm: boolean;
 }>();
 
+const defaultStartDate = props.booking.edd.slice(0, 10) > props.minStartDate
+    ? props.booking.edd.slice(0, 10)
+    : props.minStartDate;
+
 const form = useForm({
-    start_date: '',
+    start_date: defaultStartDate,
     actual_birth_type: 'normal',
 });
 
@@ -29,7 +33,7 @@ const confirm = () => useForm({}).post(route('customer.start.confirm'));
     <CustomerLayout>
         <Head title="Start my package" />
 
-        <h1 class="mb-4 text-xl font-semibold text-gray-900 dark:text-gray-100">
+        <h1 class="mb-4 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
             Start my package
         </h1>
 
@@ -44,7 +48,10 @@ const confirm = () => useForm({}).post(route('customer.start.confirm'));
             v-else-if="booking.start_date && balanceDue > 0"
             class="rounded-md bg-amber-50 p-4 text-sm text-amber-800 dark:bg-amber-900/30 dark:text-amber-200"
         >
-            A balance of RM {{ money(balanceDue) }} is still due before your package can start.
+            <p>A balance of RM {{ money(balanceDue) }} is still due before your package can start.</p>
+            <Link :href="route('customer.payment')" class="mt-2 inline-block font-semibold underline">
+                Pay balance
+            </Link>
         </div>
 
         <div v-else-if="booking.start_date && canConfirm" class="space-y-4">

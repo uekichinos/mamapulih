@@ -3,12 +3,15 @@ import CustomerLayout from '@/Layouts/CustomerLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SearchableSelect from '@/Components/SearchableSelect.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
-defineProps<{
+const props = defineProps<{
     draft: Record<string, unknown>;
     dietTags: { value: string; label: string }[];
+    deliverablePostcodes: string[];
 }>();
 
 const form = useForm({
@@ -26,17 +29,40 @@ const form = useForm({
 });
 
 const submit = () => form.post(route('customer.booking.details'));
+
+const isPostcodeDeliverable = computed(() =>
+    props.deliverablePostcodes.includes(form.address.postcode),
+);
 </script>
 
 <template>
     <CustomerLayout>
         <Head title="Delivery address and diet" />
 
-        <h1 class="mb-4 text-xl font-semibold text-gray-900 dark:text-gray-100">
+        <h1 class="mb-4 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
             Delivery address and diet
         </h1>
 
         <form class="space-y-4" @submit.prevent="submit">
+            <div>
+                <InputLabel for="postcode" value="Postcode" />
+                <SearchableSelect
+                    id="postcode"
+                    v-model="form.address.postcode"
+                    :options="deliverablePostcodes"
+                    placeholder="Search a postcode we deliver to"
+                    class="mt-1"
+                />
+                <InputError class="mt-2" :message="form.errors['address.postcode']" />
+                <p
+                    v-if="form.address.postcode && !isPostcodeDeliverable"
+                    class="mt-2 text-sm text-gray-500 dark:text-gray-400"
+                >
+                    Pick a postcode from the list to continue.
+                </p>
+            </div>
+
+            <template v-if="isPostcodeDeliverable">
             <div>
                 <InputLabel for="line1" value="Address" />
                 <TextInput id="line1" v-model="form.address.line1" class="mt-1 block w-full" required />
@@ -46,12 +72,6 @@ const submit = () => form.post(route('customer.booking.details'));
             <div>
                 <InputLabel for="line2" value="Address (line 2, optional)" />
                 <TextInput id="line2" v-model="form.address.line2" class="mt-1 block w-full" />
-            </div>
-
-            <div>
-                <InputLabel for="postcode" value="Postcode" />
-                <TextInput id="postcode" v-model="form.address.postcode" class="mt-1 block w-full" required />
-                <InputError class="mt-2" :message="form.errors['address.postcode']" />
             </div>
 
             <div>
@@ -87,6 +107,7 @@ const submit = () => form.post(route('customer.booking.details'));
             <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                 Continue
             </PrimaryButton>
+            </template>
         </form>
     </CustomerLayout>
 </template>

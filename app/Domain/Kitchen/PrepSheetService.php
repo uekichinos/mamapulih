@@ -4,11 +4,12 @@ namespace App\Domain\Kitchen;
 
 use App\Models\BookingDay;
 use App\Models\Dish;
-use App\Models\RotationDay;
 use Illuminate\Support\Carbon;
 
 class PrepSheetService
 {
+    public function __construct(private DishResolver $dishes) {}
+
     /**
      * @return array<string, array<int, array{dish: Dish, count: int, substituted: int}>>
      */
@@ -38,29 +39,18 @@ class PrepSheetService
             $meals = $booking->meal_plan === 'lunch_dinner' ? ['lunch', 'dinner'] : ['lunch'];
 
             foreach ($meals as $meal) {
-                $rotationDay = RotationDay::query()
-                    ->where('menu_rotation_id', $bookingDay->menu_rotation_id)
-                    ->where('day_no', $dayNo)
-                    ->where('meal', $meal)
-                    ->with('dish.substitute')
-                    ->first();
+                $resolved = $this->dishes->resolve($bookingDay->menu_rotation_id, $dayNo, $meal, $exclusions);
 
-                if (! $rotationDay) {
+                if (! $resolved) {
                     continue;
                 }
 
-                $dish = $rotationDay->dish;
-                $substituted = false;
-
-                if ($dish->excludedBy($exclusions) && $dish->substitute) {
-                    $dish = $dish->substitute;
-                    $substituted = true;
-                }
+                $dish = $resolved['dish'];
 
                 $result[$meal][$dish->id] ??= ['dish' => $dish, 'count' => 0, 'substituted' => 0];
                 $result[$meal][$dish->id]['count']++;
 
-                if ($substituted) {
+                if ($resolved['substituted']) {
                     $result[$meal][$dish->id]['substituted']++;
                 }
             }

@@ -30,7 +30,7 @@ const useNextAvailable = () => {
     <CustomerLayout>
         <Head title="Check your due date" />
 
-        <h1 class="mb-4 text-xl font-semibold text-gray-900 dark:text-gray-100">
+        <h1 class="mb-4 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
             When is baby due?
         </h1>
 

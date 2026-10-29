@@ -6,6 +6,7 @@ import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
+import SelectInput from '@/Components/SelectInput.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, router, useForm } from '@inertiajs/vue3';
 
@@ -23,7 +24,7 @@ const props = defineProps<{
     package: {
         id: number;
         name: { en: string; ms: string };
-        description: { en: string | null; ms: string | null };
+        description: { en: string | null; ms: string | null } | null;
         active: boolean;
     };
     variants: Variant[];
@@ -31,11 +32,18 @@ const props = defineProps<{
 
 const form = useForm({
     name: { ...props.package.name },
-    description: { en: props.package.description.en ?? '', ms: props.package.description.ms ?? '' },
+    description: { en: props.package.description?.en ?? '', ms: props.package.description?.ms ?? '' },
     active: props.package.active,
 });
 
-const submit = () => form.put(route('admin.packages.update', props.package.id));
+const submit = () => {
+    // BM input is hidden from the UI; mirror the English value so the
+    // (unchanged) backend validation, which still requires both locales,
+    // keeps passing.
+    form.name.ms = form.name.en;
+    form.description.ms = form.description.en;
+    form.put(route('admin.packages.update', props.package.id));
+};
 
 const showVariantForm = ref(false);
 
@@ -70,31 +78,18 @@ const formatPrice = (sen: number) => `RM${(sen / 100).toFixed(2)}`;
     <AdminLayout>
         <Head title="Edit package" />
 
-        <h1 class="mb-6 text-2xl font-semibold text-gray-900 dark:text-gray-100">Edit package</h1>
+        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">Edit package</h1>
 
         <form class="mb-10 max-w-xl space-y-4" @submit.prevent="submit">
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <InputLabel for="name_en" value="Name (English)" />
-                    <TextInput
-                        id="name_en"
-                        v-model="form.name.en"
-                        class="mt-1 block w-full"
-                        required
-                    />
-                    <InputError class="mt-2" :message="form.errors['name.en']" />
-                </div>
-
-                <div>
-                    <InputLabel for="name_ms" value="Name (Bahasa Melayu)" />
-                    <TextInput
-                        id="name_ms"
-                        v-model="form.name.ms"
-                        class="mt-1 block w-full"
-                        required
-                    />
-                    <InputError class="mt-2" :message="form.errors['name.ms']" />
-                </div>
+            <div>
+                <InputLabel for="name_en" value="Name" />
+                <TextInput
+                    id="name_en"
+                    v-model="form.name.en"
+                    class="mt-1 block w-full"
+                    required
+                />
+                <InputError class="mt-2" :message="form.errors['name.en']" />
             </div>
 
             <label class="flex items-center gap-2">
@@ -117,7 +112,7 @@ const formatPrice = (sen: number) => `RM${(sen / 100).toFixed(2)}`;
 
         <div class="max-w-2xl">
             <div class="mb-4 flex items-center justify-between">
-                <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Variants</h2>
+                <h2 class="font-display text-sm font-bold text-gray-900 dark:text-gray-50">Variants</h2>
                 <SecondaryButton @click="showVariantForm = !showVariantForm">
                     {{ showVariantForm ? 'Cancel' : 'Add variant' }}
                 </SecondaryButton>
@@ -131,42 +126,30 @@ const formatPrice = (sen: number) => `RM${(sen / 100).toFixed(2)}`;
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <InputLabel for="birth_type" value="Birth type" />
-                        <select
-                            id="birth_type"
-                            v-model="variantForm.birth_type"
-                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
-                        >
+                        <SelectInput id="birth_type" v-model="variantForm.birth_type" class="mt-1">
                             <option value="normal">Normal</option>
                             <option value="csec">Caesarean</option>
-                        </select>
+                        </SelectInput>
                     </div>
 
                     <div>
                         <InputLabel for="duration_days" value="Duration (days)" />
-                        <select
-                            id="duration_days"
-                            v-model.number="variantForm.duration_days"
-                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
-                        >
+                        <SelectInput id="duration_days" v-model="variantForm.duration_days" class="mt-1">
                             <option :value="7">7</option>
                             <option :value="14">14</option>
                             <option :value="21">21</option>
                             <option :value="28">28</option>
-                        </select>
+                        </SelectInput>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-3 gap-4">
                     <div>
                         <InputLabel for="meal_plan" value="Meal plan" />
-                        <select
-                            id="meal_plan"
-                            v-model="variantForm.meal_plan"
-                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
-                        >
+                        <SelectInput id="meal_plan" v-model="variantForm.meal_plan" class="mt-1">
                             <option value="lunch">Lunch only</option>
                             <option value="lunch_dinner">Lunch + Dinner</option>
-                        </select>
+                        </SelectInput>
                     </div>
 
                     <div>
@@ -204,10 +187,10 @@ const formatPrice = (sen: number) => `RM${(sen / 100).toFixed(2)}`;
                 </PrimaryButton>
             </form>
 
-            <div class="overflow-hidden rounded-lg bg-white shadow-sm dark:bg-gray-800">
+            <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
                 <table class="w-full text-left text-sm">
                     <thead
-                        class="border-b border-gray-200 text-gray-500 dark:border-gray-700 dark:text-gray-400"
+                        class="border-b border-gray-100 text-xs font-bold uppercase tracking-wide text-gray-400 dark:border-gray-800 dark:text-gray-400"
                     >
                         <tr>
                             <th class="px-4 py-2">Birth type</th>
@@ -217,7 +200,7 @@ const formatPrice = (sen: number) => `RM${(sen / 100).toFixed(2)}`;
                             <th class="px-4 py-2"></th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
                         <tr v-for="variant in variants" :key="variant.id">
                             <td class="px-4 py-2 capitalize text-gray-900 dark:text-gray-100">
                                 {{ variant.birth_type === 'csec' ? 'Caesarean' : 'Normal' }}

@@ -17,7 +17,7 @@ test('owner without two-factor is sent to setup before reaching the dashboard', 
 test('kitchen without two-factor is not forced into setup', function () {
     $kitchen = User::factory()->kitchen()->withoutTwoFactor()->create();
 
-    $this->actingAs($kitchen)->get(route('dashboard'))->assertOk();
+    $this->actingAs($kitchen)->get(route('dashboard'))->assertRedirect(route('admin.kitchen.prep-sheet'));
 });
 
 test('owner can confirm two-factor setup with a valid code and reach the dashboard', function () {

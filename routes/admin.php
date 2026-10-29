@@ -22,6 +22,11 @@ use App\Http\Controllers\Admin\VariantController;
 use App\Http\Controllers\Admin\ZoneController;
 use Illuminate\Support\Facades\Route;
 
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', 'role:owner,kitchen', 'force-2fa'])->group(function () {
+    Route::get('/kitchen/prep-sheet', [PrepSheetController::class, 'index'])->name('kitchen.prep-sheet');
+    Route::get('/delivery-lists', [DeliveryListController::class, 'index'])->name('delivery-lists.index');
+});
+
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', 'role:owner', 'force-2fa'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -51,9 +56,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', 'role:ow
         ->except(['show', 'index', 'create', 'edit'])
         ->shallow();
 
-    Route::get('/kitchen/prep-sheet', [PrepSheetController::class, 'index'])->name('kitchen.prep-sheet');
-    Route::get('/delivery-lists', [DeliveryListController::class, 'index'])->name('delivery-lists.index');
-
     Route::get('/audit-log', [AuditLogController::class, 'index'])->name('audit-log.index');
 
     Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
@@ -71,9 +73,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', 'role:ow
     Route::put('/payment-settings', [PaymentSettingsController::class, 'update'])->name('payment-settings.update');
 
     Route::post('/bookings/{booking}/payments', [BookingController::class, 'recordPayment'])->name('bookings.payments.store');
+    Route::get('/bookings/{booking}/receipts/{receipt}/download', [BookingController::class, 'downloadReceipt'])->name('bookings.receipts.download');
     Route::post('/bookings/{booking}/refunds/{refund}/mark-paid', [BookingController::class, 'markRefundPaid'])->name('bookings.refunds.mark-paid');
     Route::post('/bookings/{booking}/resend-consent', [BookingController::class, 'resendConsent'])->name('bookings.resend-consent');
     Route::post('/bookings/{booking}/pause', [BookingController::class, 'pause'])->name('bookings.pause');
     Route::post('/bookings/{booking}/resume', [BookingController::class, 'resume'])->name('bookings.resume');
     Route::post('/bookings/{booking}/extend', [BookingController::class, 'extend'])->name('bookings.extend');
+    Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
 });

@@ -27,11 +27,11 @@ const zonesFor = (run: string): [string, Row[]][] => Object.entries(props.runs[r
         <Head title="Delivery lists" />
 
         <div class="mb-6 flex items-center justify-between print:hidden">
-            <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Delivery lists</h1>
-            <input type="date" :value="date" class="rounded-md border-gray-300 text-sm shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300" @change="changeDate" />
+            <h1 class="font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">Delivery lists</h1>
+            <input type="date" :value="date" class="rounded-lg border-gray-300 text-sm shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300" @change="changeDate" />
         </div>
 
-        <h2 class="mb-2 text-lg font-medium text-gray-800 dark:text-gray-200">{{ date }}</h2>
+        <h2 class="mb-2 font-display text-sm font-bold text-gray-900 dark:text-gray-50">{{ date }}</h2>
 
         <div v-for="run in ['lunch', 'dinner']" :key="run" class="mb-6">
             <h3 class="mb-2 font-medium capitalize text-gray-700 dark:text-gray-300">{{ run }} run</h3>
@@ -39,7 +39,7 @@ const zonesFor = (run: string): [string, Row[]][] => Object.entries(props.runs[r
             <div v-for="[zone, rows] in zonesFor(run)" :key="zone" class="mb-4">
                 <h4 class="mb-1 text-sm font-semibold text-gray-600 dark:text-gray-400">{{ zone }}</h4>
                 <table class="w-full text-left text-sm">
-                    <thead class="border-b border-gray-200 text-gray-500 dark:border-gray-700 dark:text-gray-400">
+                    <thead class="border-b border-gray-100 text-xs font-bold uppercase tracking-wide text-gray-400 dark:border-gray-800 dark:text-gray-400">
                         <tr>
                             <th class="py-2">Name</th>
                             <th class="py-2">Address</th>
@@ -48,7 +48,7 @@ const zonesFor = (run: string): [string, Row[]][] => Object.entries(props.runs[r
                             <th class="py-2">+Dinner</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
                         <tr v-for="(row, i) in rows" :key="i">
                             <td class="py-2 text-gray-900 dark:text-gray-100">{{ row.name }}</td>
                             <td class="py-2 text-gray-600 dark:text-gray-400">{{ row.address }}</td>

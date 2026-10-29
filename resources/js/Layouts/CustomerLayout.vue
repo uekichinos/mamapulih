@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import ApplicationLogo from '@/Components/ApplicationLogo.vue';
-import LanguageSwitcher from '@/Components/LanguageSwitcher.vue';
 import { Link, usePage } from '@inertiajs/vue3';
 
 const page = usePage();
@@ -8,15 +6,15 @@ const isAuthed = () => Boolean((page.props as { auth?: { customer?: unknown } })
 </script>
 
 <template>
-    <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-        <nav class="border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
-            <div class="mx-auto flex max-w-xl items-center justify-between px-4 py-3">
-                <Link href="/" class="flex items-center gap-2">
-                    <ApplicationLogo class="h-8 w-8 fill-current text-gray-500" />
-                    <span class="font-semibold text-gray-800 dark:text-gray-200">MamaPulih</span>
+    <div class="flex min-h-screen flex-col bg-gray-50 font-sans dark:bg-gray-950">
+        <nav class="border-b border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-900">
+            <div class="mx-auto flex max-w-xl items-center justify-between px-4 py-3.5">
+                <Link href="/" class="flex items-center gap-2.5">
+                    <span class="size-7 shrink-0 rounded-lg bg-linear-to-br from-indigo-500 to-indigo-700" />
+                    <span class="font-display text-base font-extrabold text-gray-900 dark:text-gray-50">MamaPulih</span>
                 </Link>
 
-                <div class="flex items-center gap-4 text-sm">
+                <div class="flex items-center gap-4 text-sm font-medium">
                     <Link
                         v-if="isAuthed()"
                         :href="route('customer.my-booking')"
@@ -33,12 +31,22 @@ const isAuthed = () => Boolean((page.props as { auth?: { customer?: unknown } })
                     >
                         Log out
                     </Link>
-                    <LanguageSwitcher />
+                    <template v-else>
+                        <Link
+                            :href="route('customer.login')"
+                            class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+                        >
+                            Log in
+                        </Link>
+                        <Link :href="route('customer.register')" class="text-indigo-600 hover:text-indigo-700">
+                            Get started
+                        </Link>
+                    </template>
                 </div>
             </div>
         </nav>
 
-        <main class="mx-auto max-w-xl px-4 py-6">
+        <main class="mx-auto w-full max-w-xl flex-1 px-4 py-7">
             <slot />
         </main>
     </div>
