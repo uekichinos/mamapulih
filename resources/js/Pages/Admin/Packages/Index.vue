@@ -62,7 +62,7 @@ defineProps<{
                         </td>
                     </tr>
                     <tr v-if="packages.data.length === 0">
-                        <td colspan="4" class="px-4 py-6 text-center text-gray-500">
+                        <td colspan="4" class="px-4 py-6 text-center text-gray-600">
                             No packages yet.
                         </td>
                     </tr>

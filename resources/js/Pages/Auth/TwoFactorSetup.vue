@@ -49,7 +49,7 @@ const disable = () => {
                             for a code from your authenticator app each time you log in.
                         </p>
 
-                        <p v-if="required" class="mt-4 text-sm text-gray-500 dark:text-gray-400">
+                        <p v-if="required" class="mt-4 text-sm text-gray-600 dark:text-gray-400">
                             It can't be turned off for the Owner account.
                         </p>
 
@@ -78,7 +78,7 @@ const disable = () => {
                         <!-- eslint-disable-next-line vue/no-v-html -- server-rendered QR SVG, not user input -->
                         <div class="mt-4 w-48" v-html="qrCodeSvg"></div>
 
-                        <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                        <p class="mt-2 text-xs text-gray-600 dark:text-gray-400">
                             Can't scan it? Enter this key manually:
                             <code class="font-mono">{{ secret }}</code>
                         </p>

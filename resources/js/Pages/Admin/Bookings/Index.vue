@@ -55,7 +55,7 @@ const statusLabel = (status: string) =>
         <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
             <div>
                 <h1 class="font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">Bookings</h1>
-                <p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">{{ bookings.total }} bookings</p>
+                <p class="mt-0.5 text-sm text-gray-600 dark:text-gray-400">{{ bookings.total }} bookings</p>
             </div>
             <Link :href="route('admin.bookings.create')">
                 <PrimaryButton>
@@ -88,10 +88,10 @@ const statusLabel = (status: string) =>
                         <td class="px-5 py-3.5 font-medium text-gray-900 dark:text-gray-100">
                             {{ booking.customer.name }}
                         </td>
-                        <td class="px-5 py-3.5 text-gray-500 dark:text-gray-400">
+                        <td class="px-5 py-3.5 text-gray-600 dark:text-gray-400">
                             {{ booking.variant.package.name.en }}
                         </td>
-                        <td class="whitespace-nowrap px-5 py-3.5 text-gray-500 dark:text-gray-400">
+                        <td class="whitespace-nowrap px-5 py-3.5 text-gray-600 dark:text-gray-400">
                             {{ formatDate(booking.edd) }}
                         </td>
                         <td class="whitespace-nowrap px-5 py-3.5 text-right font-mono text-xs tabular-nums text-gray-900 dark:text-gray-100">
@@ -107,7 +107,7 @@ const statusLabel = (status: string) =>
                         </td>
                     </tr>
                     <tr v-if="bookings.data.length === 0">
-                        <td colspan="7" class="px-5 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+                        <td colspan="7" class="px-5 py-8 text-center text-sm text-gray-600 dark:text-gray-400">
                             No bookings yet.
                         </td>
                     </tr>

@@ -50,7 +50,7 @@ const rowsFor = (meal: string): Row[] => Object.values(props.meals[meal] ?? {});
                         </td>
                     </tr>
                     <tr v-if="rowsFor(meal).length === 0">
-                        <td colspan="3" class="py-4 text-center text-gray-500">Nothing scheduled.</td>
+                        <td colspan="3" class="py-4 text-center text-gray-600">Nothing scheduled.</td>
                     </tr>
                 </tbody>
             </table>

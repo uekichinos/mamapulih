@@ -61,7 +61,7 @@ const formatPrice = (sen: number) => `RM${(sen / 100).toFixed(2)}`;
                         </td>
                     </tr>
                     <tr v-if="addons.data.length === 0">
-                        <td colspan="4" class="px-4 py-6 text-center text-gray-500">
+                        <td colspan="4" class="px-4 py-6 text-center text-gray-600">
                             No add-ons yet.
                         </td>
                     </tr>

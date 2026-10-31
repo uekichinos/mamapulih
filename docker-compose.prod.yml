@@ -1,0 +1,53 @@
+# Production install. Pulls the prebuilt image from GitHub Container
+# Registry instead of building from source — see INSTALL.md.
+#
+#   docker compose -f docker-compose.prod.yml up -d
+#
+services:
+    app:
+        image: ghcr.io/uekichinos/mamapulih:${APP_VERSION:-latest}
+        restart: unless-stopped
+        ports:
+            - '${APP_PORT:-8000}:80'
+        environment:
+            APP_NAME: '${APP_NAME:-MamaPulih}'
+            APP_ENV: production
+            APP_KEY: '${APP_KEY}'
+            APP_DEBUG: 'false'
+            APP_URL: '${APP_URL}'
+            DB_CONNECTION: pgsql
+            DB_HOST: pgsql
+            DB_PORT: 5432
+            DB_DATABASE: '${DB_DATABASE:-mamapulih}'
+            DB_USERNAME: '${DB_USERNAME:-mamapulih}'
+            DB_PASSWORD: '${DB_PASSWORD}'
+            SESSION_DRIVER: database
+            CACHE_STORE: database
+            QUEUE_CONNECTION: database
+            FILESYSTEM_DISK: local
+            MAIL_MAILER: '${MAIL_MAILER:-smtp}'
+            LOG_CHANNEL: stderr
+        volumes:
+            - 'app-storage:/var/www/html/storage/app'
+        depends_on:
+            pgsql:
+                condition: service_healthy
+    pgsql:
+        image: 'postgres:18-alpine'
+        restart: unless-stopped
+        environment:
+            POSTGRES_DB: '${DB_DATABASE:-mamapulih}'
+            POSTGRES_USER: '${DB_USERNAME:-mamapulih}'
+            POSTGRES_PASSWORD: '${DB_PASSWORD}'
+        volumes:
+            - 'pgsql-data:/var/lib/postgresql'
+        healthcheck:
+            test: ['CMD', 'pg_isready', '-U', '${DB_USERNAME:-mamapulih}']
+            interval: 5s
+            timeout: 5s
+            retries: 10
+volumes:
+    pgsql-data:
+        driver: local
+    app-storage:
+        driver: local

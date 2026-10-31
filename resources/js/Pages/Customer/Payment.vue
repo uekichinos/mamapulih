@@ -143,10 +143,10 @@ const uploadReceipt = () => {
             </template>
 
             <div class="rounded-2xl border border-gray-200 bg-white shadow-sm p-4 text-sm dark:border-gray-800 dark:bg-gray-900">
-                <p><span class="text-gray-500">Bank:</span> {{ manual.bank_name }}</p>
-                <p><span class="text-gray-500">Account name:</span> {{ manual.account_name }}</p>
+                <p><span class="text-gray-600">Bank:</span> {{ manual.bank_name }}</p>
+                <p><span class="text-gray-600">Account name:</span> {{ manual.account_name }}</p>
                 <p>
-                    <span class="text-gray-500">Account number:</span> {{ manual.account_number }}
+                    <span class="text-gray-600">Account number:</span> {{ manual.account_number }}
                 </p>
                 <img
                     v-if="manual.qr_image_url"
@@ -166,7 +166,7 @@ const uploadReceipt = () => {
                 <h2 class="font-display font-bold text-gray-900 dark:text-gray-50">
                     Upload payment receipt
                 </h2>
-                <p class="mt-1 text-gray-500 dark:text-gray-400">
+                <p class="mt-1 text-gray-600 dark:text-gray-400">
                     Upload a screenshot or PDF of your transfer receipt so we can verify it faster.
                 </p>
 
@@ -177,7 +177,7 @@ const uploadReceipt = () => {
                         class="flex items-center justify-between py-2"
                     >
                         <span class="text-gray-700 dark:text-gray-300">{{ receipt.original_name }}</span>
-                        <span class="text-gray-500 dark:text-gray-400">{{ formatDateTime(receipt.created_at) }}</span>
+                        <span class="text-gray-600 dark:text-gray-400">{{ formatDateTime(receipt.created_at) }}</span>
                     </li>
                 </ul>
 

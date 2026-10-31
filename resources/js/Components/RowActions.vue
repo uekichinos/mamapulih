@@ -7,7 +7,7 @@ import Dropdown from '@/Components/Dropdown.vue';
         <template #trigger>
             <button
                 type="button"
-                class="rounded-lg p-1.5 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
+                class="rounded-lg p-1.5 text-gray-500 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-300"
                 aria-label="Actions"
             >
                 <svg class="size-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">

@@ -46,7 +46,7 @@ const money = (sen: number) => (sen / 100).toFixed(2);
                 <h2 class="font-display text-base font-extrabold text-gray-900 dark:text-gray-50">
                     {{ pkg.name.en }}
                 </h2>
-                <p v-if="pkg.description" class="mt-1 text-gray-500 dark:text-gray-400">
+                <p v-if="pkg.description" class="mt-1 text-gray-600 dark:text-gray-400">
                     {{ pkg.description.en }}
                 </p>
 
@@ -72,7 +72,7 @@ const money = (sen: number) => (sen / 100).toFixed(2);
                 </ul>
             </div>
 
-            <p v-if="packages.length === 0" class="text-gray-500 dark:text-gray-400">
+            <p v-if="packages.length === 0" class="text-gray-600 dark:text-gray-400">
                 No packages are available yet.
             </p>
         </div>

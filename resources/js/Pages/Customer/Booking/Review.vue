@@ -42,11 +42,11 @@ const otherErrors = computed(() =>
 
         <div class="space-y-3 rounded-2xl border border-gray-200 bg-white shadow-sm p-4 text-sm dark:border-gray-800 dark:bg-gray-900">
             <div class="flex justify-between">
-                <span class="text-gray-500 dark:text-gray-400">Package</span>
+                <span class="text-gray-600 dark:text-gray-400">Package</span>
                 <span class="text-gray-900 dark:text-gray-100">{{ variant.package.name.en }}</span>
             </div>
             <div class="flex justify-between">
-                <span class="text-gray-500 dark:text-gray-400">Plan</span>
+                <span class="text-gray-600 dark:text-gray-400">Plan</span>
                 <span class="text-gray-900 dark:text-gray-100">
                     {{ variant.birth_type === 'csec' ? 'C-sec' : 'Normal' }}
                     · {{ variant.duration_days }} days ·
@@ -54,15 +54,15 @@ const otherErrors = computed(() =>
                 </span>
             </div>
             <div class="flex justify-between">
-                <span class="text-gray-500 dark:text-gray-400">Due date</span>
+                <span class="text-gray-600 dark:text-gray-400">Due date</span>
                 <span class="text-gray-900 dark:text-gray-100">{{ formatDate(draft.edd) }}</span>
             </div>
             <div v-if="draft.is_twins" class="flex justify-between">
-                <span class="text-gray-500 dark:text-gray-400">Twins</span>
+                <span class="text-gray-600 dark:text-gray-400">Twins</span>
                 <span class="text-gray-900 dark:text-gray-100">Yes</span>
             </div>
             <div class="flex justify-between">
-                <span class="text-gray-500 dark:text-gray-400">Delivery</span>
+                <span class="text-gray-600 dark:text-gray-400">Delivery</span>
                 <span class="text-gray-900 dark:text-gray-100">
                     {{ draft.address.line1
                     }}<span v-if="draft.address.line2">, {{ draft.address.line2 }}</span
@@ -100,7 +100,7 @@ const otherErrors = computed(() =>
             <p v-for="[key, message] in otherErrors" :key="key">{{ message }}</p>
         </div>
 
-        <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">
+        <p class="mt-4 text-sm text-gray-600 dark:text-gray-400">
             No payment is taken yet. Your booking will be reviewed, and you'll get payment
             instructions once it's approved.
         </p>

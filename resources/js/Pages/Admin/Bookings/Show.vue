@@ -322,7 +322,7 @@ const extend = () => {
                         </tr>
                     </tbody>
                 </table>
-                <p v-else class="text-sm text-gray-500">No payments recorded yet.</p>
+                <p v-else class="text-sm text-gray-600">No payments recorded yet.</p>
 
                 <form
                     v-if="!isInactive(booking.status)"
@@ -398,7 +398,7 @@ const extend = () => {
                     >
                         <span class="text-gray-700 dark:text-gray-300">{{ receipt.original_name }}</span>
                         <span class="flex items-center gap-3">
-                            <span class="text-gray-500 dark:text-gray-400">{{ formatDateTime(receipt.created_at) }}</span>
+                            <span class="text-gray-600 dark:text-gray-400">{{ formatDateTime(receipt.created_at) }}</span>
                             <a
                                 :href="route('admin.bookings.receipts.download', [booking.id, receipt.id])"
                                 class="font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"

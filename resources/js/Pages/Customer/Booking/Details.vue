@@ -56,7 +56,7 @@ const isPostcodeDeliverable = computed(() =>
                 <InputError class="mt-2" :message="form.errors['address.postcode']" />
                 <p
                     v-if="form.address.postcode && !isPostcodeDeliverable"
-                    class="mt-2 text-sm text-gray-500 dark:text-gray-400"
+                    class="mt-2 text-sm text-gray-600 dark:text-gray-400"
                 >
                     Pick a postcode from the list to continue.
                 </p>

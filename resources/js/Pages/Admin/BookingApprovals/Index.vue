@@ -90,7 +90,7 @@ const reject = (id: number) => {
                 </div>
             </div>
 
-            <p v-if="bookings.data.length === 0" class="text-center text-gray-500">
+            <p v-if="bookings.data.length === 0" class="text-center text-gray-600">
                 No bookings awaiting approval.
             </p>
         </div>

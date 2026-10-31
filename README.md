@@ -6,7 +6,11 @@ The full business flow and development plan live in a local `docs/` folder that 
 
 ## Status
 
-Pre-release (Sprint 0). Not yet ready for production use.
+Pre-release (Sprint 5). All core booking/payment/kitchen/delivery functionality is built; packaging and docs for a v1.0 release are in progress. Not yet production-tested with a pilot kitchen.
+
+## Installing
+
+See [INSTALL.md](INSTALL.md) for a production install with Docker, [UPGRADE.md](UPGRADE.md) for moving between versions, and [BACKUP.md](BACKUP.md) for backups. Privacy notice and terms-of-service templates (fill in before taking real bookings — required under Malaysia's PDPA 2010) are in [`legal/`](legal/).
 
 ## Stack
 

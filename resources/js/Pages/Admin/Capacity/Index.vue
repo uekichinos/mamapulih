@@ -36,7 +36,7 @@ const isCurrentWindow = computed(() => props.from === new Date().toISOString().s
         <Head title="Capacity" />
 
         <h1 class="mb-2 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">Capacity</h1>
-        <p class="mb-6 text-sm text-gray-500 dark:text-gray-400">
+        <p class="mb-6 text-sm text-gray-600 dark:text-gray-400">
             Regular capacity {{ regularCapacity }} / day, buffer {{ bufferCapacity }}. Closure days
             are not shown (no deliveries).
         </p>

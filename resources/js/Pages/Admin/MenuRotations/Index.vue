@@ -43,7 +43,7 @@ defineProps<{
                         </td>
                     </tr>
                     <tr v-if="menuRotations.data.length === 0">
-                        <td colspan="2" class="px-4 py-6 text-center text-gray-500">No menu rotations yet.</td>
+                        <td colspan="2" class="px-4 py-6 text-center text-gray-600">No menu rotations yet.</td>
                     </tr>
                 </tbody>
             </table>

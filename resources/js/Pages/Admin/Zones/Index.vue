@@ -58,7 +58,7 @@ defineProps<{
                         </td>
                     </tr>
                     <tr v-if="zones.data.length === 0">
-                        <td colspan="4" class="px-4 py-6 text-center text-gray-500">
+                        <td colspan="4" class="px-4 py-6 text-center text-gray-600">
                             No zones yet.
                         </td>
                     </tr>

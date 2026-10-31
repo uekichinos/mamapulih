@@ -39,7 +39,7 @@ const tiles = [
         <Head title="Admin dashboard" />
 
         <h1 class="mb-1 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">Dashboard</h1>
-        <p class="mb-6 text-sm text-gray-500 dark:text-gray-400">An at-a-glance view of today's operations.</p>
+        <p class="mb-6 text-sm text-gray-600 dark:text-gray-400">An at-a-glance view of today's operations.</p>
 
         <div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Link
@@ -49,7 +49,7 @@ const tiles = [
                 class="flex flex-col gap-3 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:shadow-md dark:border-gray-800 dark:bg-gray-900"
             >
                 <div class="flex items-center justify-between">
-                    <span class="text-xs font-semibold text-gray-500 dark:text-gray-400">{{ tile.label }}</span>
+                    <span class="text-xs font-semibold text-gray-600 dark:text-gray-400">{{ tile.label }}</span>
                     <span class="flex size-8 items-center justify-center rounded-lg" :class="tile.tint">
                         <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
                             <circle cx="12" cy="12" r="9" />

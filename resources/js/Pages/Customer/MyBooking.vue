@@ -94,27 +94,27 @@ const cancel = () => {
             class="space-y-3 rounded-2xl border border-gray-200 bg-white shadow-sm p-4 text-sm dark:border-gray-800 dark:bg-gray-900"
         >
             <div class="flex justify-between">
-                <span class="text-gray-500 dark:text-gray-400">Reference</span>
+                <span class="text-gray-600 dark:text-gray-400">Reference</span>
                 <span class="text-gray-900 dark:text-gray-100">{{ booking.ref_no }}</span>
             </div>
             <div class="flex justify-between">
-                <span class="text-gray-500 dark:text-gray-400">Status</span>
+                <span class="text-gray-600 dark:text-gray-400">Status</span>
                 <span class="font-medium text-gray-900 dark:text-gray-100">
                     {{ statusLabel[booking.status] ?? booking.status }}
                 </span>
             </div>
             <div class="flex justify-between">
-                <span class="text-gray-500 dark:text-gray-400">Package</span>
+                <span class="text-gray-600 dark:text-gray-400">Package</span>
                 <span class="text-gray-900 dark:text-gray-100">{{
                     booking.variant.package.name.en
                 }}</span>
             </div>
             <div class="flex justify-between">
-                <span class="text-gray-500 dark:text-gray-400">Due date</span>
+                <span class="text-gray-600 dark:text-gray-400">Due date</span>
                 <span class="text-gray-900 dark:text-gray-100">{{ formatDate(booking.edd) }}</span>
             </div>
             <div class="flex justify-between">
-                <span class="text-gray-500 dark:text-gray-400">Price</span>
+                <span class="text-gray-600 dark:text-gray-400">Price</span>
                 <span class="text-gray-900 dark:text-gray-100"
                     >RM {{ money(booking.price_sen) }}</span
                 >
@@ -123,12 +123,12 @@ const cancel = () => {
                 v-if="balanceDue"
                 class="flex justify-between"
             >
-                <span class="text-gray-500 dark:text-gray-400">Balance due</span>
+                <span class="text-gray-600 dark:text-gray-400">Balance due</span>
                 <span class="text-gray-900 dark:text-gray-100">RM {{ money(balanceDue) }}</span>
             </div>
 
             <div v-if="booking.payment_receipts.length" class="border-t border-gray-100 pt-3 dark:border-gray-800">
-                <p class="mb-2 text-xs font-bold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                <p class="mb-2 text-xs font-bold uppercase tracking-wide text-gray-600 dark:text-gray-400">
                     Receipts you uploaded
                 </p>
                 <ul class="divide-y divide-gray-100 dark:divide-gray-800">
@@ -139,7 +139,7 @@ const cancel = () => {
                     >
                         <span class="text-gray-700 dark:text-gray-300">{{ receipt.original_name }}</span>
                         <span class="flex items-center gap-3">
-                            <span class="text-gray-500 dark:text-gray-400">{{ formatDateTime(receipt.created_at) }}</span>
+                            <span class="text-gray-600 dark:text-gray-400">{{ formatDateTime(receipt.created_at) }}</span>
                             <a
                                 :href="route('customer.my-booking.receipts.view', receipt.id)"
                                 target="_blank"
@@ -172,7 +172,7 @@ const cancel = () => {
             </div>
 
             <div v-if="canCancel && cancelling" class="space-y-3 border-t border-gray-100 pt-3 dark:border-gray-800">
-                <p class="text-sm text-gray-500 dark:text-gray-400">
+                <p class="text-sm text-gray-600 dark:text-gray-400">
                     No payment has been made yet, so this booking can be cancelled with nothing to
                     refund.
                 </p>
@@ -207,7 +207,7 @@ const cancel = () => {
                             <p class="font-medium text-gray-900 dark:text-gray-100">
                                 {{ archived.variant.package.name.en }}
                             </p>
-                            <p class="text-gray-500 dark:text-gray-400">
+                            <p class="text-gray-600 dark:text-gray-400">
                                 {{ archived.ref_no }} &middot; {{ formatDate(archived.edd) }}
                             </p>
                         </div>

@@ -75,7 +75,7 @@ const notify = (id: number) => router.post(route('admin.closure-days.notify', id
                         </td>
                     </tr>
                     <tr v-if="closureDays.data.length === 0">
-                        <td colspan="4" class="px-4 py-6 text-center text-gray-500">
+                        <td colspan="4" class="px-4 py-6 text-center text-gray-600">
                             No upcoming closure days.
                         </td>
                     </tr>

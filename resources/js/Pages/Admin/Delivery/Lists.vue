@@ -60,7 +60,7 @@ const zonesFor = (run: string): [string, Row[]][] => Object.entries(props.runs[r
                 </table>
             </div>
 
-            <p v-if="zonesFor(run).length === 0" class="text-sm text-gray-500">Nothing scheduled.</p>
+            <p v-if="zonesFor(run).length === 0" class="text-sm text-gray-600">Nothing scheduled.</p>
         </div>
     </AdminLayout>
 </template>
