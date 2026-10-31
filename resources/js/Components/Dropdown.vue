@@ -64,7 +64,11 @@ const open = ref(false);
             <div
                 v-show="open"
                 class="absolute z-50 rounded-md shadow-lg"
-                :class="[widthClass, alignmentClasses, direction === 'up' ? 'bottom-full mb-2' : 'mt-2']"
+                :class="[
+                    widthClass,
+                    alignmentClasses,
+                    direction === 'up' ? 'bottom-full mb-2' : 'mt-2',
+                ]"
                 style="display: none"
                 @click="open = false"
             >

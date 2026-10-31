@@ -10,8 +10,13 @@ const isAuthed = () => Boolean((page.props as { auth?: { customer?: unknown } })
         <nav class="border-b border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-900">
             <div class="mx-auto flex max-w-xl items-center justify-between px-4 py-3.5">
                 <Link href="/" class="flex items-center gap-2.5">
-                    <span class="size-7 shrink-0 rounded-lg bg-linear-to-br from-indigo-500 to-indigo-700" />
-                    <span class="font-display text-base font-extrabold text-gray-900 dark:text-gray-50">MamaPulih</span>
+                    <span
+                        class="size-7 shrink-0 rounded-lg bg-linear-to-br from-indigo-500 to-indigo-700"
+                    />
+                    <span
+                        class="font-display text-base font-extrabold text-gray-900 dark:text-gray-50"
+                        >MamaPulih</span
+                    >
                 </Link>
 
                 <div class="flex items-center gap-4 text-sm font-medium">
@@ -38,7 +43,10 @@ const isAuthed = () => Boolean((page.props as { auth?: { customer?: unknown } })
                         >
                             Log in
                         </Link>
-                        <Link :href="route('customer.register')" class="text-indigo-600 hover:text-indigo-700">
+                        <Link
+                            :href="route('customer.register')"
+                            class="text-indigo-600 hover:text-indigo-700"
+                        >
                             Get started
                         </Link>
                     </template>

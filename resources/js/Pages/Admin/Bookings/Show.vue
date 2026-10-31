@@ -91,7 +91,10 @@ const props = defineProps<{
 
 const money = (sen: number) => (sen / 100).toFixed(2);
 
-const statusTones: Record<string, 'accent' | 'success' | 'warning' | 'danger' | 'info' | 'neutral'> = {
+const statusTones: Record<
+    string,
+    'accent' | 'success' | 'warning' | 'danger' | 'info' | 'neutral'
+> = {
     waitlisted: 'neutral',
     pending_approval: 'warning',
     rejected: 'danger',
@@ -183,7 +186,7 @@ const cancelForm = useForm({
 });
 
 const cancel = () => {
-    if (! confirm('Cancel this booking? This cannot be undone.')) {
+    if (!confirm('Cancel this booking? This cannot be undone.')) {
         return;
     }
 
@@ -209,19 +212,29 @@ const extend = () => {
             <h1 class="font-mono text-lg font-semibold text-gray-900 dark:text-gray-100">
                 {{ booking.ref_no }}
             </h1>
-            <StatusBadge :tone="statusTones[booking.status] ?? 'neutral'">{{ statusLabel(booking.status) }}</StatusBadge>
+            <StatusBadge :tone="statusTones[booking.status] ?? 'neutral'">{{
+                statusLabel(booking.status)
+            }}</StatusBadge>
         </div>
 
         <div class="grid gap-6 sm:grid-cols-2">
-            <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">Customer</h2>
+            <div
+                class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+            >
+                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">
+                    Customer
+                </h2>
                 <p class="text-sm text-gray-600 dark:text-gray-400">{{ booking.customer.name }}</p>
                 <p class="text-sm text-gray-600 dark:text-gray-400">{{ booking.customer.email }}</p>
                 <p class="text-sm text-gray-600 dark:text-gray-400">{{ booking.customer.phone }}</p>
             </div>
 
-            <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">Plan</h2>
+            <div
+                class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+            >
+                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">
+                    Plan
+                </h2>
                 <p class="text-sm text-gray-600 dark:text-gray-400">
                     {{ booking.variant.package.name.en }}
                 </p>
@@ -231,18 +244,28 @@ const extend = () => {
                     {{ booking.meal_plan === 'lunch_dinner' ? 'Lunch + Dinner' : 'Lunch only' }}
                     <span v-if="booking.is_twins">· Twins</span>
                 </p>
-                <p class="text-sm text-gray-600 dark:text-gray-400">EDD: {{ formatDate(booking.edd) }}</p>
-                <p v-if="booking.start_date" class="text-sm text-gray-600 dark:text-gray-400">
-                    Start {{ formatDate(booking.start_date) }} → End {{ formatDate(booking.end_date) }}
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                    EDD: {{ formatDate(booking.edd) }}
                 </p>
-                <p class="font-mono text-sm font-semibold tabular-nums text-gray-900 dark:text-gray-100">
+                <p v-if="booking.start_date" class="text-sm text-gray-600 dark:text-gray-400">
+                    Start {{ formatDate(booking.start_date) }} → End
+                    {{ formatDate(booking.end_date) }}
+                </p>
+                <p
+                    class="font-mono text-sm font-semibold tabular-nums text-gray-900 dark:text-gray-100"
+                >
                     RM {{ money(booking.price_sen) }} (paid RM {{ money(amountPaid) }}, balance RM
                     {{ money(balanceDue) }})
                 </p>
             </div>
 
-            <div v-if="booking.address" class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">Delivery</h2>
+            <div
+                v-if="booking.address"
+                class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+            >
+                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">
+                    Delivery
+                </h2>
                 <p class="text-sm text-gray-600 dark:text-gray-400">
                     {{ booking.address.line1
                     }}<span v-if="booking.address.line2">, {{ booking.address.line2 }}</span
@@ -258,7 +281,9 @@ const extend = () => {
                 v-if="booking.addons.length"
                 class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
             >
-                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">Add-ons</h2>
+                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">
+                    Add-ons
+                </h2>
                 <p
                     v-for="(line, i) in booking.addons"
                     :key="i"
@@ -268,9 +293,15 @@ const extend = () => {
                 </p>
             </div>
 
-            <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900">
-                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">Status</h2>
-                <StatusBadge :tone="statusTones[booking.status] ?? 'neutral'">{{ statusLabel(booking.status) }}</StatusBadge>
+            <div
+                class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+            >
+                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">
+                    Status
+                </h2>
+                <StatusBadge :tone="statusTones[booking.status] ?? 'neutral'">{{
+                    statusLabel(booking.status)
+                }}</StatusBadge>
                 <p v-if="booking.approver" class="mt-2 text-sm text-gray-600 dark:text-gray-400">
                     Approved by {{ booking.approver.name }}
                 </p>
@@ -281,7 +312,9 @@ const extend = () => {
                 <div v-if="booking.status === 'pending_approval'" class="mt-3 space-y-3">
                     <div class="flex items-center gap-2">
                         <PrimaryButton type="button" @click="approve">Approve</PrimaryButton>
-                        <DangerButton type="button" @click="rejecting = !rejecting">Reject</DangerButton>
+                        <DangerButton type="button" @click="rejecting = !rejecting"
+                            >Reject</DangerButton
+                        >
                     </div>
 
                     <div v-if="rejecting" class="flex items-center gap-2">
@@ -300,7 +333,9 @@ const extend = () => {
                 v-if="!isInactive(booking.status) || booking.payments.length"
                 class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900 sm:col-span-2"
             >
-                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">Payments</h2>
+                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">
+                    Payments
+                </h2>
                 <table v-if="booking.payments.length" class="w-full text-left text-sm">
                     <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
                         <tr v-for="payment in booking.payments" :key="payment.id">
@@ -316,7 +351,9 @@ const extend = () => {
                             <td class="py-1 text-gray-600 dark:text-gray-400">
                                 {{ payment.reference }}
                             </td>
-                            <td class="py-1 text-right font-mono tabular-nums text-gray-900 dark:text-gray-100">
+                            <td
+                                class="py-1 text-right font-mono tabular-nums text-gray-900 dark:text-gray-100"
+                            >
                                 RM {{ money(payment.amount_sen) }}
                             </td>
                         </tr>
@@ -396,11 +433,20 @@ const extend = () => {
                         :key="receipt.id"
                         class="flex items-center justify-between py-1.5"
                     >
-                        <span class="text-gray-700 dark:text-gray-300">{{ receipt.original_name }}</span>
+                        <span class="text-gray-700 dark:text-gray-300">{{
+                            receipt.original_name
+                        }}</span>
                         <span class="flex items-center gap-3">
-                            <span class="text-gray-600 dark:text-gray-400">{{ formatDateTime(receipt.created_at) }}</span>
+                            <span class="text-gray-600 dark:text-gray-400">{{
+                                formatDateTime(receipt.created_at)
+                            }}</span>
                             <a
-                                :href="route('admin.bookings.receipts.download', [booking.id, receipt.id])"
+                                :href="
+                                    route('admin.bookings.receipts.download', [
+                                        booking.id,
+                                        receipt.id,
+                                    ])
+                                "
                                 class="font-medium text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
                             >
                                 Download
@@ -414,7 +460,9 @@ const extend = () => {
                 v-if="booking.plan_changes.length"
                 class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900 sm:col-span-2"
             >
-                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">Plan changes</h2>
+                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">
+                    Plan changes
+                </h2>
                 <div
                     v-for="pc in booking.plan_changes"
                     :key="pc.id"
@@ -436,13 +484,18 @@ const extend = () => {
                 v-if="booking.refunds.length"
                 class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900 sm:col-span-2"
             >
-                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">Refunds</h2>
+                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">
+                    Refunds
+                </h2>
                 <div v-for="refund in booking.refunds" :key="refund.id" class="mb-3 text-sm">
                     <p class="text-gray-600 dark:text-gray-400">
                         {{ refund.reason }} — RM {{ money(refund.amount_sen) }} —
                         {{ refund.status }}
                     </p>
-                    <div v-if="refund.status === 'pending'" class="mt-2 flex flex-wrap items-center gap-2">
+                    <div
+                        v-if="refund.status === 'pending'"
+                        class="mt-2 flex flex-wrap items-center gap-2"
+                    >
                         <TextInput
                             v-model="refundForm(refund.id).method"
                             type="text"
@@ -471,20 +524,35 @@ const extend = () => {
                 v-if="['active', 'paused'].includes(booking.status)"
                 class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900 sm:col-span-2"
             >
-                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">Pause / resume / extend</h2>
+                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">
+                    Pause / resume / extend
+                </h2>
 
                 <div v-if="booking.pauses.length" class="mb-3 space-y-1">
-                    <p v-for="p in booking.pauses" :key="p.id" class="text-sm text-gray-600 dark:text-gray-400">
-                        {{ formatDate(p.from_date) }} → {{ formatDate(p.to_date) }} ({{ p.reason }}<span v-if="p.limit_overridden">, override</span>)
+                    <p
+                        v-for="p in booking.pauses"
+                        :key="p.id"
+                        class="text-sm text-gray-600 dark:text-gray-400"
+                    >
+                        {{ formatDate(p.from_date) }} → {{ formatDate(p.to_date) }} ({{ p.reason
+                        }}<span v-if="p.limit_overridden">, override</span>)
                     </p>
                 </div>
 
-                <SecondaryButton v-if="booking.status === 'paused'" @click="resume">Resume now</SecondaryButton>
+                <SecondaryButton v-if="booking.status === 'paused'" @click="resume"
+                    >Resume now</SecondaryButton
+                >
 
                 <form v-else class="flex flex-wrap items-end gap-3" @submit.prevent="pause">
                     <div>
                         <InputLabel for="pause-days" value="Pause for (days)" />
-                        <TextInput id="pause-days" v-model="pauseForm.days" type="number" min="1" class="mt-1 block w-24" />
+                        <TextInput
+                            id="pause-days"
+                            v-model="pauseForm.days"
+                            type="number"
+                            min="1"
+                            class="mt-1 block w-24"
+                        />
                     </div>
                     <div>
                         <InputLabel for="pause-reason" value="Reason" />
@@ -493,7 +561,9 @@ const extend = () => {
                             <option value="medical">Medical</option>
                         </SelectInput>
                     </div>
-                    <label class="flex items-center gap-2 pb-2 text-sm text-gray-700 dark:text-gray-300">
+                    <label
+                        class="flex items-center gap-2 pb-2 text-sm text-gray-700 dark:text-gray-300"
+                    >
                         <Checkbox v-model:checked="pauseForm.override_limit" />
                         Override pause limit
                     </label>
@@ -504,9 +574,17 @@ const extend = () => {
                 <form class="mt-4 flex items-end gap-3" @submit.prevent="extend">
                     <div>
                         <InputLabel for="extend-days" value="Extend by (days)" />
-                        <TextInput id="extend-days" v-model="extendForm.days" type="number" min="1" class="mt-1 block w-24" />
+                        <TextInput
+                            id="extend-days"
+                            v-model="extendForm.days"
+                            type="number"
+                            min="1"
+                            class="mt-1 block w-24"
+                        />
                     </div>
-                    <SecondaryButton :disabled="extendForm.processing" type="submit">Extend</SecondaryButton>
+                    <SecondaryButton :disabled="extendForm.processing" type="submit"
+                        >Extend</SecondaryButton
+                    >
                 </form>
             </div>
 
@@ -514,7 +592,9 @@ const extend = () => {
                 v-if="!isInactive(booking.status)"
                 class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900 sm:col-span-2"
             >
-                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">Cancel booking</h2>
+                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">
+                    Cancel booking
+                </h2>
 
                 <form class="flex flex-wrap items-end gap-3" @submit.prevent="cancel">
                     <div>
@@ -527,7 +607,11 @@ const extend = () => {
                     </div>
                     <div class="min-w-[16rem] flex-1">
                         <InputLabel for="cancel-reason" value="Reason (internal)" />
-                        <TextInput id="cancel-reason" v-model="cancelForm.reason" class="mt-1 block w-full" />
+                        <TextInput
+                            id="cancel-reason"
+                            v-model="cancelForm.reason"
+                            class="mt-1 block w-full"
+                        />
                     </div>
                     <div>
                         <InputLabel for="cancel-override" value="Override refund (RM, optional)" />

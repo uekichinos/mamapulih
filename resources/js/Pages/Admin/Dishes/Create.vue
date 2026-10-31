@@ -32,7 +32,9 @@ const submit = () => {
     <AdminLayout>
         <Head title="New dish" />
 
-        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">New dish</h1>
+        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
+            New dish
+        </h1>
 
         <form class="max-w-xl space-y-4" @submit.prevent="submit">
             <div>
@@ -44,7 +46,11 @@ const submit = () => {
             <div>
                 <InputLabel value="Tags" />
                 <div class="mt-2 flex flex-wrap gap-3">
-                    <label v-for="tag in tags" :key="tag.value" class="flex items-center gap-1 text-sm text-gray-700 dark:text-gray-300">
+                    <label
+                        v-for="tag in tags"
+                        :key="tag.value"
+                        class="flex items-center gap-1 text-sm text-gray-700 dark:text-gray-300"
+                    >
                         <input v-model="form.tags" type="checkbox" :value="tag.value" />
                         {{ tag.label }}
                     </label>
@@ -52,10 +58,15 @@ const submit = () => {
             </div>
 
             <div>
-                <InputLabel for="substitute_dish_id" value="Substitute dish (used when a customer excludes a tag above)" />
+                <InputLabel
+                    for="substitute_dish_id"
+                    value="Substitute dish (used when a customer excludes a tag above)"
+                />
                 <SelectInput id="substitute_dish_id" v-model="form.substitute_dish_id" class="mt-1">
                     <option :value="null">None</option>
-                    <option v-for="dish in dishes" :key="dish.id" :value="dish.id">{{ dish.name.en }}</option>
+                    <option v-for="dish in dishes" :key="dish.id" :value="dish.id">
+                        {{ dish.name.en }}
+                    </option>
                 </SelectInput>
                 <InputError class="mt-2" :message="form.errors.substitute_dish_id" />
             </div>

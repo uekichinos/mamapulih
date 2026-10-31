@@ -61,7 +61,8 @@ const reject = (id: number) => {
                             {{ booking.customer.name }}
                         </p>
                         <p class="text-sm text-gray-600 dark:text-gray-400">
-                            {{ booking.variant.package.name.en }} · EDD {{ formatDate(booking.edd) }} · RM
+                            {{ booking.variant.package.name.en }} · EDD
+                            {{ formatDate(booking.edd) }} · RM
                             {{ money(booking.price_sen) }}
                         </p>
                         <p class="font-mono text-xs text-gray-400">{{ booking.ref_no }}</p>

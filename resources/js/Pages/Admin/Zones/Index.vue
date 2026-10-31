@@ -24,13 +24,17 @@ defineProps<{
         <Head title="Zones" />
 
         <div class="mb-6 flex items-center justify-between">
-            <h1 class="font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">Delivery zones</h1>
+            <h1 class="font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
+                Delivery zones
+            </h1>
             <Link :href="route('admin.zones.create')">
                 <PrimaryButton>New zone</PrimaryButton>
             </Link>
         </div>
 
-        <div class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+        <div
+            class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900"
+        >
             <table class="w-full text-left text-sm">
                 <thead
                     class="border-b border-gray-100 text-xs font-bold uppercase tracking-wide text-gray-400 dark:border-gray-800 dark:text-gray-400"
@@ -53,7 +57,9 @@ defineProps<{
                         </td>
                         <td class="px-4 py-3 text-right">
                             <RowActions>
-                                <DropdownLink :href="route('admin.zones.edit', zone.id)">Edit</DropdownLink>
+                                <DropdownLink :href="route('admin.zones.edit', zone.id)"
+                                    >Edit</DropdownLink
+                                >
                             </RowActions>
                         </td>
                     </tr>

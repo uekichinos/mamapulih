@@ -32,7 +32,10 @@ const props = defineProps<{
 
 const form = useForm({
     name: { ...props.package.name },
-    description: { en: props.package.description?.en ?? '', ms: props.package.description?.ms ?? '' },
+    description: {
+        en: props.package.description?.en ?? '',
+        ms: props.package.description?.ms ?? '',
+    },
     active: props.package.active,
 });
 
@@ -78,17 +81,14 @@ const formatPrice = (sen: number) => `RM${(sen / 100).toFixed(2)}`;
     <AdminLayout>
         <Head title="Edit package" />
 
-        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">Edit package</h1>
+        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
+            Edit package
+        </h1>
 
         <form class="mb-10 max-w-xl space-y-4" @submit.prevent="submit">
             <div>
                 <InputLabel for="name_en" value="Name" />
-                <TextInput
-                    id="name_en"
-                    v-model="form.name.en"
-                    class="mt-1 block w-full"
-                    required
-                />
+                <TextInput id="name_en" v-model="form.name.en" class="mt-1 block w-full" required />
                 <InputError class="mt-2" :message="form.errors['name.en']" />
             </div>
 
@@ -112,7 +112,9 @@ const formatPrice = (sen: number) => `RM${(sen / 100).toFixed(2)}`;
 
         <div class="max-w-2xl">
             <div class="mb-4 flex items-center justify-between">
-                <h2 class="font-display text-sm font-bold text-gray-900 dark:text-gray-50">Variants</h2>
+                <h2 class="font-display text-sm font-bold text-gray-900 dark:text-gray-50">
+                    Variants
+                </h2>
                 <SecondaryButton @click="showVariantForm = !showVariantForm">
                     {{ showVariantForm ? 'Cancel' : 'Add variant' }}
                 </SecondaryButton>
@@ -134,7 +136,11 @@ const formatPrice = (sen: number) => `RM${(sen / 100).toFixed(2)}`;
 
                     <div>
                         <InputLabel for="duration_days" value="Duration (days)" />
-                        <SelectInput id="duration_days" v-model="variantForm.duration_days" class="mt-1">
+                        <SelectInput
+                            id="duration_days"
+                            v-model="variantForm.duration_days"
+                            class="mt-1"
+                        >
                             <option :value="7">7</option>
                             <option :value="14">14</option>
                             <option :value="21">21</option>
@@ -187,7 +193,9 @@ const formatPrice = (sen: number) => `RM${(sen / 100).toFixed(2)}`;
                 </PrimaryButton>
             </form>
 
-            <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+            <div
+                class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900"
+            >
                 <table class="w-full text-left text-sm">
                     <thead
                         class="border-b border-gray-100 text-xs font-bold uppercase tracking-wide text-gray-400 dark:border-gray-800 dark:text-gray-400"

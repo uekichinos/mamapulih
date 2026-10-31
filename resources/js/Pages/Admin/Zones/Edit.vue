@@ -42,7 +42,9 @@ const submit = () => {
     <AdminLayout>
         <Head title="Edit zone" />
 
-        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">Edit zone</h1>
+        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
+            Edit zone
+        </h1>
 
         <form class="max-w-xl space-y-4" @submit.prevent="submit">
             <div>

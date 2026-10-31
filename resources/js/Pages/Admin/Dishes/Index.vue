@@ -24,15 +24,21 @@ defineProps<{
         <Head title="Dishes" />
 
         <div class="mb-6 flex items-center justify-between">
-            <h1 class="font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">Dishes</h1>
+            <h1 class="font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
+                Dishes
+            </h1>
             <Link :href="route('admin.dishes.create')">
                 <PrimaryButton>New dish</PrimaryButton>
             </Link>
         </div>
 
-        <div class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+        <div
+            class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900"
+        >
             <table class="w-full text-left text-sm">
-                <thead class="border-b border-gray-100 text-xs font-bold uppercase tracking-wide text-gray-400 dark:border-gray-800 dark:text-gray-400">
+                <thead
+                    class="border-b border-gray-100 text-xs font-bold uppercase tracking-wide text-gray-400 dark:border-gray-800 dark:text-gray-400"
+                >
                     <tr>
                         <th class="px-4 py-3">Name</th>
                         <th class="px-4 py-3">Tags</th>
@@ -42,17 +48,27 @@ defineProps<{
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
                     <tr v-for="dish in dishes.data" :key="dish.id">
-                        <td class="px-4 py-3 text-gray-900 dark:text-gray-100">{{ dish.name.en }}</td>
-                        <td class="px-4 py-3 text-gray-600 dark:text-gray-400">{{ dish.tags.join(', ') }}</td>
-                        <td class="px-4 py-3 text-gray-600 dark:text-gray-400">{{ dish.active ? 'Yes' : 'No' }}</td>
+                        <td class="px-4 py-3 text-gray-900 dark:text-gray-100">
+                            {{ dish.name.en }}
+                        </td>
+                        <td class="px-4 py-3 text-gray-600 dark:text-gray-400">
+                            {{ dish.tags.join(', ') }}
+                        </td>
+                        <td class="px-4 py-3 text-gray-600 dark:text-gray-400">
+                            {{ dish.active ? 'Yes' : 'No' }}
+                        </td>
                         <td class="px-4 py-3 text-right">
                             <RowActions>
-                                <DropdownLink :href="route('admin.dishes.edit', dish.id)">Edit</DropdownLink>
+                                <DropdownLink :href="route('admin.dishes.edit', dish.id)"
+                                    >Edit</DropdownLink
+                                >
                             </RowActions>
                         </td>
                     </tr>
                     <tr v-if="dishes.data.length === 0">
-                        <td colspan="4" class="px-4 py-6 text-center text-gray-600">No dishes yet.</td>
+                        <td colspan="4" class="px-4 py-6 text-center text-gray-600">
+                            No dishes yet.
+                        </td>
                     </tr>
                 </tbody>
             </table>

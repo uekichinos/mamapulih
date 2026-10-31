@@ -15,9 +15,10 @@ const props = defineProps<{
     canConfirm: boolean;
 }>();
 
-const defaultStartDate = props.booking.edd.slice(0, 10) > props.minStartDate
-    ? props.booking.edd.slice(0, 10)
-    : props.minStartDate;
+const defaultStartDate =
+    props.booking.edd.slice(0, 10) > props.minStartDate
+        ? props.booking.edd.slice(0, 10)
+        : props.minStartDate;
 
 const form = useForm({
     start_date: defaultStartDate,
@@ -48,8 +49,13 @@ const confirm = () => useForm({}).post(route('customer.start.confirm'));
             v-else-if="booking.start_date && balanceDue > 0"
             class="rounded-md bg-amber-50 p-4 text-sm text-amber-800 dark:bg-amber-900/30 dark:text-amber-200"
         >
-            <p>A balance of RM {{ money(balanceDue) }} is still due before your package can start.</p>
-            <Link :href="route('customer.payment')" class="mt-2 inline-block font-semibold underline">
+            <p>
+                A balance of RM {{ money(balanceDue) }} is still due before your package can start.
+            </p>
+            <Link
+                :href="route('customer.payment')"
+                class="mt-2 inline-block font-semibold underline"
+            >
                 Pay balance
             </Link>
         </div>

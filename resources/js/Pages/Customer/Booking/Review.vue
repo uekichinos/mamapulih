@@ -40,7 +40,9 @@ const otherErrors = computed(() =>
             Review your booking
         </h1>
 
-        <div class="space-y-3 rounded-2xl border border-gray-200 bg-white shadow-sm p-4 text-sm dark:border-gray-800 dark:bg-gray-900">
+        <div
+            class="space-y-3 rounded-2xl border border-gray-200 bg-white shadow-sm p-4 text-sm dark:border-gray-800 dark:bg-gray-900"
+        >
             <div class="flex justify-between">
                 <span class="text-gray-600 dark:text-gray-400">Package</span>
                 <span class="text-gray-900 dark:text-gray-100">{{ variant.package.name.en }}</span>

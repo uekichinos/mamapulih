@@ -32,7 +32,9 @@ const submit = () => form.put(route('admin.settings.update'));
     <AdminLayout>
         <Head title="Booking settings" />
 
-        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">Settings</h1>
+        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
+            Settings
+        </h1>
 
         <form class="max-w-xl space-y-4" @submit.prevent="submit">
             <div class="grid grid-cols-2 gap-4">

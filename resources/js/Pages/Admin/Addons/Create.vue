@@ -27,17 +27,14 @@ const submit = () => {
     <AdminLayout>
         <Head title="New add-on" />
 
-        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">New add-on</h1>
+        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
+            New add-on
+        </h1>
 
         <form class="max-w-xl space-y-4" @submit.prevent="submit">
             <div>
                 <InputLabel for="name_en" value="Name" />
-                <TextInput
-                    id="name_en"
-                    v-model="form.name.en"
-                    class="mt-1 block w-full"
-                    required
-                />
+                <TextInput id="name_en" v-model="form.name.en" class="mt-1 block w-full" required />
                 <InputError class="mt-2" :message="form.errors['name.en']" />
             </div>
 

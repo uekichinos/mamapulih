@@ -56,7 +56,9 @@ const setDish = (dayNo: number, meal: string, event: Event) => {
     <AdminLayout>
         <Head title="Edit menu rotation" />
 
-        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">Edit menu rotation</h1>
+        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
+            Edit menu rotation
+        </h1>
 
         <form class="mb-8 max-w-xl space-y-4" @submit.prevent="submit">
             <div>
@@ -67,14 +69,22 @@ const setDish = (dayNo: number, meal: string, event: Event) => {
             <PrimaryButton :disabled="form.processing">Save name</PrimaryButton>
         </form>
 
-        <h2 class="mb-4 font-display text-sm font-bold text-gray-900 dark:text-gray-50">Weekly rotation</h2>
+        <h2 class="mb-4 font-display text-sm font-bold text-gray-900 dark:text-gray-50">
+            Weekly rotation
+        </h2>
 
-        <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+        <div
+            class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900"
+        >
             <table class="w-full text-left text-sm">
-                <thead class="border-b border-gray-100 text-xs font-bold uppercase tracking-wide text-gray-400 dark:border-gray-800 dark:text-gray-400">
+                <thead
+                    class="border-b border-gray-100 text-xs font-bold uppercase tracking-wide text-gray-400 dark:border-gray-800 dark:text-gray-400"
+                >
                     <tr>
                         <th class="px-4 py-3">Day</th>
-                        <th v-for="meal in meals" :key="meal" class="px-4 py-3 capitalize">{{ meal }}</th>
+                        <th v-for="meal in meals" :key="meal" class="px-4 py-3 capitalize">
+                            {{ meal }}
+                        </th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
@@ -87,7 +97,9 @@ const setDish = (dayNo: number, meal: string, event: Event) => {
                                 @change="(e) => setDish(day, meal, e)"
                             >
                                 <option :value="null">—</option>
-                                <option v-for="dish in dishes" :key="dish.id" :value="dish.id">{{ dish.name.en }}</option>
+                                <option v-for="dish in dishes" :key="dish.id" :value="dish.id">
+                                    {{ dish.name.en }}
+                                </option>
                             </select>
                         </td>
                     </tr>

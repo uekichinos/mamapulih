@@ -27,13 +27,17 @@ const formatPrice = (sen: number) => `RM${(sen / 100).toFixed(2)}`;
         <Head title="Add-ons" />
 
         <div class="mb-6 flex items-center justify-between">
-            <h1 class="font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">Add-ons</h1>
+            <h1 class="font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
+                Add-ons
+            </h1>
             <Link :href="route('admin.addons.create')">
                 <PrimaryButton>New add-on</PrimaryButton>
             </Link>
         </div>
 
-        <div class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+        <div
+            class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900"
+        >
             <table class="w-full text-left text-sm">
                 <thead
                     class="border-b border-gray-100 text-xs font-bold uppercase tracking-wide text-gray-400 dark:border-gray-800 dark:text-gray-400"
@@ -56,7 +60,9 @@ const formatPrice = (sen: number) => `RM${(sen / 100).toFixed(2)}`;
                         <td class="px-4 py-3 text-gray-600 dark:text-gray-400">{{ addon.per }}</td>
                         <td class="px-4 py-3 text-right">
                             <RowActions>
-                                <DropdownLink :href="route('admin.addons.edit', addon.id)">Edit</DropdownLink>
+                                <DropdownLink :href="route('admin.addons.edit', addon.id)"
+                                    >Edit</DropdownLink
+                                >
                             </RowActions>
                         </td>
                     </tr>

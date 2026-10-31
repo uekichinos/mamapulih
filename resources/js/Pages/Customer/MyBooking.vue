@@ -62,7 +62,7 @@ const cancelling = ref(false);
 const cancelForm = useForm({ reason: '' });
 
 const cancel = () => {
-    if (! confirm('Cancel this booking? This cannot be undone.')) {
+    if (!confirm('Cancel this booking? This cannot be undone.')) {
         return;
     }
 
@@ -74,7 +74,9 @@ const cancel = () => {
     <CustomerLayout>
         <Head title="My Booking" />
 
-        <h1 class="mb-4 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">My Booking</h1>
+        <h1 class="mb-4 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
+            My Booking
+        </h1>
 
         <div
             v-if="!booking"
@@ -119,16 +121,18 @@ const cancel = () => {
                     >RM {{ money(booking.price_sen) }}</span
                 >
             </div>
-            <div
-                v-if="balanceDue"
-                class="flex justify-between"
-            >
+            <div v-if="balanceDue" class="flex justify-between">
                 <span class="text-gray-600 dark:text-gray-400">Balance due</span>
                 <span class="text-gray-900 dark:text-gray-100">RM {{ money(balanceDue) }}</span>
             </div>
 
-            <div v-if="booking.payment_receipts.length" class="border-t border-gray-100 pt-3 dark:border-gray-800">
-                <p class="mb-2 text-xs font-bold uppercase tracking-wide text-gray-600 dark:text-gray-400">
+            <div
+                v-if="booking.payment_receipts.length"
+                class="border-t border-gray-100 pt-3 dark:border-gray-800"
+            >
+                <p
+                    class="mb-2 text-xs font-bold uppercase tracking-wide text-gray-600 dark:text-gray-400"
+                >
                     Receipts you uploaded
                 </p>
                 <ul class="divide-y divide-gray-100 dark:divide-gray-800">
@@ -137,9 +141,13 @@ const cancel = () => {
                         :key="receipt.id"
                         class="flex items-center justify-between py-1.5"
                     >
-                        <span class="text-gray-700 dark:text-gray-300">{{ receipt.original_name }}</span>
+                        <span class="text-gray-700 dark:text-gray-300">{{
+                            receipt.original_name
+                        }}</span>
                         <span class="flex items-center gap-3">
-                            <span class="text-gray-600 dark:text-gray-400">{{ formatDateTime(receipt.created_at) }}</span>
+                            <span class="text-gray-600 dark:text-gray-400">{{
+                                formatDateTime(receipt.created_at)
+                            }}</span>
                             <a
                                 :href="route('customer.my-booking.receipts.view', receipt.id)"
                                 target="_blank"
@@ -153,25 +161,41 @@ const cancel = () => {
             </div>
 
             <div class="flex flex-wrap items-center gap-3">
-                <Link v-if="booking.status === 'awaiting_payment'" :href="route('customer.payment')">
+                <Link
+                    v-if="booking.status === 'awaiting_payment'"
+                    :href="route('customer.payment')"
+                >
                     <PrimaryButton>Pay now</PrimaryButton>
                 </Link>
-                <Link v-else-if="booking.status === 'reserved' && balanceDue" :href="route('customer.payment')">
+                <Link
+                    v-else-if="booking.status === 'reserved' && balanceDue"
+                    :href="route('customer.payment')"
+                >
                     <PrimaryButton>Pay balance</PrimaryButton>
                 </Link>
                 <Link v-else-if="booking.status === 'reserved'" :href="route('customer.start')">
                     <PrimaryButton>Start my package</PrimaryButton>
                 </Link>
-                <Link v-else-if="booking.status === 'active'" :href="route('customer.my-booking.schedule')">
+                <Link
+                    v-else-if="booking.status === 'active'"
+                    :href="route('customer.my-booking.schedule')"
+                >
                     <PrimaryButton>View schedule</PrimaryButton>
                 </Link>
 
-                <SecondaryButton v-if="canCancel && !cancelling" type="button" @click="cancelling = true">
+                <SecondaryButton
+                    v-if="canCancel && !cancelling"
+                    type="button"
+                    @click="cancelling = true"
+                >
                     Cancel booking
                 </SecondaryButton>
             </div>
 
-            <div v-if="canCancel && cancelling" class="space-y-3 border-t border-gray-100 pt-3 dark:border-gray-800">
+            <div
+                v-if="canCancel && cancelling"
+                class="space-y-3 border-t border-gray-100 pt-3 dark:border-gray-800"
+            >
                 <p class="text-sm text-gray-600 dark:text-gray-400">
                     No payment has been made yet, so this booking can be cancelled with nothing to
                     refund.
@@ -186,13 +210,17 @@ const cancel = () => {
                     <DangerButton :disabled="cancelForm.processing" @click="cancel">
                         Confirm cancellation
                     </DangerButton>
-                    <SecondaryButton type="button" @click="cancelling = false">Keep booking</SecondaryButton>
+                    <SecondaryButton type="button" @click="cancelling = false"
+                        >Keep booking</SecondaryButton
+                    >
                 </div>
             </div>
         </div>
 
         <div v-if="archivedBookings.length" class="mt-8">
-            <h2 class="mb-3 font-display text-base font-extrabold text-gray-900 dark:text-gray-50">Archives</h2>
+            <h2 class="mb-3 font-display text-base font-extrabold text-gray-900 dark:text-gray-50">
+                Archives
+            </h2>
             <ul class="space-y-2">
                 <li
                     v-for="archived in archivedBookings"

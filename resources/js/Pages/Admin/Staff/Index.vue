@@ -33,13 +33,17 @@ const destroy = (id: number) => {
         <Head title="Staff" />
 
         <div class="mb-6 flex items-center justify-between">
-            <h1 class="font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">Staff</h1>
+            <h1 class="font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
+                Staff
+            </h1>
             <Link :href="route('admin.staff.create')">
                 <PrimaryButton>New staff account</PrimaryButton>
             </Link>
         </div>
 
-        <div class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+        <div
+            class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900"
+        >
             <table class="w-full text-left text-sm">
                 <thead
                     class="border-b border-gray-100 text-xs font-bold uppercase tracking-wide text-gray-400 dark:border-gray-800 dark:text-gray-400"
@@ -64,7 +68,9 @@ const destroy = (id: number) => {
                         </td>
                         <td class="px-4 py-3 text-right">
                             <RowActions>
-                                <DropdownLink :href="route('admin.staff.edit', member.id)">Edit</DropdownLink>
+                                <DropdownLink :href="route('admin.staff.edit', member.id)"
+                                    >Edit</DropdownLink
+                                >
                                 <DropdownButton
                                     v-if="member.id !== page.props.auth.user.id"
                                     class="text-red-600 dark:text-red-400"

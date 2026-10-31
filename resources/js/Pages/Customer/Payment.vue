@@ -37,7 +37,8 @@ const form = useForm({
 });
 
 const money = (sen: number) => (sen / 100).toFixed(2);
-const submit = () => form.post(route('customer.payment'), { onSuccess: () => (changingOption.value = false) });
+const submit = () =>
+    form.post(route('customer.payment'), { onSuccess: () => (changingOption.value = false) });
 
 const changingOption = ref(false);
 
@@ -70,9 +71,15 @@ const uploadReceipt = () => {
     <CustomerLayout>
         <Head title="Payment" />
 
-        <h1 class="mb-4 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">Payment</h1>
+        <h1 class="mb-4 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
+            Payment
+        </h1>
 
-        <form v-if="!isBalanceMode && (!booking.payment_option || changingOption)" class="space-y-3" @submit.prevent="submit">
+        <form
+            v-if="!isBalanceMode && (!booking.payment_option || changingOption)"
+            class="space-y-3"
+            @submit.prevent="submit"
+        >
             <label
                 class="flex items-center justify-between rounded-md border p-3"
                 :class="
@@ -111,7 +118,11 @@ const uploadReceipt = () => {
                 <PrimaryButton :disabled="!form.payment_option || form.processing"
                     >Continue</PrimaryButton
                 >
-                <SecondaryButton v-if="changingOption" type="button" @click="changingOption = false">
+                <SecondaryButton
+                    v-if="changingOption"
+                    type="button"
+                    @click="changingOption = false"
+                >
                     Cancel
                 </SecondaryButton>
             </div>
@@ -120,14 +131,16 @@ const uploadReceipt = () => {
         <div v-else class="space-y-4">
             <p v-if="isBalanceMode" class="text-sm text-gray-600 dark:text-gray-400">
                 Your package is reserved. Please pay the remaining balance of
-                <strong>RM {{ money(amountDueSen) }}</strong> before it can start, using the
-                details below.
+                <strong>RM {{ money(amountDueSen) }}</strong> before it can start, using the details
+                below.
             </p>
 
             <template v-else>
                 <p class="text-sm text-gray-600 dark:text-gray-400">
                     You chose
-                    <strong>{{ booking.payment_option === 'full' ? 'full payment' : 'deposit' }}</strong
+                    <strong>{{
+                        booking.payment_option === 'full' ? 'full payment' : 'deposit'
+                    }}</strong
                     >. Please transfer
                     <strong>RM {{ money(amountDueSen) }}</strong>
                     using the details below, then wait for admin to confirm your payment.
@@ -142,7 +155,9 @@ const uploadReceipt = () => {
                 </button>
             </template>
 
-            <div class="rounded-2xl border border-gray-200 bg-white shadow-sm p-4 text-sm dark:border-gray-800 dark:bg-gray-900">
+            <div
+                class="rounded-2xl border border-gray-200 bg-white shadow-sm p-4 text-sm dark:border-gray-800 dark:bg-gray-900"
+            >
                 <p><span class="text-gray-600">Bank:</span> {{ manual.bank_name }}</p>
                 <p><span class="text-gray-600">Account name:</span> {{ manual.account_name }}</p>
                 <p>
@@ -162,7 +177,9 @@ const uploadReceipt = () => {
                 </p>
             </div>
 
-            <div class="rounded-2xl border border-gray-200 bg-white shadow-sm p-4 text-sm dark:border-gray-800 dark:bg-gray-900">
+            <div
+                class="rounded-2xl border border-gray-200 bg-white shadow-sm p-4 text-sm dark:border-gray-800 dark:bg-gray-900"
+            >
                 <h2 class="font-display font-bold text-gray-900 dark:text-gray-50">
                     Upload payment receipt
                 </h2>
@@ -170,14 +187,21 @@ const uploadReceipt = () => {
                     Upload a screenshot or PDF of your transfer receipt so we can verify it faster.
                 </p>
 
-                <ul v-if="receipts.length" class="mt-3 divide-y divide-gray-100 dark:divide-gray-800">
+                <ul
+                    v-if="receipts.length"
+                    class="mt-3 divide-y divide-gray-100 dark:divide-gray-800"
+                >
                     <li
                         v-for="receipt in receipts"
                         :key="receipt.id"
                         class="flex items-center justify-between py-2"
                     >
-                        <span class="text-gray-700 dark:text-gray-300">{{ receipt.original_name }}</span>
-                        <span class="text-gray-600 dark:text-gray-400">{{ formatDateTime(receipt.created_at) }}</span>
+                        <span class="text-gray-700 dark:text-gray-300">{{
+                            receipt.original_name
+                        }}</span>
+                        <span class="text-gray-600 dark:text-gray-400">{{
+                            formatDateTime(receipt.created_at)
+                        }}</span>
                     </li>
                 </ul>
 
@@ -195,7 +219,10 @@ const uploadReceipt = () => {
                     <span class="flex-1 truncate text-gray-600 dark:text-gray-400">
                         {{ receiptForm.receipt?.name ?? 'No file chosen' }}
                     </span>
-                    <PrimaryButton type="submit" :disabled="!receiptForm.receipt || receiptForm.processing">
+                    <PrimaryButton
+                        type="submit"
+                        :disabled="!receiptForm.receipt || receiptForm.processing"
+                    >
                         Upload
                     </PrimaryButton>
                 </form>

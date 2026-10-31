@@ -39,7 +39,11 @@ const allNavGroups: NavGroup[] = [
         icon: '<rect x="2" y="7" width="20" height="4" rx="1"/><circle cx="8" cy="17" r="3"/><circle cx="16" cy="17" r="3"/>',
         links: [
             { label: 'Prep sheet', route: 'admin.kitchen.prep-sheet', roles: ['owner', 'kitchen'] },
-            { label: 'Delivery lists', route: 'admin.delivery-lists.index', roles: ['owner', 'kitchen'] },
+            {
+                label: 'Delivery lists',
+                route: 'admin.delivery-lists.index',
+                roles: ['owner', 'kitchen'],
+            },
         ],
     },
     {
@@ -76,9 +80,7 @@ const initials = computed(() =>
         .join(''),
 );
 
-const topLink = computed(() =>
-    pinnedLink.roles.includes(role.value) ? pinnedLink : null,
-);
+const topLink = computed(() => (pinnedLink.roles.includes(role.value) ? pinnedLink : null));
 
 const navGroups = computed(() =>
     allNavGroups
@@ -127,10 +129,18 @@ const toggleGroup = (key: string) => {
         >
             <div class="flex h-16 shrink-0 items-center justify-between px-4">
                 <Link :href="route('admin.dashboard')" class="flex items-center gap-2.5">
-                    <span class="size-8 shrink-0 rounded-lg bg-linear-to-br from-indigo-500 to-indigo-700" />
+                    <span
+                        class="size-8 shrink-0 rounded-lg bg-linear-to-br from-indigo-500 to-indigo-700"
+                    />
                     <span class="flex flex-col leading-tight">
-                        <span class="font-display text-base font-extrabold text-gray-900 dark:text-gray-50">MamaPulih</span>
-                        <span class="text-[10px] font-semibold tracking-wider text-gray-600 dark:text-gray-400">ADMIN</span>
+                        <span
+                            class="font-display text-base font-extrabold text-gray-900 dark:text-gray-50"
+                            >MamaPulih</span
+                        >
+                        <span
+                            class="text-[10px] font-semibold tracking-wider text-gray-600 dark:text-gray-400"
+                            >ADMIN</span
+                        >
                     </span>
                 </Link>
 
@@ -140,8 +150,19 @@ const toggleGroup = (key: string) => {
                     aria-label="Close menu"
                     @click="showingMobileSidebar = false"
                 >
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    <svg
+                        class="h-6 w-6"
+                        stroke="currentColor"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"
+                        />
                     </svg>
                 </button>
             </div>
@@ -158,13 +179,25 @@ const toggleGroup = (key: string) => {
                     "
                     @click="showingMobileSidebar = false"
                 >
-                    <svg class="size-4.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
-                        <rect x="4" y="11" width="16" height="9" rx="1" /><polyline points="2,12 12,4 22,12" /><rect x="10" y="14" width="4" height="6" />
+                    <svg
+                        class="size-4.5 shrink-0"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.7"
+                        aria-hidden="true"
+                    >
+                        <rect x="4" y="11" width="16" height="9" rx="1" />
+                        <polyline points="2,12 12,4 22,12" />
+                        <rect x="10" y="14" width="4" height="6" />
                     </svg>
                     <span>{{ topLink.label }}</span>
                 </Link>
 
-                <div v-if="topLink && navGroups.length" class="my-2 border-t border-gray-100 dark:border-gray-800" />
+                <div
+                    v-if="topLink && navGroups.length"
+                    class="my-2 border-t border-gray-100 dark:border-gray-800"
+                />
 
                 <div v-for="group in navGroups" :key="group.key">
                     <button
@@ -177,9 +210,19 @@ const toggleGroup = (key: string) => {
                         "
                         @click="toggleGroup(group.key)"
                     >
-                        <span class="flex items-center gap-2.5 text-[11px] font-bold uppercase tracking-wider">
+                        <span
+                            class="flex items-center gap-2.5 text-[11px] font-bold uppercase tracking-wider"
+                        >
                             <!-- eslint-disable-next-line vue/no-v-html -- static icon markup authored in this file, not user input -->
-                            <svg class="size-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true" v-html="group.icon" />
+                            <svg
+                                class="size-3.5 shrink-0"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                aria-hidden="true"
+                                v-html="group.icon"
+                            />
                             <span>{{ group.label }}</span>
                         </span>
                         <svg
@@ -189,7 +232,12 @@ const toggleGroup = (key: string) => {
                             viewBox="0 0 24 24"
                             stroke="currentColor"
                         >
-                            <polyline points="6,9 12,15 18,9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            <polyline
+                                points="6,9 12,15 18,9"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            />
                         </svg>
                     </button>
 
@@ -219,12 +267,26 @@ const toggleGroup = (key: string) => {
                             type="button"
                             class="flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
                         >
-                            <span class="flex size-7 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-indigo-500 to-indigo-700 text-xs font-bold text-white">
+                            <span
+                                class="flex size-7 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-indigo-500 to-indigo-700 text-xs font-bold text-white"
+                            >
                                 {{ initials }}
                             </span>
-                            <span class="flex-1 truncate text-left font-semibold">{{ $page.props.auth.user.name }}</span>
-                            <svg class="size-3.5 shrink-0 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                            <span class="flex-1 truncate text-left font-semibold">{{
+                                $page.props.auth.user.name
+                            }}</span>
+                            <svg
+                                class="size-3.5 shrink-0 text-gray-400"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M5 15l7-7 7 7"
+                                />
                             </svg>
                         </button>
                     </template>
@@ -242,10 +304,17 @@ const toggleGroup = (key: string) => {
         <!-- Main column -->
         <div class="flex min-h-screen w-full flex-1 flex-col sm:ms-64">
             <!-- Mobile top bar -->
-            <div class="flex h-16 items-center justify-between border-b border-gray-100 bg-white px-4 sm:hidden dark:border-gray-800 dark:bg-gray-900">
+            <div
+                class="flex h-16 items-center justify-between border-b border-gray-100 bg-white px-4 sm:hidden dark:border-gray-800 dark:bg-gray-900"
+            >
                 <Link :href="route('admin.dashboard')" class="flex items-center gap-2.5">
-                    <span class="size-8 shrink-0 rounded-lg bg-linear-to-br from-indigo-500 to-indigo-700" />
-                    <span class="font-display text-base font-extrabold text-gray-900 dark:text-gray-50">MamaPulih</span>
+                    <span
+                        class="size-8 shrink-0 rounded-lg bg-linear-to-br from-indigo-500 to-indigo-700"
+                    />
+                    <span
+                        class="font-display text-base font-extrabold text-gray-900 dark:text-gray-50"
+                        >MamaPulih</span
+                    >
                 </Link>
 
                 <button
@@ -254,13 +323,27 @@ const toggleGroup = (key: string) => {
                     aria-label="Open menu"
                     @click="showingMobileSidebar = true"
                 >
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    <svg
+                        class="h-6 w-6"
+                        stroke="currentColor"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16"
+                        />
                     </svg>
                 </button>
             </div>
 
-            <header v-if="$slots.header" class="border-b border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-900">
+            <header
+                v-if="$slots.header"
+                class="border-b border-gray-100 bg-white dark:border-gray-800 dark:bg-gray-900"
+            >
                 <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
                     <slot name="header" />
                 </div>

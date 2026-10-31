@@ -50,7 +50,9 @@ const submit = () => form.post(route('admin.bookings.store'));
     <AdminLayout>
         <Head title="Create booking" />
 
-        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">Create booking</h1>
+        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
+            Create booking
+        </h1>
 
         <form class="max-w-2xl space-y-6" @submit.prevent="submit">
             <div class="grid grid-cols-3 gap-4">
@@ -90,7 +92,9 @@ const submit = () => form.post(route('admin.bookings.store'));
                 :key="pkg.id"
                 class="rounded-lg border border-gray-200 p-4 dark:border-gray-700"
             >
-                <h2 class="mb-2 font-display text-sm font-bold text-gray-900 dark:text-gray-50">{{ pkg.name.en }}</h2>
+                <h2 class="mb-2 font-display text-sm font-bold text-gray-900 dark:text-gray-50">
+                    {{ pkg.name.en }}
+                </h2>
                 <label
                     v-for="variant in pkg.variants"
                     :key="variant.id"
@@ -162,8 +166,16 @@ const submit = () => form.post(route('admin.bookings.store'));
                 <div>
                     <InputLabel value="Allergies" />
                     <div class="mt-2 flex flex-wrap gap-3">
-                        <label v-for="tag in dietTags" :key="tag.value" class="flex items-center gap-1 text-sm text-gray-700 dark:text-gray-300">
-                            <input v-model="form.diet.allergies" type="checkbox" :value="tag.value" />
+                        <label
+                            v-for="tag in dietTags"
+                            :key="tag.value"
+                            class="flex items-center gap-1 text-sm text-gray-700 dark:text-gray-300"
+                        >
+                            <input
+                                v-model="form.diet.allergies"
+                                type="checkbox"
+                                :value="tag.value"
+                            />
                             {{ tag.label }}
                         </label>
                     </div>
@@ -171,8 +183,16 @@ const submit = () => form.post(route('admin.bookings.store'));
                 <div>
                     <InputLabel value="Exclusions" />
                     <div class="mt-2 flex flex-wrap gap-3">
-                        <label v-for="tag in dietTags" :key="tag.value" class="flex items-center gap-1 text-sm text-gray-700 dark:text-gray-300">
-                            <input v-model="form.diet.exclusions" type="checkbox" :value="tag.value" />
+                        <label
+                            v-for="tag in dietTags"
+                            :key="tag.value"
+                            class="flex items-center gap-1 text-sm text-gray-700 dark:text-gray-300"
+                        >
+                            <input
+                                v-model="form.diet.exclusions"
+                                type="checkbox"
+                                :value="tag.value"
+                            />
                             {{ tag.label }}
                         </label>
                     </div>

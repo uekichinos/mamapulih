@@ -39,7 +39,9 @@ const submit = () => {
     <AdminLayout>
         <Head title="Edit dish" />
 
-        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">Edit dish</h1>
+        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
+            Edit dish
+        </h1>
 
         <form class="max-w-xl space-y-4" @submit.prevent="submit">
             <div>
@@ -51,7 +53,11 @@ const submit = () => {
             <div>
                 <InputLabel value="Tags" />
                 <div class="mt-2 flex flex-wrap gap-3">
-                    <label v-for="tag in tags" :key="tag.value" class="flex items-center gap-1 text-sm text-gray-700 dark:text-gray-300">
+                    <label
+                        v-for="tag in tags"
+                        :key="tag.value"
+                        class="flex items-center gap-1 text-sm text-gray-700 dark:text-gray-300"
+                    >
                         <input v-model="form.tags" type="checkbox" :value="tag.value" />
                         {{ tag.label }}
                     </label>
@@ -59,10 +65,15 @@ const submit = () => {
             </div>
 
             <div>
-                <InputLabel for="substitute_dish_id" value="Substitute dish (used when a customer excludes a tag above)" />
+                <InputLabel
+                    for="substitute_dish_id"
+                    value="Substitute dish (used when a customer excludes a tag above)"
+                />
                 <SelectInput id="substitute_dish_id" v-model="form.substitute_dish_id" class="mt-1">
                     <option :value="null">None</option>
-                    <option v-for="candidate in dishes" :key="candidate.id" :value="candidate.id">{{ candidate.name.en }}</option>
+                    <option v-for="candidate in dishes" :key="candidate.id" :value="candidate.id">
+                        {{ candidate.name.en }}
+                    </option>
                 </SelectInput>
                 <InputError class="mt-2" :message="form.errors.substitute_dish_id" />
             </div>
@@ -73,10 +84,15 @@ const submit = () => {
             </label>
 
             <div class="flex items-center gap-4">
-                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                <PrimaryButton
+                    :class="{ 'opacity-25': form.processing }"
+                    :disabled="form.processing"
+                >
                     Save
                 </PrimaryButton>
-                <p v-if="form.recentlySuccessful" class="text-sm text-gray-600 dark:text-gray-400">Saved.</p>
+                <p v-if="form.recentlySuccessful" class="text-sm text-gray-600 dark:text-gray-400">
+                    Saved.
+                </p>
             </div>
         </form>
     </AdminLayout>

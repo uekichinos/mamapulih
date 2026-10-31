@@ -35,7 +35,9 @@ const isCurrentWindow = computed(() => props.from === new Date().toISOString().s
     <AdminLayout>
         <Head title="Capacity" />
 
-        <h1 class="mb-2 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">Capacity</h1>
+        <h1 class="mb-2 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
+            Capacity
+        </h1>
         <p class="mb-6 text-sm text-gray-600 dark:text-gray-400">
             Regular capacity {{ regularCapacity }} / day, buffer {{ bufferCapacity }}. Closure days
             are not shown (no deliveries).
@@ -46,8 +48,14 @@ const isCurrentWindow = computed(() => props.from === new Date().toISOString().s
                 <SecondaryButton>← Previous 30 days</SecondaryButton>
             </Link>
             <div class="flex items-center gap-3">
-                <span class="text-sm text-gray-600 dark:text-gray-400">{{ formatDate(from) }} – {{ formatDate(to) }}</span>
-                <Link v-if="!isCurrentWindow" :href="route('admin.capacity.index')" class="text-sm font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400">
+                <span class="text-sm text-gray-600 dark:text-gray-400"
+                    >{{ formatDate(from) }} – {{ formatDate(to) }}</span
+                >
+                <Link
+                    v-if="!isCurrentWindow"
+                    :href="route('admin.capacity.index')"
+                    class="text-sm font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-400"
+                >
                     Jump to today
                 </Link>
             </div>
@@ -56,7 +64,9 @@ const isCurrentWindow = computed(() => props.from === new Date().toISOString().s
             </Link>
         </div>
 
-        <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900">
+        <div
+            class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900"
+        >
             <table class="w-full text-left text-sm">
                 <thead
                     class="border-b border-gray-100 text-xs font-bold uppercase tracking-wide text-gray-400 dark:border-gray-800 dark:text-gray-400"
@@ -69,7 +79,9 @@ const isCurrentWindow = computed(() => props.from === new Date().toISOString().s
                 </thead>
                 <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
                     <tr v-for="day in days" :key="day.date">
-                        <td class="px-4 py-3 text-gray-900 dark:text-gray-100">{{ formatDate(day.date) }}</td>
+                        <td class="px-4 py-3 text-gray-900 dark:text-gray-100">
+                            {{ formatDate(day.date) }}
+                        </td>
                         <td class="px-4 py-3 text-gray-600 dark:text-gray-400">{{ day.slots }}</td>
                         <td class="px-4 py-3">
                             <span
