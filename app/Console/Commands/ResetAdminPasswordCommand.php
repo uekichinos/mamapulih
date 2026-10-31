@@ -16,12 +16,6 @@ class ResetAdminPasswordCommand extends Command
     {
         $email = $this->argument('email');
 
-        if (! is_string($email)) {
-            $this->components->error('Please provide a single email address.');
-
-            return self::FAILURE;
-        }
-
         $user = User::query()->where('email', $email)->first();
 
         if (! $user) {

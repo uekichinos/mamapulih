@@ -25,10 +25,10 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with: { php-version: '${{ env.PHP_VERSION }}', coverage: none }
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with: { node-version: '${{ env.NODE_VERSION }}', cache: npm }
       - run: composer install --no-interaction --prefer-dist
       - run: npm ci
@@ -42,12 +42,12 @@ jobs:
   security:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with: { php-version: '${{ env.PHP_VERSION }}' }
       - run: composer install --no-interaction --prefer-dist
       - run: composer audit
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with: { node-version: '${{ env.NODE_VERSION }}', cache: npm }
       - run: npm ci
       - run: npm audit --audit-level=low
@@ -74,10 +74,10 @@ jobs:
       DB_USERNAME: app
       DB_PASSWORD: secret
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with: { php-version: '${{ env.PHP_VERSION }}', coverage: pcov }
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with: { node-version: '${{ env.NODE_VERSION }}', cache: npm }
       - run: composer install --no-interaction --prefer-dist
       - run: npm ci && npm run build
@@ -87,8 +87,8 @@ jobs:
   frontend-tests:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with: { node-version: '${{ env.NODE_VERSION }}', cache: npm }
       - run: npm ci
       - run: npm run test -- --coverage
@@ -97,10 +97,10 @@ jobs:
     needs: [quality, security, backend-tests, frontend-tests]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: shivammathur/setup-php@v2
         with: { php-version: '${{ env.PHP_VERSION }}' }
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v7
         with: { node-version: '${{ env.NODE_VERSION }}', cache: npm }
       - run: composer install --no-interaction --prefer-dist --no-dev --optimize-autoloader
       - run: npm ci
@@ -118,7 +118,7 @@ jobs:
       contents: write
       packages: write
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io

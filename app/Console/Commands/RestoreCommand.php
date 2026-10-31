@@ -22,8 +22,8 @@ class RestoreCommand extends Command
     {
         $archivePath = $this->argument('file');
 
-        if (! is_string($archivePath) || ! File::exists($archivePath)) {
-            $this->components->error('Backup archive not found: '.(is_string($archivePath) ? $archivePath : ''));
+        if (! File::exists($archivePath)) {
+            $this->components->error("Backup archive not found: {$archivePath}");
 
             return self::FAILURE;
         }
