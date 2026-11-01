@@ -17,7 +17,7 @@ it('shows the schedule with resolved dishes for an active booking', function () 
     app(BookingDayGenerator::class)->generateFor($booking);
 
     $this->actingAs($booking->customer, 'customers')
-        ->get(route('customer.my-booking.schedule'))
+        ->get(route('customer.my-booking.schedule', $booking))
         ->assertInertia(fn ($page) => $page
             ->where('days.0.date', '2026-12-01')
             ->where('days.0.meals.0.dish.name.en', 'Chicken rice')
@@ -37,31 +37,32 @@ it('substitutes the dish on the schedule when it matches the customer\'s own exc
     ]);
     RotationDay::query()->create(['menu_rotation_id' => $rotation->id, 'day_no' => 1, 'meal' => 'lunch', 'dish_id' => $dish->id]);
 
-    $booking->customer->dietProfile()->create(['allergies' => [], 'exclusions' => ['seafood']]);
+    $booking->dietProfile()->create(['customer_id' => $booking->customer_id, 'allergies' => [], 'exclusions' => ['seafood']]);
 
     app(BookingDayGenerator::class)->generateFor($booking);
 
     $this->actingAs($booking->customer, 'customers')
-        ->get(route('customer.my-booking.schedule'))
+        ->get(route('customer.my-booking.schedule', $booking))
         ->assertInertia(fn ($page) => $page
             ->where('days.0.meals.0.dish.name.en', 'Vegetable soup')
             ->where('days.0.meals.0.substituted', true)
         );
 });
 
-it('redirects to my-booking when the current booking is not active', function () {
+it('redirects to my-booking when the booking is not active', function () {
     $booking = kitchenTestBooking();
     $booking->update(['status' => 'reserved']);
 
     $this->actingAs($booking->customer, 'customers')
-        ->get(route('customer.my-booking.schedule'))
+        ->get(route('customer.my-booking.schedule', $booking))
         ->assertRedirect(route('customer.my-booking'));
 });
 
-it('redirects to my-booking when the customer has no booking at all', function () {
-    $customer = Customer::factory()->create();
+it('refuses to let a customer view another customer\'s schedule', function () {
+    $booking = kitchenTestBooking();
+    $other = Customer::factory()->create();
 
-    $this->actingAs($customer, 'customers')
-        ->get(route('customer.my-booking.schedule'))
-        ->assertRedirect(route('customer.my-booking'));
+    $this->actingAs($other, 'customers')
+        ->get(route('customer.my-booking.schedule', $booking))
+        ->assertStatus(403);
 });

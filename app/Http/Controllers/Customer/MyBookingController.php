@@ -9,7 +9,6 @@ use App\Enums\BookingStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\BookingDay;
-use App\Models\Customer;
 use App\Models\PaymentReceipt;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,17 +25,6 @@ class MyBookingController extends Controller
      */
     private const SELF_CANCELLABLE_STATUSES = [BookingStatus::PendingApproval, BookingStatus::AwaitingPayment];
 
-    /**
-     * A booking whose lifecycle has ended — it's never shown as "current",
-     * only ever under Archives (see dev plan P20).
-     */
-    private const INACTIVE_STATUSES = [
-        BookingStatus::Rejected,
-        BookingStatus::Expired,
-        BookingStatus::Cancelled,
-        BookingStatus::Completed,
-    ];
-
     public function __construct(
         private PaymentService $payments,
         private CancellationService $cancellations,
@@ -47,22 +35,25 @@ class MyBookingController extends Controller
     {
         $customer = $request->user('customers');
 
-        $booking = $this->currentBooking($customer)
-            ?->load(['variant.package', 'address.zone', 'addons.addon', 'paymentReceipts']);
+        $liveBookings = $customer->liveBookings()
+            ->with(['variant.package', 'address.zone', 'addons.addon'])
+            ->get()
+            ->map(fn (Booking $booking) => [
+                'id' => $booking->id,
+                'ref_no' => $booking->ref_no,
+                'recipient_label' => $booking->recipient_name ?: $customer->name,
+                'status' => $booking->status,
+                'edd' => $booking->edd,
+                'price_sen' => $booking->price_sen,
+                'variant' => $booking->variant,
+                'balance_due' => $this->payments->balanceDueSen($booking),
+                'can_cancel' => in_array($booking->status, self::SELF_CANCELLABLE_STATUSES, true),
+            ]);
 
-        $archivedBookings = $customer->bookings()
-            ->with('variant.package')
-            ->when($booking, fn ($query) => $query->whereKeyNot($booking->id))
-            ->latest()
-            ->latest('id')
-            ->get();
+        $archivedBookings = $customer->archivedBookings()->with('variant.package')->get();
 
         return Inertia::render('Customer/MyBooking', [
-            'booking' => $booking,
-            'balanceDue' => $booking ? $this->payments->balanceDueSen($booking) : null,
-            'canCancel' => $booking
-                ? in_array($booking->status, self::SELF_CANCELLABLE_STATUSES, true)
-                : false,
+            'bookings' => $liveBookings,
             'archivedBookings' => $archivedBookings,
         ]);
     }
@@ -86,17 +77,17 @@ class MyBookingController extends Controller
         return Storage::disk('local')->response($receipt->path, $receipt->original_name);
     }
 
-    public function schedule(Request $request): Response|RedirectResponse
+    public function schedule(Request $request, Booking $booking): Response|RedirectResponse
     {
-        $booking = $this->currentBooking($request->user('customers'));
+        abort_unless($booking->customer_id === $request->user('customers')->id, 403);
 
-        if (! $booking || $booking->status !== BookingStatus::Active) {
+        if ($booking->status !== BookingStatus::Active) {
             return redirect()->route('customer.my-booking');
         }
 
-        $booking->load('customer.dietProfile');
+        $booking->load('dietProfile');
 
-        $dietProfile = $booking->customer->dietProfile;
+        $dietProfile = $booking->dietProfile;
         $exclusions = $dietProfile === null
             ? []
             : array_merge($dietProfile->allergies ?? [], $dietProfile->exclusions ?? []);
@@ -111,6 +102,7 @@ class MyBookingController extends Controller
         return Inertia::render('Customer/BookingSchedule', [
             'booking' => [
                 'ref_no' => $booking->ref_no,
+                'recipient_label' => $booking->recipient_name ?: $request->user('customers')->name,
                 'start_date' => $booking->start_date,
                 'end_date' => $booking->end_date,
             ],
@@ -150,35 +142,19 @@ class MyBookingController extends Controller
         ];
     }
 
-    public function cancel(Request $request): RedirectResponse
+    public function cancel(Request $request, Booking $booking): RedirectResponse
     {
+        abort_unless($booking->customer_id === $request->user('customers')->id, 403);
+
         $data = $request->validate([
             'reason' => ['nullable', 'string', 'max:500'],
         ]);
 
-        $booking = $this->currentBooking($request->user('customers'));
-
-        abort_if(! $booking, 404);
         abort_unless(in_array($booking->status, self::SELF_CANCELLABLE_STATUSES, true), 422, 'This booking can no longer be cancelled yourself.');
         abort_unless($this->payments->amountPaid($booking) === 0, 422, 'A payment has already been recorded — please contact us to cancel.');
 
         $this->cancellations->cancel($booking, null, 'normal', $data['reason'] ?? null);
 
         return redirect()->route('customer.my-booking')->with('status', 'cancelled');
-    }
-
-    /**
-     * The booking shown as "current" — the customer's latest booking that
-     * hasn't reached an inactive, terminal status. Those are always
-     * historical and belong under Archives, never as the one displayed up
-     * front (see dev plan P20).
-     */
-    private function currentBooking(Customer $customer): ?Booking
-    {
-        return $customer->bookings()
-            ->whereNotIn('status', self::INACTIVE_STATUSES)
-            ->latest()
-            ->latest('id')
-            ->first();
     }
 }

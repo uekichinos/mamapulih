@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import CustomerLayout from '@/Layouts/CustomerLayout.vue';
+import CustomerAppLayout from '@/Layouts/CustomerAppLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SearchableSelect from '@/Components/SearchableSelect.vue';
 import TextInput from '@/Components/TextInput.vue';
@@ -15,6 +16,7 @@ const props = defineProps<{
 }>();
 
 const form = useForm({
+    recipient_name: '',
     address: {
         line1: '',
         line2: '',
@@ -36,14 +38,29 @@ const isPostcodeDeliverable = computed(() =>
 </script>
 
 <template>
-    <CustomerLayout>
+    <CustomerAppLayout>
         <Head title="Delivery address and diet" />
 
-        <h1 class="mb-4 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
-            Delivery address and diet
-        </h1>
+        <PageHeader title="Delivery address and diet" />
 
-        <form class="space-y-4" @submit.prevent="submit">
+        <form
+            class="space-y-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+            @submit.prevent="submit"
+        >
+            <div>
+                <InputLabel for="recipient_name" value="Recipient name (optional)" />
+                <TextInput
+                    id="recipient_name"
+                    v-model="form.recipient_name"
+                    class="mt-1 block w-full"
+                />
+                <InputError class="mt-2" :message="form.errors.recipient_name" />
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    If this package is for someone other than yourself — e.g. your wife — add her
+                    name so it's easy to tell apart from your other bookings.
+                </p>
+            </div>
+
             <div>
                 <InputLabel for="postcode" value="Postcode" />
                 <SearchableSelect
@@ -88,18 +105,19 @@ const isPostcodeDeliverable = computed(() =>
                     />
                 </div>
 
-                <div class="border-t border-gray-200 pt-4 dark:border-gray-700">
+                <div class="border-t border-gray-200 pt-4 dark:border-gray-800">
                     <InputLabel value="Allergies" />
-                    <div class="mt-2 flex flex-wrap gap-3">
+                    <div class="mt-2 flex flex-wrap gap-2">
                         <label
                             v-for="tag in dietTags"
                             :key="tag.value"
-                            class="flex items-center gap-1 text-sm text-gray-700 dark:text-gray-300"
+                            class="flex items-center gap-1.5 rounded-full border border-gray-200 px-3 py-1 text-sm text-gray-700 has-checked:border-red-200 has-checked:bg-red-50 has-checked:text-red-700 dark:border-gray-700 dark:text-gray-300 dark:has-checked:border-red-900 dark:has-checked:bg-red-950 dark:has-checked:text-red-300"
                         >
                             <input
                                 v-model="form.diet.allergies"
                                 type="checkbox"
                                 :value="tag.value"
+                                class="rounded border-gray-300"
                             />
                             {{ tag.label }}
                         </label>
@@ -108,16 +126,17 @@ const isPostcodeDeliverable = computed(() =>
 
                 <div>
                     <InputLabel value="Food exclusions / dislikes" />
-                    <div class="mt-2 flex flex-wrap gap-3">
+                    <div class="mt-2 flex flex-wrap gap-2">
                         <label
                             v-for="tag in dietTags"
                             :key="tag.value"
-                            class="flex items-center gap-1 text-sm text-gray-700 dark:text-gray-300"
+                            class="flex items-center gap-1.5 rounded-full border border-gray-200 px-3 py-1 text-sm text-gray-700 has-checked:border-amber-200 has-checked:bg-amber-50 has-checked:text-amber-700 dark:border-gray-700 dark:text-gray-300 dark:has-checked:border-amber-900 dark:has-checked:bg-amber-950 dark:has-checked:text-amber-300"
                         >
                             <input
                                 v-model="form.diet.exclusions"
                                 type="checkbox"
                                 :value="tag.value"
+                                class="rounded border-gray-300"
                             />
                             {{ tag.label }}
                         </label>
@@ -141,5 +160,5 @@ const isPostcodeDeliverable = computed(() =>
                 </PrimaryButton>
             </template>
         </form>
-    </CustomerLayout>
+    </CustomerAppLayout>
 </template>

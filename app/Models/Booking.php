@@ -4,9 +4,11 @@ namespace App\Models;
 
 use App\Enums\BookingSensitiveFlag;
 use App\Enums\BookingStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Carbon;
 
 /**
@@ -25,6 +27,7 @@ class Booking extends Model
     protected $fillable = [
         'ref_no',
         'customer_id',
+        'recipient_name',
         'variant_id',
         'address_id',
         'edd',
@@ -163,5 +166,29 @@ class Booking extends Model
     public function pauses(): HasMany
     {
         return $this->hasMany(Pause::class);
+    }
+
+    /**
+     * @return HasOne<DietProfile, $this>
+     */
+    public function dietProfile(): HasOne
+    {
+        return $this->hasOne(DietProfile::class);
+    }
+
+    /**
+     * @param  Builder<Booking>  $query
+     */
+    public function scopeLive(Builder $query): void
+    {
+        $query->whereNotIn('status', BookingStatus::terminal());
+    }
+
+    /**
+     * @param  Builder<Booking>  $query
+     */
+    public function scopeTerminal(Builder $query): void
+    {
+        $query->whereIn('status', BookingStatus::terminal());
     }
 }

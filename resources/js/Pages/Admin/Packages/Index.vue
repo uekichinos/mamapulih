@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 import Pagination from '@/Components/Pagination.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import RowActions from '@/Components/RowActions.vue';
@@ -23,14 +24,13 @@ defineProps<{
     <AdminLayout>
         <Head title="Packages" />
 
-        <div class="mb-6 flex items-center justify-between">
-            <h1 class="font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
-                Packages
-            </h1>
-            <Link :href="route('admin.packages.create')">
-                <PrimaryButton>New package</PrimaryButton>
-            </Link>
-        </div>
+        <PageHeader title="Packages">
+            <template #actions>
+                <Link :href="route('admin.packages.create')">
+                    <PrimaryButton>New package</PrimaryButton>
+                </Link>
+            </template>
+        </PageHeader>
 
         <div
             class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900"

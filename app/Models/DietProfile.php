@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class DietProfile extends Model
 {
-    protected $fillable = ['customer_id', 'allergies', 'exclusions', 'notes'];
+    protected $fillable = ['customer_id', 'booking_id', 'allergies', 'exclusions', 'notes'];
 
     protected function casts(): array
     {
@@ -28,5 +28,13 @@ class DietProfile extends Model
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    /**
+     * @return BelongsTo<Booking, $this>
+     */
+    public function booking(): BelongsTo
+    {
+        return $this->belongsTo(Booking::class);
     }
 }

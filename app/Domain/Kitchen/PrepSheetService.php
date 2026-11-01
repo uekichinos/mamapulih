@@ -11,14 +11,14 @@ class PrepSheetService
     public function __construct(private DishResolver $dishes) {}
 
     /**
-     * @return array<string, array<int, array{dish: Dish, count: int, substituted: int}>>
+     * @return array<string, array<int, array{dish: Dish, count: int, substituted: int, bookings: array<int, array{id: int, ref_no: string, customer_name: string}>}>>
      */
     public function forDate(Carbon $date): array
     {
         $bookingDays = BookingDay::query()
             ->where('date', $date->toDateString())
             ->where('status', 'scheduled')
-            ->with(['booking.customer.dietProfile'])
+            ->with(['booking.dietProfile'])
             ->get();
 
         $result = [];
@@ -31,7 +31,7 @@ class PrepSheetService
             }
 
             $dayNo = ($booking->start_date->diffInDays($date) % 7) + 1;
-            $dietProfile = $booking->customer->dietProfile;
+            $dietProfile = $booking->dietProfile;
             $exclusions = $dietProfile === null
                 ? []
                 : array_merge($dietProfile->allergies ?? [], $dietProfile->exclusions ?? []);
@@ -47,8 +47,13 @@ class PrepSheetService
 
                 $dish = $resolved['dish'];
 
-                $result[$meal][$dish->id] ??= ['dish' => $dish, 'count' => 0, 'substituted' => 0];
+                $result[$meal][$dish->id] ??= ['dish' => $dish, 'count' => 0, 'substituted' => 0, 'bookings' => []];
                 $result[$meal][$dish->id]['count']++;
+                $result[$meal][$dish->id]['bookings'][] = [
+                    'id' => $booking->id,
+                    'ref_no' => $booking->ref_no,
+                    'customer_name' => $booking->customer->name,
+                ];
 
                 if ($resolved['substituted']) {
                     $result[$meal][$dish->id]['substituted']++;

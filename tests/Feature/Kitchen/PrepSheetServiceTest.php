@@ -33,7 +33,7 @@ it('substitutes the dish for a customer with a matching exclusion', function () 
     ]);
     RotationDay::query()->create(['menu_rotation_id' => $rotation->id, 'day_no' => 1, 'meal' => 'lunch', 'dish_id' => $dish->id]);
 
-    $booking->customer->dietProfile()->create(['allergies' => [], 'exclusions' => ['seafood']]);
+    $booking->dietProfile()->create(['customer_id' => $booking->customer_id, 'allergies' => [], 'exclusions' => ['seafood']]);
 
     app(BookingDayGenerator::class)->generateFor($booking);
 
@@ -52,7 +52,7 @@ it('does not substitute when the customer has no matching exclusion', function (
     $dish = Dish::query()->create(['name' => ['en' => 'Fish curry', 'ms' => 'Kari ikan'], 'tags' => ['seafood']]);
     RotationDay::query()->create(['menu_rotation_id' => $rotation->id, 'day_no' => 1, 'meal' => 'lunch', 'dish_id' => $dish->id]);
 
-    $booking->customer->dietProfile()->create(['allergies' => [], 'exclusions' => []]);
+    $booking->dietProfile()->create(['customer_id' => $booking->customer_id, 'allergies' => [], 'exclusions' => []]);
 
     app(BookingDayGenerator::class)->generateFor($booking);
 

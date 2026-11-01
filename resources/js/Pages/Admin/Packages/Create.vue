@@ -2,6 +2,7 @@
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
@@ -26,36 +27,50 @@ const submit = () => {
     <AdminLayout>
         <Head title="New package" />
 
-        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
-            New package
-        </h1>
+        <PageHeader title="New package">
+            Add pricing variants once the package is created.
+        </PageHeader>
 
-        <form class="max-w-xl space-y-4" @submit.prevent="submit">
-            <div>
-                <InputLabel for="name_en" value="Name" />
-                <TextInput id="name_en" v-model="form.name.en" class="mt-1 block w-full" required />
-                <InputError class="mt-2" :message="form.errors['name.en']" />
+        <form @submit.prevent="submit">
+            <div
+                class="space-y-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+            >
+                <div>
+                    <InputLabel for="name_en" value="Name" />
+                    <TextInput
+                        id="name_en"
+                        v-model="form.name.en"
+                        class="mt-1 block w-full"
+                        required
+                    />
+                    <InputError class="mt-2" :message="form.errors['name.en']" />
+                </div>
+
+                <div>
+                    <InputLabel for="description_en" value="Description" />
+                    <textarea
+                        id="description_en"
+                        v-model="form.description.en"
+                        rows="3"
+                        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                    ></textarea>
+                    <InputError class="mt-2" :message="form.errors['description.en']" />
+                </div>
+
+                <label class="flex items-center gap-2">
+                    <input v-model="form.active" type="checkbox" class="rounded border-gray-300" />
+                    <span class="text-sm text-gray-700 dark:text-gray-300">Active</span>
+                </label>
             </div>
 
-            <div>
-                <InputLabel for="description_en" value="Description" />
-                <textarea
-                    id="description_en"
-                    v-model="form.description.en"
-                    rows="3"
-                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
-                ></textarea>
-                <InputError class="mt-2" :message="form.errors['description.en']" />
+            <div class="mt-4">
+                <PrimaryButton
+                    :class="{ 'opacity-25': form.processing }"
+                    :disabled="form.processing"
+                >
+                    Create
+                </PrimaryButton>
             </div>
-
-            <label class="flex items-center gap-2">
-                <input v-model="form.active" type="checkbox" class="rounded border-gray-300" />
-                <span class="text-sm text-gray-700 dark:text-gray-300">Active</span>
-            </label>
-
-            <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                Create
-            </PrimaryButton>
         </form>
     </AdminLayout>
 </template>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import CustomerLayout from '@/Layouts/CustomerLayout.vue';
+import CustomerAppLayout from '@/Layouts/CustomerAppLayout.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 import { formatDate } from '@/lib/formatDate';
 import { Head, Link } from '@inertiajs/vue3';
 
@@ -16,7 +17,7 @@ interface Day {
 }
 
 defineProps<{
-    booking: { ref_no: string; start_date: string; end_date: string };
+    booking: { ref_no: string; recipient_label: string; start_date: string; end_date: string };
     days: Day[];
 }>();
 
@@ -27,28 +28,27 @@ const mealLabel: Record<string, string> = {
 </script>
 
 <template>
-    <CustomerLayout>
-        <Head title="My schedule" />
+    <CustomerAppLayout>
+        <Head title="Schedule" />
 
-        <div class="mb-4 flex items-center justify-between">
-            <h1 class="font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
-                My schedule
-            </h1>
-            <Link :href="route('customer.my-booking')" class="text-sm text-indigo-600 underline">
-                Back to My Booking
-            </Link>
-        </div>
-
-        <p class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-            {{ booking.ref_no }} &middot; {{ formatDate(booking.start_date) }} to
-            {{ formatDate(booking.end_date) }}
-        </p>
+        <PageHeader title="Schedule">
+            {{ booking.recipient_label }} &middot; {{ booking.ref_no }} &middot;
+            {{ formatDate(booking.start_date) }} to {{ formatDate(booking.end_date) }}
+            <template #actions>
+                <Link
+                    :href="route('customer.my-booking')"
+                    class="text-sm text-indigo-600 underline"
+                >
+                    Back to Booking
+                </Link>
+            </template>
+        </PageHeader>
 
         <ul class="space-y-2">
             <li
                 v-for="day in days"
                 :key="day.date"
-                class="rounded-2xl border border-gray-200 bg-white p-4 text-sm shadow-sm dark:border-gray-800 dark:bg-gray-900"
+                class="rounded-2xl border border-gray-200 bg-white p-5 text-sm shadow-sm dark:border-gray-800 dark:bg-gray-900"
             >
                 <div class="flex items-center justify-between">
                     <p class="font-medium text-gray-900 dark:text-gray-100">
@@ -78,5 +78,5 @@ const mealLabel: Record<string, string> = {
                 </ul>
             </li>
         </ul>
-    </CustomerLayout>
+    </CustomerAppLayout>
 </template>

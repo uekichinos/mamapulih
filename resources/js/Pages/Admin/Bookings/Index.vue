@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 import Pagination from '@/Components/Pagination.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import RowActions from '@/Components/RowActions.vue';
@@ -11,6 +12,7 @@ import { Head, Link } from '@inertiajs/vue3';
 interface BookingRow {
     id: number;
     ref_no: string;
+    recipient_name: string | null;
     status: string;
     edd: string;
     price_sen: number;
@@ -24,6 +26,7 @@ defineProps<{
         total: number;
         links: Array<{ url: string | null; label: string; active: boolean }>;
     };
+    customerFilter: { id: number; name: string } | null;
 }>();
 
 const money = (sen: number) => (sen / 100).toFixed(2);
@@ -55,30 +58,37 @@ const statusLabel = (status: string) =>
     <AdminLayout>
         <Head title="Bookings" />
 
-        <div class="mb-6 flex flex-wrap items-center justify-between gap-3">
-            <div>
-                <h1 class="font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
-                    Bookings
-                </h1>
-                <p class="mt-0.5 text-sm text-gray-600 dark:text-gray-400">
-                    {{ bookings.total }} bookings
-                </p>
-            </div>
-            <Link :href="route('admin.bookings.create')">
-                <PrimaryButton>
-                    <svg
-                        class="size-4"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2.2"
-                        aria-hidden="true"
-                    >
-                        <line x1="12" y1="5" x2="12" y2="19" />
-                        <line x1="5" y1="12" x2="19" y2="12" />
-                    </svg>
-                    New booking
-                </PrimaryButton>
+        <PageHeader title="Bookings">
+            {{ bookings.total }} bookings
+            <template #actions>
+                <Link :href="route('admin.bookings.create')">
+                    <PrimaryButton>
+                        <svg
+                            class="size-4"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2.2"
+                            aria-hidden="true"
+                        >
+                            <line x1="12" y1="5" x2="12" y2="19" />
+                            <line x1="5" y1="12" x2="19" y2="12" />
+                        </svg>
+                        New booking
+                    </PrimaryButton>
+                </Link>
+            </template>
+        </PageHeader>
+
+        <div
+            v-if="customerFilter"
+            class="mb-4 flex items-center gap-2 rounded-lg bg-indigo-50 px-4 py-2.5 text-sm text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300"
+        >
+            <span
+                >Showing bookings for <strong>{{ customerFilter.name }}</strong></span
+            >
+            <Link :href="route('admin.bookings.index')" class="font-semibold underline">
+                Clear filter
             </Link>
         </div>
 
@@ -134,6 +144,15 @@ const statusLabel = (status: string) =>
                         </td>
                         <td class="px-5 py-3.5 font-medium text-gray-900 dark:text-gray-100">
                             {{ booking.customer.name }}
+                            <p
+                                v-if="
+                                    booking.recipient_name &&
+                                    booking.recipient_name !== booking.customer.name
+                                "
+                                class="text-xs font-normal text-gray-500 dark:text-gray-400"
+                            >
+                                for {{ booking.recipient_name }}
+                            </p>
                         </td>
                         <td class="px-5 py-3.5 text-gray-600 dark:text-gray-400">
                             {{ booking.variant.package.name.en }}

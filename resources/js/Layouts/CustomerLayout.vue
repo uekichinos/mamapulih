@@ -1,8 +1,20 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+import Dropdown from '@/Components/Dropdown.vue';
+import DropdownLink from '@/Components/DropdownLink.vue';
 import { Link, usePage } from '@inertiajs/vue3';
 
 const page = usePage();
-const isAuthed = () => Boolean((page.props as { auth?: { customer?: unknown } }).auth?.customer);
+const customer = computed(() => page.props.auth.customer);
+
+const initials = computed(() =>
+    (customer.value?.name ?? '')
+        .split(' ')
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((part) => part[0]?.toUpperCase())
+        .join(''),
+);
 </script>
 
 <template>
@@ -19,37 +31,64 @@ const isAuthed = () => Boolean((page.props as { auth?: { customer?: unknown } })
                     >
                 </Link>
 
-                <div class="flex items-center gap-4 text-sm font-medium">
+                <div v-if="customer" class="flex items-center gap-3 text-sm font-medium">
                     <Link
-                        v-if="isAuthed()"
                         :href="route('customer.my-booking')"
                         class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
                     >
-                        My Booking
+                        Booking
                     </Link>
+
+                    <Dropdown align="right" width="48">
+                        <template #trigger>
+                            <button
+                                type="button"
+                                class="flex items-center gap-2 rounded-full p-0.5 hover:ring-2 hover:ring-gray-200 dark:hover:ring-gray-700"
+                            >
+                                <span
+                                    class="flex size-8 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-indigo-500 to-indigo-700 text-xs font-bold text-white"
+                                >
+                                    {{ initials }}
+                                </span>
+                            </button>
+                        </template>
+
+                        <template #content>
+                            <div class="border-b border-gray-100 px-4 py-2 dark:border-gray-700">
+                                <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                                    {{ customer.name }}
+                                </p>
+                                <p class="truncate text-xs text-gray-500 dark:text-gray-400">
+                                    {{ customer.email }}
+                                </p>
+                            </div>
+                            <DropdownLink :href="route('customer.profile.edit')">
+                                Profile
+                            </DropdownLink>
+                            <DropdownLink
+                                :href="route('customer.logout')"
+                                method="post"
+                                as="button"
+                            >
+                                Log out
+                            </DropdownLink>
+                        </template>
+                    </Dropdown>
+                </div>
+
+                <div v-else class="flex items-center gap-4 text-sm font-medium">
                     <Link
-                        v-if="isAuthed()"
-                        :href="route('customer.logout')"
-                        method="post"
-                        as="button"
+                        :href="route('customer.login')"
                         class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
                     >
-                        Log out
+                        Log in
                     </Link>
-                    <template v-else>
-                        <Link
-                            :href="route('customer.login')"
-                            class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
-                        >
-                            Log in
-                        </Link>
-                        <Link
-                            :href="route('customer.register')"
-                            class="text-indigo-600 hover:text-indigo-700"
-                        >
-                            Get started
-                        </Link>
-                    </template>
+                    <Link
+                        :href="route('customer.register')"
+                        class="text-indigo-600 hover:text-indigo-700"
+                    >
+                        Get started
+                    </Link>
                 </div>
             </div>
         </nav>

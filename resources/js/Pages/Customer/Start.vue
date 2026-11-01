@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import CustomerLayout from '@/Layouts/CustomerLayout.vue';
+import CustomerAppLayout from '@/Layouts/CustomerAppLayout.vue';
+import AlertBanner from '@/Components/AlertBanner.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
 const props = defineProps<{
-    booking: { edd: string; start_date: string | null };
+    booking: { id: number; edd: string; start_date: string | null };
     minStartDate: string;
     pendingConsent: boolean;
     balanceDue: number;
@@ -26,29 +28,21 @@ const form = useForm({
 });
 
 const money = (sen: number) => (sen / 100).toFixed(2);
-const submit = () => form.post(route('customer.start'));
-const confirm = () => useForm({}).post(route('customer.start.confirm'));
+const submit = () => form.post(route('customer.start', props.booking.id));
+const confirm = () => useForm({}).post(route('customer.start.confirm', props.booking.id));
 </script>
 
 <template>
-    <CustomerLayout>
+    <CustomerAppLayout>
         <Head title="Start my package" />
 
-        <h1 class="mb-4 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
-            Start my package
-        </h1>
+        <PageHeader title="Start my package" />
 
-        <div
-            v-if="pendingConsent"
-            class="rounded-md bg-amber-50 p-4 text-sm text-amber-800 dark:bg-amber-900/30 dark:text-amber-200"
-        >
+        <AlertBanner v-if="pendingConsent" tone="amber">
             We're waiting for you to review a plan change — check your email for the link.
-        </div>
+        </AlertBanner>
 
-        <div
-            v-else-if="booking.start_date && balanceDue > 0"
-            class="rounded-md bg-amber-50 p-4 text-sm text-amber-800 dark:bg-amber-900/30 dark:text-amber-200"
-        >
+        <AlertBanner v-else-if="booking.start_date && balanceDue > 0" tone="amber">
             <p>
                 A balance of RM {{ money(balanceDue) }} is still due before your package can start.
             </p>
@@ -58,9 +52,12 @@ const confirm = () => useForm({}).post(route('customer.start.confirm'));
             >
                 Pay balance
             </Link>
-        </div>
+        </AlertBanner>
 
-        <div v-else-if="booking.start_date && canConfirm" class="space-y-4">
+        <div
+            v-else-if="booking.start_date && canConfirm"
+            class="space-y-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+        >
             <p class="text-sm text-gray-600 dark:text-gray-400">
                 Start date: {{ booking.start_date }}. Everything is ready — confirm to begin
                 deliveries.
@@ -68,7 +65,11 @@ const confirm = () => useForm({}).post(route('customer.start.confirm'));
             <SecondaryButton @click="confirm">Confirm start</SecondaryButton>
         </div>
 
-        <form v-else class="space-y-4" @submit.prevent="submit">
+        <form
+            v-else
+            class="space-y-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+            @submit.prevent="submit"
+        >
             <div>
                 <InputLabel for="start_date" value="Start date" />
                 <TextInput
@@ -87,7 +88,7 @@ const confirm = () => useForm({}).post(route('customer.start.confirm'));
                 <select
                     id="actual_birth_type"
                     v-model="form.actual_birth_type"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                 >
                     <option value="normal">Normal</option>
                     <option value="csec">C-sec</option>
@@ -97,5 +98,5 @@ const confirm = () => useForm({}).post(route('customer.start.confirm'));
 
             <PrimaryButton :disabled="form.processing">Continue</PrimaryButton>
         </form>
-    </CustomerLayout>
+    </CustomerAppLayout>
 </template>

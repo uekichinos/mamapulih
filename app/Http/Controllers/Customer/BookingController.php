@@ -134,6 +134,7 @@ class BookingController extends Controller
         }
 
         $data = $request->validate([
+            'recipient_name' => ['nullable', 'string', 'max:255'],
             'address.line1' => ['required', 'string', 'max:255'],
             'address.line2' => ['nullable', 'string', 'max:255'],
             'address.postcode' => [

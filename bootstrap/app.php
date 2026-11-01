@@ -7,12 +7,14 @@ use App\Http\Middleware\EnsureUserHasRole;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\SetSecurityHeaders;
+use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -46,6 +48,18 @@ return Application::configure(basePath: dirname(__DIR__))
             fn (Request $request) => $request->routeIs('customer.*')
                 ? route('customer.login')
                 : route('login'),
+        );
+
+        // The reverse direction has the same guard-blindness: Laravel's
+        // default RedirectIfAuthenticated::defaultRedirectUri() sends any
+        // already-authenticated visitor of a "guest" route (e.g. an already
+        // logged-in customer re-visiting /customer-login or /register) to
+        // the route literally named "dashboard" — the staff one — which
+        // then bounces them again since they're not a "web" guard user.
+        RedirectIfAuthenticated::redirectUsing(
+            fn () => Auth::guard('customers')->check()
+                ? route('customer.dashboard')
+                : route('dashboard'),
         );
     })
     ->withExceptions(function (Exceptions $exceptions): void {

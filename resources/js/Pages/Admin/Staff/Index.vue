@@ -2,6 +2,7 @@
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import DropdownButton from '@/Components/DropdownButton.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 import Pagination from '@/Components/Pagination.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import RowActions from '@/Components/RowActions.vue';
@@ -32,14 +33,13 @@ const destroy = (id: number) => {
     <AdminLayout>
         <Head title="Staff" />
 
-        <div class="mb-6 flex items-center justify-between">
-            <h1 class="font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
-                Staff
-            </h1>
-            <Link :href="route('admin.staff.create')">
-                <PrimaryButton>New staff account</PrimaryButton>
-            </Link>
-        </div>
+        <PageHeader title="Staff">
+            <template #actions>
+                <Link :href="route('admin.staff.create')">
+                    <PrimaryButton>New staff account</PrimaryButton>
+                </Link>
+            </template>
+        </PageHeader>
 
         <div
             class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900"
@@ -71,6 +71,17 @@ const destroy = (id: number) => {
                                 <DropdownLink :href="route('admin.staff.edit', member.id)"
                                     >Edit</DropdownLink
                                 >
+                                <DropdownLink
+                                    v-if="
+                                        member.id !== page.props.auth.user.id &&
+                                        member.role !== 'owner'
+                                    "
+                                    :href="route('admin.staff.impersonate', member.id)"
+                                    method="post"
+                                    as="button"
+                                >
+                                    Login as
+                                </DropdownLink>
                                 <DropdownButton
                                     v-if="member.id !== page.props.auth.user.id"
                                     class="text-red-600 dark:text-red-400"

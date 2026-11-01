@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import CustomerLayout from '@/Layouts/CustomerLayout.vue';
+import CustomerAppLayout from '@/Layouts/CustomerAppLayout.vue';
+import AlertBanner from '@/Components/AlertBanner.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
@@ -27,14 +29,15 @@ const useNextAvailable = () => {
 </script>
 
 <template>
-    <CustomerLayout>
+    <CustomerAppLayout>
         <Head title="Check your due date" />
 
-        <h1 class="mb-4 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
-            When is baby due?
-        </h1>
+        <PageHeader title="When is baby due?" />
 
-        <form class="space-y-4" @submit.prevent="submit">
+        <form
+            class="space-y-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+            @submit.prevent="submit"
+        >
             <div>
                 <InputLabel for="edd" value="Expected delivery date (EDD)" />
                 <TextInput
@@ -48,10 +51,7 @@ const useNextAvailable = () => {
                 <InputError class="mt-2" :message="form.errors.edd" />
             </div>
 
-            <div
-                v-if="full"
-                class="rounded-md bg-amber-50 p-4 text-sm text-amber-800 dark:bg-amber-900/30 dark:text-amber-200"
-            >
+            <AlertBanner v-if="full" tone="amber">
                 <p>That date is fully booked.</p>
                 <p v-if="nextAvailable" class="mt-2">
                     Next available:
@@ -59,11 +59,11 @@ const useNextAvailable = () => {
                         {{ nextAvailable }}
                     </button>
                 </p>
-            </div>
+            </AlertBanner>
 
             <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                 Check availability
             </PrimaryButton>
         </form>
-    </CustomerLayout>
+    </CustomerAppLayout>
 </template>

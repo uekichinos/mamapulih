@@ -39,16 +39,23 @@ class BookingController extends Controller
         private CustomerMailer $mailer,
     ) {}
 
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $bookings = Booking::query()
             ->with(['customer', 'variant.package'])
+            ->when(
+                $request->filled('customer_id'),
+                fn ($query) => $query->where('customer_id', $request->integer('customer_id')),
+            )
             ->latest()
             ->paginate(20)
             ->withQueryString();
 
         return Inertia::render('Admin/Bookings/Index', [
             'bookings' => $bookings,
+            'customerFilter' => $request->filled('customer_id')
+                ? Customer::query()->find($request->integer('customer_id'), ['id', 'name'])
+                : null,
         ]);
     }
 
@@ -57,7 +64,7 @@ class BookingController extends Controller
         $booking->load([
             'customer', 'variant.package', 'address.zone', 'addons.addon', 'approver',
             'payments.recorder', 'paymentReceipts', 'refunds', 'planChanges.toVariant', 'planChanges.consent',
-            'pauses.approver',
+            'pauses.approver', 'dietProfile',
         ]);
 
         return Inertia::render('Admin/Bookings/Show', [
@@ -211,6 +218,7 @@ class BookingController extends Controller
             'customer.name' => ['required', 'string', 'max:255'],
             'customer.email' => ['required', 'email', 'max:255'],
             'customer.phone' => ['nullable', 'string', 'max:30'],
+            'recipient_name' => ['nullable', 'string', 'max:255'],
             'variant_id' => ['required', 'integer', 'exists:variants,id'],
             'expected_birth_type' => ['required', 'in:normal,csec'],
             'is_twins' => ['boolean'],

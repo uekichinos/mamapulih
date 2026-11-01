@@ -5,13 +5,10 @@ namespace App\Models;
 use Database\Factories\CustomerFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 /**
  * @use HasFactory<CustomerFactory>
- *
- * @property DietProfile|null $dietProfile
  */
 class Customer extends Authenticatable
 {
@@ -40,14 +37,6 @@ class Customer extends Authenticatable
     }
 
     /**
-     * @return HasOne<DietProfile, $this>
-     */
-    public function dietProfile(): HasOne
-    {
-        return $this->hasOne(DietProfile::class);
-    }
-
-    /**
      * @return HasMany<Address, $this>
      */
     public function addresses(): HasMany
@@ -61,5 +50,27 @@ class Customer extends Authenticatable
     public function bookings(): HasMany
     {
         return $this->hasMany(Booking::class);
+    }
+
+    /**
+     * Every booking that hasn't reached an inactive, terminal status —
+     * plural, since one account can have more than one live booking at
+     * once (e.g. two wives expecting at the same time, see dev plan P42).
+     *
+     * @return HasMany<Booking, $this>
+     */
+    public function liveBookings(): HasMany
+    {
+        return $this->bookings()->live()->latest()->latest('id');
+    }
+
+    /**
+     * Every terminal-status booking — always historical (see dev plan P20).
+     *
+     * @return HasMany<Booking, $this>
+     */
+    public function archivedBookings(): HasMany
+    {
+        return $this->bookings()->terminal()->latest()->latest('id');
     }
 }

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import DangerButton from '@/Components/DangerButton.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 import Pagination from '@/Components/Pagination.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
@@ -45,9 +46,7 @@ const reject = (id: number) => {
     <AdminLayout>
         <Head title="Booking approvals" />
 
-        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
-            Booking approvals
-        </h1>
+        <PageHeader title="Booking approvals" />
 
         <div class="space-y-4">
             <div

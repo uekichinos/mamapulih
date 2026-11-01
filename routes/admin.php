@@ -7,10 +7,12 @@ use App\Http\Controllers\Admin\BookingController;
 use App\Http\Controllers\Admin\BusinessProfileController;
 use App\Http\Controllers\Admin\CapacityController;
 use App\Http\Controllers\Admin\ClosureDayController;
+use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\DeliveryListController;
 use App\Http\Controllers\Admin\DishController;
 use App\Http\Controllers\Admin\EmailSettingsController;
+use App\Http\Controllers\Admin\ImpersonationController;
 use App\Http\Controllers\Admin\MenuRotationController;
 use App\Http\Controllers\Admin\PackageController;
 use App\Http\Controllers\Admin\PaymentSettingsController;
@@ -49,6 +51,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', 'role:ow
     Route::resource('closure-days', ClosureDayController::class)->except(['show', 'edit', 'update']);
     Route::post('/closure-days/{closureDay}/notify', [ClosureDayController::class, 'notify'])->name('closure-days.notify');
     Route::resource('staff', StaffUserController::class)->except(['show']);
+    Route::post('/staff/{staff}/impersonate', [ImpersonationController::class, 'start'])->name('staff.impersonate');
 
     Route::resource('dishes', DishController::class)->except(['show']);
     Route::resource('menu-rotations', MenuRotationController::class)->except(['show']);
@@ -57,6 +60,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', 'role:ow
         ->shallow();
 
     Route::get('/audit-log', [AuditLogController::class, 'index'])->name('audit-log.index');
+    Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
+    Route::get('/customers/{customer}', [CustomerController::class, 'show'])->name('customers.show');
 
     Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
     Route::get('/bookings/create', [BookingController::class, 'create'])->name('bookings.create');

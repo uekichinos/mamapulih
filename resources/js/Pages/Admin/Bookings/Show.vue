@@ -4,6 +4,7 @@ import Checkbox from '@/Components/Checkbox.vue';
 import DangerButton from '@/Components/DangerButton.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import SelectInput from '@/Components/SelectInput.vue';
@@ -52,9 +53,16 @@ interface Pause {
     limit_overridden: boolean;
 }
 
+interface DietProfile {
+    allergies: string[];
+    exclusions: string[];
+    notes: string | null;
+}
+
 interface Booking {
     id: number;
     ref_no: string;
+    recipient_name: string | null;
     status: string;
     edd: string;
     expected_birth_type: string;
@@ -81,6 +89,7 @@ interface Booking {
     refunds: Refund[];
     plan_changes: PlanChange[];
     pauses: Pause[];
+    diet_profile: DietProfile | null;
 }
 
 const props = defineProps<{
@@ -109,6 +118,12 @@ const statusTones: Record<
 
 const statusLabel = (status: string) =>
     status
+        .split('_')
+        .map((word) => word[0].toUpperCase() + word.slice(1))
+        .join(' ');
+
+const tagLabel = (tag: string) =>
+    tag
         .split('_')
         .map((word) => word[0].toUpperCase() + word.slice(1))
         .join(' ');
@@ -208,14 +223,16 @@ const extend = () => {
     <AdminLayout>
         <Head :title="`Booking ${booking.ref_no}`" />
 
-        <div class="mb-6 flex items-center gap-3">
-            <h1 class="font-mono text-lg font-semibold text-gray-900 dark:text-gray-100">
-                {{ booking.ref_no }}
-            </h1>
-            <StatusBadge :tone="statusTones[booking.status] ?? 'neutral'">{{
-                statusLabel(booking.status)
-            }}</StatusBadge>
-        </div>
+        <PageHeader
+            :title="`Booking ${booking.ref_no}`"
+            :subtitle="booking.recipient_name ? `for ${booking.recipient_name}` : null"
+        >
+            <template #suffix>
+                <StatusBadge :tone="statusTones[booking.status] ?? 'neutral'">{{
+                    statusLabel(booking.status)
+                }}</StatusBadge>
+            </template>
+        </PageHeader>
 
         <div class="grid gap-6 sm:grid-cols-2">
             <div
@@ -274,6 +291,59 @@ const extend = () => {
                 </p>
                 <p class="text-sm text-gray-600 dark:text-gray-400">
                     Zone: {{ booking.address.zone.name }}
+                </p>
+            </div>
+
+            <div
+                v-if="booking.diet_profile"
+                class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+            >
+                <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">
+                    Diet profile
+                </h2>
+                <div v-if="booking.diet_profile.allergies.length" class="mb-3">
+                    <p class="mb-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400">
+                        Allergies
+                    </p>
+                    <div class="flex flex-wrap gap-1.5">
+                        <StatusBadge
+                            v-for="tag in booking.diet_profile.allergies"
+                            :key="tag"
+                            tone="danger"
+                        >
+                            {{ tagLabel(tag) }}
+                        </StatusBadge>
+                    </div>
+                </div>
+                <div v-if="booking.diet_profile.exclusions.length" class="mb-3">
+                    <p class="mb-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400">
+                        Exclusions
+                    </p>
+                    <div class="flex flex-wrap gap-1.5">
+                        <StatusBadge
+                            v-for="tag in booking.diet_profile.exclusions"
+                            :key="tag"
+                            tone="warning"
+                        >
+                            {{ tagLabel(tag) }}
+                        </StatusBadge>
+                    </div>
+                </div>
+                <p
+                    v-if="booking.diet_profile.notes"
+                    class="text-sm text-gray-600 dark:text-gray-400"
+                >
+                    {{ booking.diet_profile.notes }}
+                </p>
+                <p
+                    v-if="
+                        !booking.diet_profile.allergies.length &&
+                        !booking.diet_profile.exclusions.length &&
+                        !booking.diet_profile.notes
+                    "
+                    class="text-sm text-gray-600 dark:text-gray-400"
+                >
+                    No allergies or exclusions recorded.
                 </p>
             </div>
 

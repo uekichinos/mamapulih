@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import CustomerLayout from '@/Layouts/CustomerLayout.vue';
+import CustomerAppLayout from '@/Layouts/CustomerAppLayout.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 import { formatDate } from '@/lib/formatDate';
 import { Head, Link } from '@inertiajs/vue3';
 
@@ -37,20 +38,22 @@ const money = (sen: number) => (sen / 100).toFixed(2);
 </script>
 
 <template>
-    <CustomerLayout>
+    <CustomerAppLayout>
         <Head title="Booking archive" />
 
-        <div class="mb-4 flex items-center justify-between">
-            <h1 class="font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
-                Archived booking
-            </h1>
-            <Link :href="route('customer.my-booking')" class="text-sm text-indigo-600 underline">
-                Back to My Booking
-            </Link>
-        </div>
+        <PageHeader title="Archived booking">
+            <template #actions>
+                <Link
+                    :href="route('customer.my-booking')"
+                    class="text-sm text-indigo-600 underline"
+                >
+                    Back to Booking
+                </Link>
+            </template>
+        </PageHeader>
 
         <div
-            class="space-y-3 rounded-2xl border border-gray-200 bg-white shadow-sm p-4 text-sm dark:border-gray-800 dark:bg-gray-900"
+            class="space-y-3 rounded-2xl border border-gray-200 bg-white shadow-sm p-5 text-sm dark:border-gray-800 dark:bg-gray-900"
         >
             <div class="flex justify-between">
                 <span class="text-gray-600 dark:text-gray-400">Reference</span>
@@ -98,5 +101,5 @@ const money = (sen: number) => (sen / 100).toFixed(2);
                 </p>
             </div>
         </div>
-    </CustomerLayout>
+    </CustomerAppLayout>
 </template>

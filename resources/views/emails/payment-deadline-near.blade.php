@@ -7,7 +7,7 @@
         Just a reminder — your booking {{ $booking->ref_no }} is still awaiting payment, and your slot
         will be released if payment isn't received before the deadline.
     </p>
-    <p>Please log in to My Booking to complete payment.</p>
+    <p>Please log in to Booking to complete payment.</p>
     <p>Thank you,<br>MamaPulih</p>
 </body>
 </html>

@@ -10,7 +10,7 @@ it('logs a customer in with correct credentials', function () {
         'password' => 'password',
     ]);
 
-    $response->assertRedirect(route('customer.booking.build'));
+    $response->assertRedirect(route('customer.dashboard'));
     $this->assertAuthenticatedAs($customer, 'customers');
 });
 
@@ -33,4 +33,12 @@ it('logs a customer out', function () {
         ->assertRedirect('/');
 
     $this->assertGuest('customers');
+});
+
+it('sends an already logged-in customer to their own dashboard, not the staff one', function () {
+    $customer = Customer::factory()->create();
+
+    $this->actingAs($customer, 'customers')
+        ->get(route('customer.login'))
+        ->assertRedirect(route('customer.dashboard'));
 });

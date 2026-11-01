@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import AlertBanner from '@/Components/AlertBanner.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 import { formatDate } from '@/lib/formatDate';
 import { Head, Link } from '@inertiajs/vue3';
 
@@ -58,12 +60,7 @@ const tiles = [
     <AdminLayout>
         <Head title="Admin dashboard" />
 
-        <h1 class="mb-1 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
-            Dashboard
-        </h1>
-        <p class="mb-6 text-sm text-gray-600 dark:text-gray-400">
-            An at-a-glance view of today's operations.
-        </p>
+        <PageHeader title="Dashboard">An at-a-glance view of today's operations.</PageHeader>
 
         <div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <Link
@@ -99,37 +96,36 @@ const tiles = [
             </Link>
         </div>
 
-        <div
-            v-if="bufferAlerts.length"
-            class="mb-6 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-900 dark:bg-amber-950"
-        >
-            <span
-                class="flex size-7 shrink-0 items-center justify-center rounded-full bg-white text-amber-700 dark:bg-gray-900 dark:text-amber-300"
-            >
-                <svg
-                    class="size-4"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    aria-hidden="true"
+        <AlertBanner v-if="bufferAlerts.length" tone="amber" class="mb-6">
+            <div class="flex items-start gap-3">
+                <span
+                    class="flex size-7 shrink-0 items-center justify-center rounded-full bg-white text-amber-700 dark:bg-gray-900 dark:text-amber-300"
                 >
-                    <circle cx="12" cy="12" r="9" />
-                    <line x1="12" y1="8" x2="12" y2="13" />
-                    <circle cx="12" cy="16.3" r="0.6" fill="currentColor" />
-                </svg>
-            </span>
-            <div>
-                <h2 class="mb-1 text-sm font-semibold text-amber-800 dark:text-amber-200">
-                    Buffer capacity in use — next 7 days
-                </h2>
-                <ul class="space-y-0.5 text-sm tabular-nums text-amber-700 dark:text-amber-300">
-                    <li v-for="alert in bufferAlerts" :key="alert.date">
-                        {{ formatDate(alert.date) }} — {{ alert.slots }} slots booked
-                    </li>
-                </ul>
+                    <svg
+                        class="size-4"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        aria-hidden="true"
+                    >
+                        <circle cx="12" cy="12" r="9" />
+                        <line x1="12" y1="8" x2="12" y2="13" />
+                        <circle cx="12" cy="16.3" r="0.6" fill="currentColor" />
+                    </svg>
+                </span>
+                <div>
+                    <h2 class="mb-1 font-semibold text-amber-800 dark:text-amber-200">
+                        Buffer capacity in use — next 7 days
+                    </h2>
+                    <ul class="space-y-0.5 tabular-nums">
+                        <li v-for="alert in bufferAlerts" :key="alert.date">
+                            {{ formatDate(alert.date) }} — {{ alert.slots }} slots booked
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </div>
+        </AlertBanner>
 
         <div
             class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900"

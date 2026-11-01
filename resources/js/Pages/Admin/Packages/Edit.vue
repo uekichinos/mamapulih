@@ -4,6 +4,7 @@ import AdminLayout from '@/Layouts/AdminLayout.vue';
 import DangerButton from '@/Components/DangerButton.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import SelectInput from '@/Components/SelectInput.vue';
@@ -81,23 +82,30 @@ const formatPrice = (sen: number) => `RM${(sen / 100).toFixed(2)}`;
     <AdminLayout>
         <Head title="Edit package" />
 
-        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
-            Edit package
-        </h1>
+        <PageHeader title="Edit package">{{ package.name.en }}</PageHeader>
 
-        <form class="mb-10 max-w-xl space-y-4" @submit.prevent="submit">
-            <div>
-                <InputLabel for="name_en" value="Name" />
-                <TextInput id="name_en" v-model="form.name.en" class="mt-1 block w-full" required />
-                <InputError class="mt-2" :message="form.errors['name.en']" />
+        <form class="mb-8" @submit.prevent="submit">
+            <div
+                class="space-y-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+            >
+                <div>
+                    <InputLabel for="name_en" value="Name" />
+                    <TextInput
+                        id="name_en"
+                        v-model="form.name.en"
+                        class="mt-1 block w-full"
+                        required
+                    />
+                    <InputError class="mt-2" :message="form.errors['name.en']" />
+                </div>
+
+                <label class="flex items-center gap-2">
+                    <input v-model="form.active" type="checkbox" class="rounded border-gray-300" />
+                    <span class="text-sm text-gray-700 dark:text-gray-300">Active</span>
+                </label>
             </div>
 
-            <label class="flex items-center gap-2">
-                <input v-model="form.active" type="checkbox" class="rounded border-gray-300" />
-                <span class="text-sm text-gray-700 dark:text-gray-300">Active</span>
-            </label>
-
-            <div class="flex items-center gap-4">
+            <div class="mt-4 flex items-center gap-4">
                 <PrimaryButton
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
@@ -110,11 +118,16 @@ const formatPrice = (sen: number) => `RM${(sen / 100).toFixed(2)}`;
             </div>
         </form>
 
-        <div class="max-w-2xl">
+        <div>
             <div class="mb-4 flex items-center justify-between">
-                <h2 class="font-display text-sm font-bold text-gray-900 dark:text-gray-50">
-                    Variants
-                </h2>
+                <div>
+                    <h2 class="font-display text-sm font-bold text-gray-900 dark:text-gray-50">
+                        Variants
+                    </h2>
+                    <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                        Birth type, duration and meal plan combinations customers can book.
+                    </p>
+                </div>
                 <SecondaryButton @click="showVariantForm = !showVariantForm">
                     {{ showVariantForm ? 'Cancel' : 'Add variant' }}
                 </SecondaryButton>
@@ -122,7 +135,7 @@ const formatPrice = (sen: number) => `RM${(sen / 100).toFixed(2)}`;
 
             <form
                 v-if="showVariantForm"
-                class="mb-6 space-y-4 rounded-md border border-gray-200 p-4 dark:border-gray-700"
+                class="mb-6 space-y-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
                 @submit.prevent="addVariant"
             >
                 <div class="grid grid-cols-2 gap-4">

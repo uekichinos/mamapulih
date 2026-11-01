@@ -60,10 +60,24 @@ const allNavGroups: NavGroup[] = [
         label: 'Administration',
         icon: '<polygon points="12,2 20,6 20,12 12,22 4,12 4,6"/>',
         links: [
+            { label: 'Customers', route: 'admin.customers.index', roles: ['owner'] },
             { label: 'Staff', route: 'admin.staff.index', roles: ['owner'] },
-            { label: 'Settings', route: 'admin.settings.edit', roles: ['owner'] },
-            { label: 'Payment settings', route: 'admin.payment-settings.edit', roles: ['owner'] },
             { label: 'Audit log', route: 'admin.audit-log.index', roles: ['owner'] },
+        ],
+    },
+    {
+        key: 'settings',
+        label: 'Settings',
+        icon: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/>',
+        links: [
+            {
+                label: 'Business profile',
+                route: 'admin.business-profile.edit',
+                roles: ['owner'],
+            },
+            { label: 'Booking settings', route: 'admin.settings.edit', roles: ['owner'] },
+            { label: 'Payment settings', route: 'admin.payment-settings.edit', roles: ['owner'] },
+            { label: 'Email settings', route: 'admin.email-settings.edit', roles: ['owner'] },
         ],
     },
 ];
@@ -210,9 +224,7 @@ const toggleGroup = (key: string) => {
                         "
                         @click="toggleGroup(group.key)"
                     >
-                        <span
-                            class="flex items-center gap-2.5 text-[11px] font-bold uppercase tracking-wider"
-                        >
+                        <span class="flex items-center gap-2.5 text-sm font-semibold">
                             <!-- eslint-disable-next-line vue/no-v-html -- static icon markup authored in this file, not user input -->
                             <svg
                                 class="size-3.5 shrink-0"
@@ -303,6 +315,36 @@ const toggleGroup = (key: string) => {
 
         <!-- Main column -->
         <div class="flex min-h-screen w-full flex-1 flex-col sm:ms-64">
+            <div
+                v-if="$page.props.auth.impersonator"
+                class="flex items-center justify-center gap-3 bg-amber-500 px-4 py-2 text-center text-sm font-semibold text-amber-950"
+            >
+                <svg
+                    class="size-4 shrink-0"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    aria-hidden="true"
+                >
+                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="m17 11 2 2 4-4" />
+                </svg>
+                <span
+                    >Viewing as {{ $page.props.auth.user.name }} — logged in as
+                    {{ $page.props.auth.impersonator.name }}</span
+                >
+                <Link
+                    :href="route('impersonation.stop')"
+                    method="post"
+                    as="button"
+                    class="rounded-md bg-amber-950/10 px-2.5 py-1 font-semibold hover:bg-amber-950/20"
+                >
+                    Return to my account
+                </Link>
+            </div>
+
             <!-- Mobile top bar -->
             <div
                 class="flex h-16 items-center justify-between border-b border-gray-100 bg-white px-4 sm:hidden dark:border-gray-800 dark:bg-gray-900"

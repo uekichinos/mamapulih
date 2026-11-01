@@ -66,6 +66,7 @@ class BookingService
      *     edd: string,
      *     expected_birth_type: string,
      *     is_twins: bool,
+     *     recipient_name?: ?string,
      *     address: array{line1: string, line2: ?string, postcode: string, notes: ?string},
      *     diet: array{allergies?: array<int,string>, exclusions?: array<int,string>, notes?: ?string},
      *     addons?: array<int, array{addon_id: int, qty: int}>,
@@ -104,21 +105,13 @@ class BookingService
                 'notes' => $data['address']['notes'] ?? null,
             ]);
 
-            DietProfile::query()->updateOrCreate(
-                ['customer_id' => $customer->id],
-                [
-                    'allergies' => $data['diet']['allergies'] ?? [],
-                    'exclusions' => $data['diet']['exclusions'] ?? [],
-                    'notes' => $data['diet']['notes'] ?? null,
-                ],
-            );
-
             $addonLines = $data['addons'] ?? [];
             $quote = $this->quote($variant, $addonLines);
 
             $booking = Booking::query()->create([
                 'ref_no' => $this->generateRefNo(),
                 'customer_id' => $customer->id,
+                'recipient_name' => $data['recipient_name'] ?? null,
                 'variant_id' => $variant->id,
                 'address_id' => $address->id,
                 'edd' => $edd,
@@ -133,6 +126,14 @@ class BookingService
                 'policy_snapshot' => $this->policy->current(),
                 'created_by' => $createdBy?->id,
                 'projected_period' => "[{$period['start']->toDateString()},{$period['end']->toDateString()}]",
+            ]);
+
+            DietProfile::query()->create([
+                'customer_id' => $customer->id,
+                'booking_id' => $booking->id,
+                'allergies' => $data['diet']['allergies'] ?? [],
+                'exclusions' => $data['diet']['exclusions'] ?? [],
+                'notes' => $data['diet']['notes'] ?? null,
             ]);
 
             foreach ($addonLines as $line) {

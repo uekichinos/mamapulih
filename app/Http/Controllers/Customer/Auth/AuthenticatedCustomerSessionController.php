@@ -48,7 +48,7 @@ class AuthenticatedCustomerSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('customer.booking.build', absolute: false));
+        return redirect()->intended(route('customer.dashboard', absolute: false));
     }
 
     public function destroy(Request $request): RedirectResponse

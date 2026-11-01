@@ -2,6 +2,7 @@
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
@@ -37,75 +38,79 @@ const submit = () => form.put(route('admin.business-profile.update'));
     <AdminLayout>
         <Head title="Business profile" />
 
-        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
-            Business profile
-        </h1>
+        <PageHeader title="Business profile">
+            Shown on customer-facing pages, emails and receipts.
+        </PageHeader>
 
-        <form class="max-w-xl space-y-4" @submit.prevent="submit">
-            <div>
-                <InputLabel for="name" value="Business name" />
-                <TextInput id="name" v-model="form.name" class="mt-1 block w-full" required />
-                <InputError class="mt-2" :message="form.errors.name" />
-            </div>
-
-            <div>
-                <InputLabel for="email" value="Contact email" />
-                <TextInput
-                    id="email"
-                    v-model="form.email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    required
-                />
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-
-            <div>
-                <InputLabel for="contact_phone" value="Contact phone" />
-                <TextInput
-                    id="contact_phone"
-                    v-model="form.contact_phone"
-                    class="mt-1 block w-full"
-                />
-                <InputError class="mt-2" :message="form.errors.contact_phone" />
-            </div>
-
-            <div>
-                <InputLabel for="address" value="Address" />
-                <textarea
-                    id="address"
-                    v-model="form.address"
-                    rows="3"
-                    class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
-                ></textarea>
-                <InputError class="mt-2" :message="form.errors.address" />
-            </div>
-
-            <div class="grid grid-cols-2 gap-4">
+        <form @submit.prevent="submit">
+            <div
+                class="space-y-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+            >
                 <div>
-                    <InputLabel for="timezone" value="Timezone" />
-                    <TextInput
-                        id="timezone"
-                        v-model="form.timezone"
-                        class="mt-1 block w-full"
-                        required
-                    />
-                    <InputError class="mt-2" :message="form.errors.timezone" />
+                    <InputLabel for="name" value="Business name" />
+                    <TextInput id="name" v-model="form.name" class="mt-1 block w-full" required />
+                    <InputError class="mt-2" :message="form.errors.name" />
                 </div>
 
                 <div>
-                    <InputLabel for="currency" value="Currency" />
+                    <InputLabel for="email" value="Contact email" />
                     <TextInput
-                        id="currency"
-                        v-model="form.currency"
+                        id="email"
+                        v-model="form.email"
+                        type="email"
                         class="mt-1 block w-full"
                         required
                     />
-                    <InputError class="mt-2" :message="form.errors.currency" />
+                    <InputError class="mt-2" :message="form.errors.email" />
+                </div>
+
+                <div>
+                    <InputLabel for="contact_phone" value="Contact phone" />
+                    <TextInput
+                        id="contact_phone"
+                        v-model="form.contact_phone"
+                        class="mt-1 block w-full"
+                    />
+                    <InputError class="mt-2" :message="form.errors.contact_phone" />
+                </div>
+
+                <div>
+                    <InputLabel for="address" value="Address" />
+                    <textarea
+                        id="address"
+                        v-model="form.address"
+                        rows="3"
+                        class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                    ></textarea>
+                    <InputError class="mt-2" :message="form.errors.address" />
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <InputLabel for="timezone" value="Timezone" />
+                        <TextInput
+                            id="timezone"
+                            v-model="form.timezone"
+                            class="mt-1 block w-full"
+                            required
+                        />
+                        <InputError class="mt-2" :message="form.errors.timezone" />
+                    </div>
+
+                    <div>
+                        <InputLabel for="currency" value="Currency" />
+                        <TextInput
+                            id="currency"
+                            v-model="form.currency"
+                            class="mt-1 block w-full"
+                            required
+                        />
+                        <InputError class="mt-2" :message="form.errors.currency" />
+                    </div>
                 </div>
             </div>
 
-            <div class="flex items-center gap-4">
+            <div class="mt-4 flex items-center gap-4">
                 <PrimaryButton
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"

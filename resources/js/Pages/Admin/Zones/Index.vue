@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 import Pagination from '@/Components/Pagination.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import RowActions from '@/Components/RowActions.vue';
@@ -12,7 +13,6 @@ defineProps<{
             id: number;
             name: string;
             postcodes: string[];
-            free_delivery: boolean;
         }>;
         links: Array<{ url: string | null; label: string; active: boolean }>;
     };
@@ -23,14 +23,13 @@ defineProps<{
     <AdminLayout>
         <Head title="Zones" />
 
-        <div class="mb-6 flex items-center justify-between">
-            <h1 class="font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
-                Delivery zones
-            </h1>
-            <Link :href="route('admin.zones.create')">
-                <PrimaryButton>New zone</PrimaryButton>
-            </Link>
-        </div>
+        <PageHeader title="Delivery zones">
+            <template #actions>
+                <Link :href="route('admin.zones.create')">
+                    <PrimaryButton>New zone</PrimaryButton>
+                </Link>
+            </template>
+        </PageHeader>
 
         <div
             class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900"
@@ -42,7 +41,6 @@ defineProps<{
                     <tr>
                         <th class="px-4 py-3">Name</th>
                         <th class="px-4 py-3">Postcodes</th>
-                        <th class="px-4 py-3">Delivery</th>
                         <th class="px-4 py-3"></th>
                     </tr>
                 </thead>
@@ -51,9 +49,6 @@ defineProps<{
                         <td class="px-4 py-3 text-gray-900 dark:text-gray-100">{{ zone.name }}</td>
                         <td class="px-4 py-3 text-gray-600 dark:text-gray-400">
                             {{ zone.postcodes.join(', ') }}
-                        </td>
-                        <td class="px-4 py-3 text-gray-600 dark:text-gray-400">
-                            {{ zone.free_delivery ? 'Free' : 'Paid' }}
                         </td>
                         <td class="px-4 py-3 text-right">
                             <RowActions>
@@ -64,7 +59,7 @@ defineProps<{
                         </td>
                     </tr>
                     <tr v-if="zones.data.length === 0">
-                        <td colspan="4" class="px-4 py-6 text-center text-gray-600">
+                        <td colspan="3" class="px-4 py-6 text-center text-gray-600">
                             No zones yet.
                         </td>
                     </tr>

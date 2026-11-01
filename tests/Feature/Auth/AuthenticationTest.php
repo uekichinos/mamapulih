@@ -51,3 +51,11 @@ test('users can logout', function () {
     $this->assertGuest();
     $response->assertRedirect('/');
 });
+
+test('an already logged-in staff user visiting login is sent to the staff dashboard', function () {
+    $user = User::factory()->create();
+
+    $response = $this->actingAs($user)->get('/login');
+
+    $response->assertRedirect(route('dashboard', absolute: false));
+});

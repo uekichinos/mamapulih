@@ -67,10 +67,10 @@ it('lets a customer cancel a pending-approval booking with no payment', function
 
     $this->actingAs($customer, 'customers')
         ->get(route('customer.my-booking'))
-        ->assertInertia(fn ($page) => $page->where('canCancel', true));
+        ->assertInertia(fn ($page) => $page->where('bookings.0.can_cancel', true));
 
     $this->actingAs($customer, 'customers')
-        ->post(route('customer.my-booking.cancel'), ['reason' => 'Changed my mind'])
+        ->post(route('customer.my-booking.cancel', $booking), ['reason' => 'Changed my mind'])
         ->assertRedirect(route('customer.my-booking'));
 
     expect($booking->refresh()->status)->toBe(BookingStatus::Cancelled);
@@ -81,7 +81,7 @@ it('lets a customer cancel an awaiting-payment booking with no payment', functio
     [$customer, $booking] = myBookingTestBooking(BookingStatus::AwaitingPayment);
 
     $this->actingAs($customer, 'customers')
-        ->post(route('customer.my-booking.cancel'))
+        ->post(route('customer.my-booking.cancel', $booking))
         ->assertRedirect(route('customer.my-booking'));
 
     expect($booking->refresh()->status)->toBe(BookingStatus::Cancelled);
@@ -99,10 +99,10 @@ it('refuses to self-cancel once a payment has already been recorded, even below 
 
     $this->actingAs($customer, 'customers')
         ->get(route('customer.my-booking'))
-        ->assertInertia(fn ($page) => $page->where('canCancel', true));
+        ->assertInertia(fn ($page) => $page->where('bookings.0.can_cancel', true));
 
     $this->actingAs($customer, 'customers')
-        ->post(route('customer.my-booking.cancel'))
+        ->post(route('customer.my-booking.cancel', $booking))
         ->assertStatus(422);
 
     expect($booking->refresh()->status)->toBe(BookingStatus::AwaitingPayment);
@@ -113,10 +113,10 @@ it('refuses to self-cancel once the booking has moved past awaiting payment', fu
 
     $this->actingAs($customer, 'customers')
         ->get(route('customer.my-booking'))
-        ->assertInertia(fn ($page) => $page->where('canCancel', false));
+        ->assertInertia(fn ($page) => $page->where('bookings.0.can_cancel', false));
 
     $this->actingAs($customer, 'customers')
-        ->post(route('customer.my-booking.cancel'))
+        ->post(route('customer.my-booking.cancel', $booking))
         ->assertStatus(422);
 
     expect($booking->refresh()->status)->toBe(BookingStatus::Reserved);
@@ -130,12 +130,27 @@ it('lists older bookings as archives, excluding the latest one', function () {
     $this->actingAs($customer, 'customers')
         ->get(route('customer.my-booking'))
         ->assertInertia(fn ($page) => $page
-            ->where('booking.id', $latest->id)
+            ->has('bookings', 1)
+            ->where('bookings.0.id', $latest->id)
             ->has('archivedBookings', 1)
         );
 });
 
-it('treats the latest booking as archived when it is inactive, falling back to an earlier live one', function (BookingStatus $inactive) {
+it('shows two simultaneously live bookings separately, not one hidden as archived', function () {
+    [$customer, $first] = myBookingTestBooking(BookingStatus::AwaitingPayment);
+    $first->update(['recipient_name' => 'Wife One']);
+    [, $second] = myBookingTestBooking(BookingStatus::Active);
+    $second->update(['customer_id' => $customer->id, 'recipient_name' => 'Wife Two']);
+
+    $this->actingAs($customer, 'customers')
+        ->get(route('customer.my-booking'))
+        ->assertInertia(fn ($page) => $page
+            ->has('bookings', 2)
+            ->has('archivedBookings', 0)
+        );
+});
+
+it('keeps an inactive booking out of the live list, regardless of how recently it was created', function (BookingStatus $inactive) {
     [$customer] = myBookingTestBooking(BookingStatus::AwaitingPayment);
     [, $latestInactive] = myBookingTestBooking($inactive);
     $latestInactive->update(['customer_id' => $customer->id]);
@@ -143,7 +158,8 @@ it('treats the latest booking as archived when it is inactive, falling back to a
     $this->actingAs($customer, 'customers')
         ->get(route('customer.my-booking'))
         ->assertInertia(fn ($page) => $page
-            ->where('booking.status', 'awaiting_payment')
+            ->has('bookings', 1)
+            ->where('bookings.0.status', 'awaiting_payment')
             ->has('archivedBookings', 1)
         );
 })->with([
@@ -153,13 +169,13 @@ it('treats the latest booking as archived when it is inactive, falling back to a
     'completed' => BookingStatus::Completed,
 ]);
 
-it('shows no current booking when every booking is inactive', function (BookingStatus $inactive) {
+it('shows no live booking when every booking is inactive', function (BookingStatus $inactive) {
     [$customer] = myBookingTestBooking($inactive);
 
     $this->actingAs($customer, 'customers')
         ->get(route('customer.my-booking'))
         ->assertInertia(fn ($page) => $page
-            ->where('booking', null)
+            ->has('bookings', 0)
             ->has('archivedBookings', 1)
         );
 })->with([

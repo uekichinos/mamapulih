@@ -23,22 +23,44 @@ class PaymentController extends Controller
 
     public function show(Request $request): Response|RedirectResponse
     {
-        $booking = $request->user('customers')->bookings()
-            ->with(['variant.package', 'paymentReceipts'])
-            ->latest()
-            ->first();
+        $customer = $request->user('customers');
 
-        if (! $booking || ! $this->isPayable($booking)) {
+        $allBookings = $customer->bookings()
+            ->with(['variant.package', 'paymentReceipts'])
+            ->get();
+
+        $payableBookings = $allBookings
+            ->filter(fn (Booking $booking) => $this->isPayable($booking))
+            ->map(fn (Booking $booking) => [
+                'id' => $booking->id,
+                'ref_no' => $booking->ref_no,
+                'recipient_label' => $booking->recipient_name ?: $customer->name,
+                'status' => $booking->status,
+                'payment_option' => $booking->payment_option,
+                'full_amount_sen' => $booking->price_sen,
+                'deposit_amount_sen' => $this->policy->firstPaymentThresholdSen($booking->price_sen, 'deposit'),
+                'balance_due_sen' => $this->payments->balanceDueSen($booking),
+            ])
+            ->values();
+
+        $receiptsByBooking = $allBookings
+            ->filter(fn (Booking $booking) => $booking->paymentReceipts->isNotEmpty())
+            ->map(fn (Booking $booking) => [
+                'id' => $booking->id,
+                'ref_no' => $booking->ref_no,
+                'recipient_label' => $booking->recipient_name ?: $customer->name,
+                'receipts' => $booking->paymentReceipts,
+            ])
+            ->values();
+
+        if ($payableBookings->isEmpty() && $receiptsByBooking->isEmpty()) {
             return redirect()->route('customer.my-booking');
         }
 
         return Inertia::render('Customer/Payment', [
-            'booking' => $booking,
-            'fullAmountSen' => $booking->price_sen,
-            'depositAmountSen' => $this->policy->firstPaymentThresholdSen($booking->price_sen, 'deposit'),
-            'balanceDueSen' => $this->payments->balanceDueSen($booking),
+            'payableBookings' => $payableBookings,
             'manual' => $this->manual->get(),
-            'receipts' => $booking->paymentReceipts,
+            'receiptsByBooking' => $receiptsByBooking,
         ]);
     }
 
@@ -58,15 +80,16 @@ class PaymentController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $booking = $request->user('customers')->bookings()->latest()->first();
-
-        if (! $booking || $booking->status !== BookingStatus::AwaitingPayment) {
-            return redirect()->route('customer.my-booking');
-        }
-
         $data = $request->validate([
+            'booking_id' => ['required', 'integer'],
             'payment_option' => ['required', 'in:full,deposit'],
         ]);
+
+        $booking = $request->user('customers')->bookings()->findOrFail((int) $data['booking_id']);
+
+        if ($booking->status !== BookingStatus::AwaitingPayment) {
+            return redirect()->route('customer.my-booking');
+        }
 
         $booking->update([
             'payment_option' => $data['payment_option'],
@@ -78,15 +101,16 @@ class PaymentController extends Controller
 
     public function uploadReceipt(Request $request): RedirectResponse
     {
-        $booking = $request->user('customers')->bookings()->latest()->first();
-
-        if (! $booking || ! $this->isPayable($booking)) {
-            return redirect()->route('customer.my-booking');
-        }
-
         $data = $request->validate([
+            'booking_id' => ['required', 'integer'],
             'receipt' => ['required', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:4096'],
         ]);
+
+        $booking = $request->user('customers')->bookings()->findOrFail((int) $data['booking_id']);
+
+        if (! $this->isPayable($booking)) {
+            return redirect()->route('customer.my-booking');
+        }
 
         $path = $data['receipt']->store('payment-receipts', 'local');
 

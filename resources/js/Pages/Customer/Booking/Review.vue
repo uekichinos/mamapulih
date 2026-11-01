@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import CustomerLayout from '@/Layouts/CustomerLayout.vue';
+import CustomerAppLayout from '@/Layouts/CustomerAppLayout.vue';
+import AlertBanner from '@/Components/AlertBanner.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { formatDate } from '@/lib/formatDate';
 import { Head, Link, useForm } from '@inertiajs/vue3';
@@ -9,6 +11,7 @@ defineProps<{
     draft: {
         edd: string;
         is_twins?: boolean;
+        recipient_name?: string;
         address: { line1: string; line2?: string; postcode: string };
     };
     variant: {
@@ -33,16 +36,18 @@ const otherErrors = computed(() =>
 </script>
 
 <template>
-    <CustomerLayout>
+    <CustomerAppLayout>
         <Head title="Review your booking" />
 
-        <h1 class="mb-4 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
-            Review your booking
-        </h1>
+        <PageHeader title="Review your booking" />
 
         <div
-            class="space-y-3 rounded-2xl border border-gray-200 bg-white shadow-sm p-4 text-sm dark:border-gray-800 dark:bg-gray-900"
+            class="space-y-3 rounded-2xl border border-gray-200 bg-white shadow-sm p-5 text-sm dark:border-gray-800 dark:bg-gray-900"
         >
+            <div v-if="draft.recipient_name" class="flex justify-between">
+                <span class="text-gray-600 dark:text-gray-400">For</span>
+                <span class="text-gray-900 dark:text-gray-100">{{ draft.recipient_name }}</span>
+            </div>
             <div class="flex justify-between">
                 <span class="text-gray-600 dark:text-gray-400">Package</span>
                 <span class="text-gray-900 dark:text-gray-100">{{ variant.package.name.en }}</span>
@@ -82,10 +87,7 @@ const otherErrors = computed(() =>
             </div>
         </div>
 
-        <div
-            v-if="addressError"
-            class="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300"
-        >
+        <AlertBanner v-if="addressError" tone="red" class="mt-4">
             <p>{{ addressError }}</p>
             <Link
                 :href="route('customer.booking.details')"
@@ -93,14 +95,11 @@ const otherErrors = computed(() =>
             >
                 Edit delivery address
             </Link>
-        </div>
+        </AlertBanner>
 
-        <div
-            v-if="otherErrors.length"
-            class="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300"
-        >
+        <AlertBanner v-if="otherErrors.length" tone="red" class="mt-4">
             <p v-for="[key, message] in otherErrors" :key="key">{{ message }}</p>
-        </div>
+        </AlertBanner>
 
         <p class="mt-4 text-sm text-gray-600 dark:text-gray-400">
             No payment is taken yet. Your booking will be reviewed, and you'll get payment
@@ -112,5 +111,5 @@ const otherErrors = computed(() =>
                 Submit for approval
             </PrimaryButton>
         </form>
-    </CustomerLayout>
+    </CustomerAppLayout>
 </template>

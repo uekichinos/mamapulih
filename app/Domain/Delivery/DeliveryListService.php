@@ -29,6 +29,7 @@ class DeliveryListService
             $zoneName = $delivery->zone->name ?? 'Unzoned';
 
             $grouped[$delivery->run][$zoneName][] = [
+                'booking_id' => $booking->id,
                 'name' => $booking->customer->name,
                 'address' => trim($address->line1.($address->line2 ? ', '.$address->line2 : '').', '.$address->postcode),
                 'phone' => $booking->customer->phone,

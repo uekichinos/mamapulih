@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import DropdownButton from '@/Components/DropdownButton.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 import Pagination from '@/Components/Pagination.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import RowActions from '@/Components/RowActions.vue';
@@ -32,19 +33,15 @@ const notify = (id: number) => router.post(route('admin.closure-days.notify', id
     <AdminLayout>
         <Head title="Closure days" />
 
-        <div class="mb-6 flex items-center justify-between">
-            <h1 class="font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
-                Closure days
-            </h1>
-            <Link :href="route('admin.closure-days.create')">
-                <PrimaryButton>New closure day</PrimaryButton>
-            </Link>
-        </div>
-
-        <p class="mb-4 text-sm text-gray-600 dark:text-gray-400">
+        <PageHeader title="Closure days">
             Full-day closures only in this version. No deliveries on these dates; active packages
             shift their end date out by one day per closure.
-        </p>
+            <template #actions>
+                <Link :href="route('admin.closure-days.create')">
+                    <PrimaryButton>New closure day</PrimaryButton>
+                </Link>
+            </template>
+        </PageHeader>
 
         <div
             class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900"

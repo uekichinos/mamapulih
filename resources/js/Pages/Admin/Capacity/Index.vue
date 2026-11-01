@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { formatDate } from '@/lib/formatDate';
 import { Head, Link } from '@inertiajs/vue3';
@@ -35,13 +36,10 @@ const isCurrentWindow = computed(() => props.from === new Date().toISOString().s
     <AdminLayout>
         <Head title="Capacity" />
 
-        <h1 class="mb-2 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
-            Capacity
-        </h1>
-        <p class="mb-6 text-sm text-gray-600 dark:text-gray-400">
+        <PageHeader title="Capacity">
             Regular capacity {{ regularCapacity }} / day, buffer {{ bufferCapacity }}. Closure days
             are not shown (no deliveries).
-        </p>
+        </PageHeader>
 
         <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
             <Link :href="previousWindowUrl">

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 import Pagination from '@/Components/Pagination.vue';
 import { formatDateTime } from '@/lib/formatDate';
 import { Head } from '@inertiajs/vue3';
@@ -25,9 +26,7 @@ defineProps<{
     <AdminLayout>
         <Head title="Audit log" />
 
-        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
-            Audit log
-        </h1>
+        <PageHeader title="Audit log" />
 
         <div
             class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900"

@@ -37,7 +37,7 @@ it('confirms start straight away when the actual birth type matches expectations
         'payment_date' => now(), 'status' => 'verified',
     ]);
 
-    $this->actingAs($customer, 'customers')->post(route('customer.start'), [
+    $this->actingAs($customer, 'customers')->post(route('customer.start', $booking), [
         'start_date' => now()->addDays(3)->toDateString(),
         'actual_birth_type' => 'normal',
     ])->assertRedirect(route('customer.my-booking'));
@@ -53,17 +53,24 @@ it('raises a plan change instead of starting when the birth type differs', funct
         'meals_per_day' => 2, 'price_sen' => 45000,
     ]);
 
-    $this->actingAs($customer, 'customers')->post(route('customer.start'), [
+    $this->actingAs($customer, 'customers')->post(route('customer.start', $booking), [
         'start_date' => now()->addDays(3)->toDateString(),
         'actual_birth_type' => 'csec',
-    ])->assertRedirect(route('customer.start'));
+    ])->assertRedirect(route('customer.start', $booking));
 
     expect($booking->refresh()->status)->toBe(BookingStatus::Reserved);
     expect($booking->planChanges()->where('status', 'awaiting_consent')->exists())->toBeTrue();
 });
 
 it('is not reachable unless the booking is Reserved', function () {
-    [$customer] = startTestCustomerBooking('awaiting_payment');
+    [$customer, $booking] = startTestCustomerBooking('awaiting_payment');
 
-    $this->actingAs($customer, 'customers')->get(route('customer.start'))->assertRedirect(route('customer.my-booking'));
+    $this->actingAs($customer, 'customers')->get(route('customer.start', $booking))->assertRedirect(route('customer.my-booking'));
+});
+
+it('refuses to let a customer start another customer\'s booking', function () {
+    [, $booking] = startTestCustomerBooking();
+    $other = Customer::factory()->create();
+
+    $this->actingAs($other, 'customers')->get(route('customer.start', $booking))->assertStatus(403);
 });

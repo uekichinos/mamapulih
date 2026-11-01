@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\ImpersonationController;
 use App\Http\Controllers\Auth\TwoFactorChallengeController;
 use App\Http\Controllers\Auth\TwoFactorSetupController;
 use App\Http\Controllers\Install\InstallController;
@@ -54,6 +55,13 @@ Route::middleware('installed')->group(function () {
         Route::get('/two-factor-setup', [TwoFactorSetupController::class, 'show'])->name('two-factor.setup');
         Route::post('/two-factor-setup/confirm', [TwoFactorSetupController::class, 'confirm'])->name('two-factor.setup.confirm');
         Route::delete('/two-factor-setup', [TwoFactorSetupController::class, 'destroy'])->name('two-factor.setup.destroy');
+    });
+
+    // Returning from an impersonated session must work regardless of the
+    // impersonated account's role or 2FA state, so this sits outside both
+    // the role and force-2fa gates — same reasoning as 2FA setup above.
+    Route::middleware('auth')->group(function () {
+        Route::post('/stop-impersonating', [ImpersonationController::class, 'stop'])->name('impersonation.stop');
     });
 
     // The challenge happens between password auth and a real session, so

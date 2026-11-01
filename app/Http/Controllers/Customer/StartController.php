@@ -25,11 +25,11 @@ class StartController extends Controller
         private PaymentService $payments,
     ) {}
 
-    public function show(Request $request): Response|RedirectResponse
+    public function show(Request $request, Booking $booking): Response|RedirectResponse
     {
-        $booking = $this->latestReservedOrFurther($request);
+        abort_unless($booking->customer_id === $request->user('customers')->id, 403);
 
-        if (! $booking) {
+        if ($booking->status !== BookingStatus::Reserved) {
             return redirect()->route('customer.my-booking');
         }
 
@@ -44,11 +44,11 @@ class StartController extends Controller
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, Booking $booking): RedirectResponse
     {
-        $booking = $this->latestReservedOrFurther($request);
+        abort_unless($booking->customer_id === $request->user('customers')->id, 403);
 
-        if (! $booking) {
+        if ($booking->status !== BookingStatus::Reserved) {
             return redirect()->route('customer.my-booking');
         }
 
@@ -66,29 +66,22 @@ class StartController extends Controller
         $result = $this->start->request($booking, $startDate, $data['actual_birth_type']);
 
         if ($result instanceof PlanChange) {
-            return redirect()->route('customer.start')->with('status', 'awaiting-consent');
+            return redirect()->route('customer.start', $booking)->with('status', 'awaiting-consent');
         }
 
         return redirect()->route('customer.my-booking')->with('status', 'started');
     }
 
-    public function confirm(Request $request): RedirectResponse
+    public function confirm(Request $request, Booking $booking): RedirectResponse
     {
-        $booking = $this->latestReservedOrFurther($request);
+        abort_unless($booking->customer_id === $request->user('customers')->id, 403);
 
-        if (! $booking) {
+        if ($booking->status !== BookingStatus::Reserved) {
             return redirect()->route('customer.my-booking');
         }
 
         $this->start->confirm($booking);
 
         return redirect()->route('customer.my-booking')->with('status', 'started');
-    }
-
-    private function latestReservedOrFurther(Request $request): ?Booking
-    {
-        $booking = $request->user('customers')->bookings()->latest()->first();
-
-        return $booking && $booking->status === BookingStatus::Reserved ? $booking : null;
     }
 }

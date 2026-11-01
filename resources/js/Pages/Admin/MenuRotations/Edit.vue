@@ -2,6 +2,7 @@
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, router, useForm } from '@inertiajs/vue3';
@@ -56,22 +57,27 @@ const setDish = (dayNo: number, meal: string, event: Event) => {
     <AdminLayout>
         <Head title="Edit menu rotation" />
 
-        <h1 class="mb-6 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
-            Edit menu rotation
-        </h1>
+        <PageHeader title="Edit menu rotation">{{ menuRotation.name.en }}</PageHeader>
 
-        <form class="mb-8 max-w-xl space-y-4" @submit.prevent="submit">
-            <div>
+        <form class="mb-8" @submit.prevent="submit">
+            <div
+                class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900"
+            >
                 <InputLabel for="name_en" value="Name" />
                 <TextInput id="name_en" v-model="form.name.en" class="mt-1 block w-full" required />
                 <InputError class="mt-2" :message="form.errors['name.en']" />
             </div>
-            <PrimaryButton :disabled="form.processing">Save name</PrimaryButton>
+            <div class="mt-4">
+                <PrimaryButton :disabled="form.processing">Save name</PrimaryButton>
+            </div>
         </form>
 
-        <h2 class="mb-4 font-display text-sm font-bold text-gray-900 dark:text-gray-50">
+        <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">
             Weekly rotation
         </h2>
+        <p class="mb-4 text-xs text-gray-500 dark:text-gray-400">
+            Pick a dish for each day and meal — changes save immediately.
+        </p>
 
         <div
             class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900"

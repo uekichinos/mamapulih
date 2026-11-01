@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import CustomerLayout from '@/Layouts/CustomerLayout.vue';
+import CustomerAppLayout from '@/Layouts/CustomerAppLayout.vue';
 import InputError from '@/Components/InputError.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SectionCard from '@/Components/SectionCard.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
@@ -63,21 +65,13 @@ const submit = () => form.post(route('customer.booking.build'));
 </script>
 
 <template>
-    <CustomerLayout>
+    <CustomerAppLayout>
         <Head title="Build your package" />
 
-        <h1 class="mb-4 font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
-            Build your package
-        </h1>
+        <PageHeader title="Build your package" />
 
         <form class="space-y-6" @submit.prevent="submit">
-            <div
-                v-for="pkg in packages"
-                :key="pkg.id"
-                class="rounded-2xl border border-gray-200 bg-white shadow-sm p-4 dark:border-gray-800 dark:bg-gray-900"
-            >
-                <h2 class="mb-2 font-medium text-gray-800 dark:text-gray-200">{{ pkg.name.en }}</h2>
-
+            <SectionCard v-for="pkg in packages" :key="pkg.id" :title="pkg.name.en">
                 <label
                     v-for="variant in pkg.variants"
                     :key="variant.id"
@@ -108,7 +102,7 @@ const submit = () => form.post(route('customer.booking.build'));
                         >RM {{ money(variant.price_sen) }}</span
                     >
                 </label>
-            </div>
+            </SectionCard>
             <InputError :message="form.errors.variant_id" />
 
             <div>
@@ -118,11 +112,7 @@ const submit = () => form.post(route('customer.booking.build'));
                 </label>
             </div>
 
-            <div
-                v-if="addons.length"
-                class="rounded-2xl border border-gray-200 bg-white shadow-sm p-4 dark:border-gray-800 dark:bg-gray-900"
-            >
-                <h2 class="mb-2 font-medium text-gray-800 dark:text-gray-200">Add-ons</h2>
+            <SectionCard v-if="addons.length" title="Add-ons">
                 <label
                     v-for="addon in addons"
                     :key="addon.id"
@@ -141,7 +131,7 @@ const submit = () => form.post(route('customer.booking.build'));
                         RM {{ money(addon.price_sen) }} {{ addon.per === 'day' ? '/ day' : '' }}
                     </span>
                 </label>
-            </div>
+            </SectionCard>
 
             <div v-if="selectedVariant" class="text-sm text-gray-600 dark:text-gray-400">
                 Selected: {{ selectedVariant.duration_days }} days, RM
@@ -150,5 +140,5 @@ const submit = () => form.post(route('customer.booking.build'));
 
             <PrimaryButton :disabled="form.processing || !form.variant_id">Continue</PrimaryButton>
         </form>
-    </CustomerLayout>
+    </CustomerAppLayout>
 </template>

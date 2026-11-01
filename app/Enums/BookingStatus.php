@@ -40,4 +40,15 @@ enum BookingStatus: string
     {
         return [self::PendingApproval, self::AwaitingPayment, self::Reserved, self::Active, self::Paused];
     }
+
+    /**
+     * Statuses a booking never leaves once reached — always historical,
+     * never shown as "current"/"live" (see dev plan P20, P42).
+     *
+     * @return array<int, self>
+     */
+    public static function terminal(): array
+    {
+        return [self::Rejected, self::Expired, self::Cancelled, self::Completed];
+    }
 }

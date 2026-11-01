@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
+import PageHeader from '@/Components/PageHeader.vue';
 import Pagination from '@/Components/Pagination.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import RowActions from '@/Components/RowActions.vue';
@@ -26,14 +27,13 @@ const formatPrice = (sen: number) => `RM${(sen / 100).toFixed(2)}`;
     <AdminLayout>
         <Head title="Add-ons" />
 
-        <div class="mb-6 flex items-center justify-between">
-            <h1 class="font-display text-xl font-extrabold text-gray-900 dark:text-gray-50">
-                Add-ons
-            </h1>
-            <Link :href="route('admin.addons.create')">
-                <PrimaryButton>New add-on</PrimaryButton>
-            </Link>
-        </div>
+        <PageHeader title="Add-ons">
+            <template #actions>
+                <Link :href="route('admin.addons.create')">
+                    <PrimaryButton>New add-on</PrimaryButton>
+                </Link>
+            </template>
+        </PageHeader>
 
         <div
             class="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900"
