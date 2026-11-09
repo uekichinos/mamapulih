@@ -129,9 +129,7 @@ const printPage = () => window.print();
                     <p class="text-xs font-semibold text-gray-600 dark:text-gray-400">
                         Total stops
                     </p>
-                    <p
-                        class="font-mono text-lg font-semibold tabular-nums text-gray-900 dark:text-gray-50"
-                    >
+                    <p class="text-lg font-semibold tabular-nums text-gray-900 dark:text-gray-50">
                         {{ totalStops }}
                     </p>
                 </div>
@@ -158,9 +156,7 @@ const printPage = () => window.print();
                     <p class="text-xs font-semibold text-gray-600 dark:text-gray-400">
                         Zones covered
                     </p>
-                    <p
-                        class="font-mono text-lg font-semibold tabular-nums text-gray-900 dark:text-gray-50"
-                    >
+                    <p class="text-lg font-semibold tabular-nums text-gray-900 dark:text-gray-50">
                         {{ totalZones }}
                     </p>
                 </div>
@@ -187,9 +183,7 @@ const printPage = () => window.print();
                     <p class="text-xs font-semibold text-gray-600 dark:text-gray-400">
                         One-trip (+dinner)
                     </p>
-                    <p
-                        class="font-mono text-lg font-semibold tabular-nums text-gray-900 dark:text-gray-50"
-                    >
+                    <p class="text-lg font-semibold tabular-nums text-gray-900 dark:text-gray-50">
                         {{ oneTripStops }}
                     </p>
                 </div>
@@ -293,7 +287,7 @@ const printPage = () => window.print();
                                         {{ row.address }}
                                     </td>
                                     <td
-                                        class="whitespace-nowrap px-5 py-3.5 font-mono text-xs text-gray-600 dark:text-gray-400"
+                                        class="whitespace-nowrap px-5 py-3.5 text-xs text-gray-600 dark:text-gray-400"
                                     >
                                         {{ row.phone ?? '—' }}
                                     </td>

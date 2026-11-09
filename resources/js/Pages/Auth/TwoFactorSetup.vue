@@ -80,7 +80,7 @@ const disable = () => {
 
                         <p class="mt-2 text-xs text-gray-600 dark:text-gray-400">
                             Can't scan it? Enter this key manually:
-                            <code class="font-mono">{{ secret }}</code>
+                            <code>{{ secret }}</code>
                         </p>
 
                         <form class="mt-6 max-w-xs" @submit.prevent="submit">

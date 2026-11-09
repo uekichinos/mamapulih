@@ -120,9 +120,7 @@ const printPage = () => window.print();
                     <p class="text-xs font-semibold text-gray-600 dark:text-gray-400">
                         Total portions
                     </p>
-                    <p
-                        class="font-mono text-lg font-semibold tabular-nums text-gray-900 dark:text-gray-50"
-                    >
+                    <p class="text-lg font-semibold tabular-nums text-gray-900 dark:text-gray-50">
                         {{ totalPortions }}
                     </p>
                 </div>
@@ -148,9 +146,7 @@ const printPage = () => window.print();
                     <p class="text-xs font-semibold text-gray-600 dark:text-gray-400">
                         Distinct dishes
                     </p>
-                    <p
-                        class="font-mono text-lg font-semibold tabular-nums text-gray-900 dark:text-gray-50"
-                    >
+                    <p class="text-lg font-semibold tabular-nums text-gray-900 dark:text-gray-50">
                         {{ totalDishes }}
                     </p>
                 </div>
@@ -177,9 +173,7 @@ const printPage = () => window.print();
                     <p class="text-xs font-semibold text-gray-600 dark:text-gray-400">
                         Exclusion swaps
                     </p>
-                    <p
-                        class="font-mono text-lg font-semibold tabular-nums text-gray-900 dark:text-gray-50"
-                    >
+                    <p class="text-lg font-semibold tabular-nums text-gray-900 dark:text-gray-50">
                         {{ totalSubstitutions }}
                     </p>
                 </div>
@@ -253,7 +247,7 @@ const printPage = () => window.print();
                                 {{ row.dish.name.en }}
                             </td>
                             <td
-                                class="px-5 py-3.5 text-right font-mono text-xs tabular-nums text-gray-900 dark:text-gray-100"
+                                class="px-5 py-3.5 text-right text-xs tabular-nums text-gray-900 dark:text-gray-100"
                             >
                                 {{ row.count }}
                             </td>

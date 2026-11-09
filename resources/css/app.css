@@ -39,20 +39,37 @@
 @theme {
     --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
     --font-display: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
-    --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
-    /* Neutral scale shifted slightly violet so it reads as a deliberate
-       choice rather than a default grey — ties every page's borders,
-       surfaces and body text back to the admin's indigo accent. */
-    --color-gray-50: #f8f7fb;
-    --color-gray-100: #f0eef6;
-    --color-gray-200: #e2e0ea;
-    --color-gray-300: #c9c6d4;
-    --color-gray-400: #a39fb3;
-    --color-gray-500: #827d94;
-    --color-gray-600: #655f73;
-    --color-gray-700: #4c4759;
-    --color-gray-800: #332f3d;
-    --color-gray-900: #211e29;
-    --color-gray-950: #14121a;
+    /* "Terracotta Bloom": neutral scale shifted warm (cream/ink) instead
+       of the old violet tint, paired with the --color-indigo-* override
+       below (terracotta replacing indigo as the brand accent) — see dev
+       plan P51. Every `gray-*`/`indigo-*` Tailwind class across both
+       panels repaints from these two overrides; nothing else changed. */
+    --color-gray-50: #fbf6f1;
+    --color-gray-100: #f6ece0;
+    --color-gray-200: #ecdfd3;
+    --color-gray-300: #d9c6b0;
+    --color-gray-400: #b9a088;
+    --color-gray-500: #96806a;
+    --color-gray-600: #6b5c4f;
+    --color-gray-700: #4f4237;
+    --color-gray-800: #39302a;
+    --color-gray-900: #2b211b;
+    --color-gray-950: #19120d;
+
+    /* Brand accent: terracotta/clay, replacing the stock indigo. Used by
+       every primary button, link, focus ring, active-nav state and the
+       `accent` StatusBadge tone, all via plain `indigo-*` Tailwind
+       classes — no component changed, only these tokens. */
+    --color-indigo-50: #fdf3f0;
+    --color-indigo-100: #fbe4dc;
+    --color-indigo-200: #f6c7b4;
+    --color-indigo-300: #eea184;
+    --color-indigo-400: #df7a54;
+    --color-indigo-500: #c1603c;
+    --color-indigo-600: #a84e30;
+    --color-indigo-700: #873f27;
+    --color-indigo-800: #6b331f;
+    --color-indigo-900: #562a19;
+    --color-indigo-950: #30160d;
 }

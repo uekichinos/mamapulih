@@ -64,7 +64,7 @@ const reject = (id: number) => {
                             {{ formatDate(booking.edd) }} · RM
                             {{ money(booking.price_sen) }}
                         </p>
-                        <p class="font-mono text-xs text-gray-400">{{ booking.ref_no }}</p>
+                        <p class="text-xs text-gray-400">{{ booking.ref_no }}</p>
                     </div>
                     <div class="flex items-center gap-2">
                         <Link :href="route('admin.bookings.show', booking.id)">

@@ -300,7 +300,7 @@ const tagLabel = (tag: string) =>
                             @click="router.visit(route('admin.bookings.show', booking.id))"
                         >
                             <td
-                                class="whitespace-nowrap px-5 py-3.5 font-mono text-xs text-gray-900 dark:text-gray-100"
+                                class="whitespace-nowrap px-5 py-3.5 text-xs text-gray-900 dark:text-gray-100"
                             >
                                 {{ booking.ref_no }}
                                 <p
@@ -319,7 +319,7 @@ const tagLabel = (tag: string) =>
                                 {{ formatDate(booking.edd) }}
                             </td>
                             <td
-                                class="whitespace-nowrap px-5 py-3.5 text-right font-mono text-xs tabular-nums text-gray-900 dark:text-gray-100"
+                                class="whitespace-nowrap px-5 py-3.5 text-right text-xs tabular-nums text-gray-900 dark:text-gray-100"
                             >
                                 RM {{ money(booking.price_sen) }}
                             </td>

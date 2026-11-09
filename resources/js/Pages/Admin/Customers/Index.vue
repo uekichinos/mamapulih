@@ -71,7 +71,7 @@ defineProps<{
                             {{ customer.phone ?? '—' }}
                         </td>
                         <td
-                            class="px-4 py-3 text-right font-mono text-xs tabular-nums text-gray-900 dark:text-gray-100"
+                            class="px-4 py-3 text-right text-xs tabular-nums text-gray-900 dark:text-gray-100"
                         >
                             {{ customer.bookings_count }}
                         </td>

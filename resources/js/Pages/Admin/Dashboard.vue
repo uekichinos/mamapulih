@@ -89,10 +89,9 @@ const tiles = [
                         </svg>
                     </span>
                 </div>
-                <span
-                    class="font-mono text-2xl font-semibold tabular-nums text-gray-900 dark:text-gray-50"
-                    >{{ stats[tile.key] }}</span
-                >
+                <span class="text-2xl font-semibold tabular-nums text-gray-900 dark:text-gray-50">{{
+                    stats[tile.key]
+                }}</span>
             </Link>
         </div>
 

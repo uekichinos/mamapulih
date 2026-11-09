@@ -170,8 +170,7 @@ const submit = () => form.post(route('admin.bookings.store'));
                                     : 'Lunch only'
                             }}
                         </span>
-                        <span
-                            class="font-mono text-sm font-semibold text-gray-900 dark:text-gray-100"
+                        <span class="text-sm font-semibold text-gray-900 dark:text-gray-100"
                             >RM {{ money(variant.price_sen) }}</span
                         >
                     </label>

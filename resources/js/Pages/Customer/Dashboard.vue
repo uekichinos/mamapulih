@@ -136,7 +136,7 @@ const nextStep = (booking: Booking) => {
                         <StatusBadge :tone="statusTones[booking.status] ?? 'neutral'">{{
                             statusLabel(booking.status)
                         }}</StatusBadge>
-                        <span class="font-mono text-xs text-gray-500 dark:text-gray-400">{{
+                        <span class="text-xs text-gray-500 dark:text-gray-400">{{
                             booking.ref_no
                         }}</span>
                     </Link>
@@ -149,14 +149,15 @@ const nextStep = (booking: Booking) => {
                             >Balance due</span
                         >
                         <span
-                            class="font-mono text-lg font-semibold tabular-nums text-gray-900 dark:text-gray-50"
+                            v-if="booking.balance_due"
+                            class="text-sm font-bold tabular-nums text-gray-900 dark:text-gray-50"
+                            >RM {{ money(booking.balance_due) }}</span
                         >
-                            {{
-                                booking.balance_due
-                                    ? `RM ${money(booking.balance_due)}`
-                                    : 'Fully paid'
-                            }}
-                        </span>
+                        <span
+                            v-else
+                            class="font-display text-sm font-bold text-gray-900 dark:text-gray-50"
+                            >Fully paid</span
+                        >
                     </Link>
 
                     <Link
@@ -178,7 +179,7 @@ const nextStep = (booking: Booking) => {
                     <p class="text-sm text-gray-600 dark:text-gray-400">
                         Due date: {{ formatDate(booking.edd) }}
                     </p>
-                    <p class="font-mono text-sm text-gray-900 dark:text-gray-100">
+                    <p class="text-sm text-gray-900 dark:text-gray-100">
                         RM {{ money(booking.price_sen) }}
                     </p>
                 </SectionCard>

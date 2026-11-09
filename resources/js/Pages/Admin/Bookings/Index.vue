@@ -138,7 +138,7 @@ const statusLabel = (status: string) =>
                         class="hover:bg-gray-50 dark:hover:bg-gray-800/60"
                     >
                         <td
-                            class="whitespace-nowrap px-5 py-3.5 font-mono text-xs text-gray-900 dark:text-gray-100"
+                            class="whitespace-nowrap px-5 py-3.5 text-xs text-gray-900 dark:text-gray-100"
                         >
                             {{ booking.ref_no }}
                         </td>
@@ -161,7 +161,7 @@ const statusLabel = (status: string) =>
                             {{ formatDate(booking.edd) }}
                         </td>
                         <td
-                            class="whitespace-nowrap px-5 py-3.5 text-right font-mono text-xs tabular-nums text-gray-900 dark:text-gray-100"
+                            class="whitespace-nowrap px-5 py-3.5 text-right text-xs tabular-nums text-gray-900 dark:text-gray-100"
                         >
                             RM {{ money(booking.price_sen) }}
                         </td>
