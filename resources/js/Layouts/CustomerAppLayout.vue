@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import BrandMark from '@/Components/BrandMark.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import { Link, usePage } from '@inertiajs/vue3';
@@ -69,9 +70,7 @@ const isLinkActive = (link: NavLink) =>
         >
             <div class="flex h-16 shrink-0 items-center justify-between px-4">
                 <Link :href="route('customer.dashboard')" class="flex items-center gap-2.5">
-                    <span
-                        class="size-8 shrink-0 rounded-lg bg-linear-to-br from-indigo-500 to-indigo-700"
-                    />
+                    <BrandMark />
                     <span class="flex flex-col leading-tight">
                         <span
                             class="font-display text-base font-extrabold text-gray-900 dark:text-gray-50"
@@ -182,9 +181,7 @@ const isLinkActive = (link: NavLink) =>
                 class="flex h-16 items-center justify-between border-b border-gray-100 bg-white px-4 sm:hidden dark:border-gray-800 dark:bg-gray-900"
             >
                 <Link :href="route('customer.dashboard')" class="flex items-center gap-2.5">
-                    <span
-                        class="size-8 shrink-0 rounded-lg bg-linear-to-br from-indigo-500 to-indigo-700"
-                    />
+                    <BrandMark />
                     <span
                         class="font-display text-base font-extrabold text-gray-900 dark:text-gray-50"
                         >MamaPulih</span
