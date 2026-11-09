@@ -84,5 +84,6 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified', 'role:ow
     Route::post('/bookings/{booking}/pause', [BookingController::class, 'pause'])->name('bookings.pause');
     Route::post('/bookings/{booking}/resume', [BookingController::class, 'resume'])->name('bookings.resume');
     Route::post('/bookings/{booking}/extend', [BookingController::class, 'extend'])->name('bookings.extend');
+    Route::post('/bookings/{booking}/complete', [BookingController::class, 'complete'])->name('bookings.complete');
     Route::post('/bookings/{booking}/cancel', [BookingController::class, 'cancel'])->name('bookings.cancel');
 });

@@ -12,7 +12,7 @@ import StatusBadge from '@/Components/StatusBadge.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { formatDate, formatDateTime } from '@/lib/formatDate';
 import { Head, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 
 interface Payment {
     id: number;
@@ -217,6 +217,22 @@ const extend = () => {
         onSuccess: () => extendForm.reset(),
     });
 };
+
+const isEarlyCompletion = computed(
+    () => !props.booking.end_date || new Date(props.booking.end_date) > new Date(),
+);
+
+const completeForm = useForm({ reason: '' });
+
+const complete = () => {
+    if (!confirm('Mark this booking as completed? This cannot be undone.')) {
+        return;
+    }
+
+    completeForm.post(route('admin.bookings.complete', props.booking.id), {
+        onSuccess: () => completeForm.reset(),
+    });
+};
 </script>
 
 <template>
@@ -268,9 +284,7 @@ const extend = () => {
                     Start {{ formatDate(booking.start_date) }} → End
                     {{ formatDate(booking.end_date) }}
                 </p>
-                <p
-                    class="font-mono text-sm font-semibold tabular-nums text-gray-900 dark:text-gray-100"
-                >
+                <p class="text-sm font-semibold tabular-nums text-gray-900 dark:text-gray-100">
                     RM {{ money(booking.price_sen) }} (paid RM {{ money(amountPaid) }}, balance RM
                     {{ money(balanceDue) }})
                 </p>
@@ -422,7 +436,7 @@ const extend = () => {
                                 {{ payment.reference }}
                             </td>
                             <td
-                                class="py-1 text-right font-mono tabular-nums text-gray-900 dark:text-gray-100"
+                                class="py-1 text-right tabular-nums text-gray-900 dark:text-gray-100"
                             >
                                 RM {{ money(payment.amount_sen) }}
                             </td>
@@ -595,7 +609,7 @@ const extend = () => {
                 class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900 sm:col-span-2"
             >
                 <h2 class="mb-3 font-display text-sm font-bold text-gray-900 dark:text-gray-50">
-                    Pause / resume / extend
+                    Pause / resume / extend / complete
                 </h2>
 
                 <div v-if="booking.pauses.length" class="mb-3 space-y-1">
@@ -654,6 +668,31 @@ const extend = () => {
                     </div>
                     <SecondaryButton :disabled="extendForm.processing" type="submit"
                         >Extend</SecondaryButton
+                    >
+                </form>
+
+                <form
+                    class="mt-4 border-t border-gray-200 pt-4 dark:border-gray-800"
+                    @submit.prevent="complete"
+                >
+                    <p
+                        v-if="isEarlyCompletion"
+                        class="mb-2 text-sm text-amber-700 dark:text-amber-400"
+                    >
+                        This booking's scheduled end date hasn't passed yet. A reason is required to
+                        complete it early.
+                    </p>
+                    <div v-if="isEarlyCompletion" class="mb-3">
+                        <InputLabel for="complete-reason" value="Reason (internal)" />
+                        <TextInput
+                            id="complete-reason"
+                            v-model="completeForm.reason"
+                            class="mt-1 block w-full"
+                        />
+                        <InputError :message="completeForm.errors.reason" />
+                    </div>
+                    <SecondaryButton :disabled="completeForm.processing" type="submit"
+                        >Mark as completed</SecondaryButton
                     >
                 </form>
             </div>

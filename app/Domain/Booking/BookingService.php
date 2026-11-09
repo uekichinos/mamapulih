@@ -11,6 +11,7 @@ use App\Domain\Notifications\BookingRejectedMail;
 use App\Domain\Notifications\BookingSubmittedMail;
 use App\Domain\Notifications\CustomerMailer;
 use App\Domain\Notifications\NewBookingToReviewMail;
+use App\Domain\Notifications\PackageCompleteMail;
 use App\Domain\Settings\SmtpSettings;
 use App\Enums\BookingStatus;
 use App\Models\Addon;
@@ -224,6 +225,38 @@ class BookingService
         $this->bookingDays->extendTail($booking, $oldEnd->copy()->addDay(), $newEnd);
 
         $this->audit->record('booking.extended', $booking, $before, $booking->toArray(), $admin);
+
+        return $booking;
+    }
+
+    /**
+     * Marks a booking as completed, either by the daily
+     * `mamapulih:send-reminders` job once `end_date` has passed, or by an
+     * admin acting early/manually (e.g. correcting a booking left active
+     * past its end date). $admin is null for the automated path, which
+     * never completes a booking early, so $reason is admin-only and
+     * required whenever `end_date` hasn't passed yet (completing on time
+     * or after is self-explanatory; completing early is not).
+     */
+    public function complete(Booking $booking, ?User $admin = null, ?string $reason = null): Booking
+    {
+        abort_unless(in_array($booking->status, [BookingStatus::Active, BookingStatus::Paused], true), 422, 'Only an active or paused booking can be marked as completed.');
+
+        $isEarly = is_null($booking->end_date) || $booking->end_date->isFuture();
+        abort_if($isEarly && blank($reason), 422, 'A reason is required to mark a booking as completed before its scheduled end date.');
+
+        $before = $booking->toArray();
+
+        $booking->update(['status' => BookingStatus::Completed]);
+
+        $after = $booking->toArray();
+        if (filled($reason)) {
+            $after['completion_reason'] = $reason;
+        }
+
+        $this->audit->record('booking.completed', $booking, $before, $after, $admin);
+
+        $this->mailer->send($booking, fn () => new PackageCompleteMail($booking));
 
         return $booking;
     }

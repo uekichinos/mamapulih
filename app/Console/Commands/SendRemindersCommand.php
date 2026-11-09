@@ -3,10 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Domain\Audit\AuditLogger;
+use App\Domain\Booking\BookingService;
 use App\Domain\Booking\ConsentService;
 use App\Domain\Notifications\CustomerMailer;
 use App\Domain\Notifications\DayBeforeStartMail;
-use App\Domain\Notifications\PackageCompleteMail;
 use App\Domain\Notifications\PaymentDeadlineNearMail;
 use App\Domain\Notifications\TwoDaysLeftMail;
 use App\Domain\Notifications\WeekCheckInMail;
@@ -28,6 +28,7 @@ class SendRemindersCommand extends Command
         private CustomerMailer $mailer,
         private ConsentService $consents,
         private AuditLogger $audit,
+        private BookingService $bookings,
     ) {
         parent::__construct();
     }
@@ -117,11 +118,7 @@ class SendRemindersCommand extends Command
             ->get();
 
         foreach ($bookings as $booking) {
-            $before = $booking->toArray();
-            $booking->update(['status' => BookingStatus::Completed]);
-            $this->audit->record('booking.completed', $booking, $before, $booking->toArray());
-
-            $this->mailer->send($booking, fn () => new PackageCompleteMail($booking));
+            $this->bookings->complete($booking);
         }
 
         return $bookings->count();

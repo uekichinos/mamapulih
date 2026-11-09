@@ -177,6 +177,17 @@ class BookingController extends Controller
         return back()->with('status', 'extended');
     }
 
+    public function complete(Request $request, Booking $booking): RedirectResponse
+    {
+        $data = $request->validate([
+            'reason' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $this->bookings->complete($booking, Auth::guard('web')->user(), $data['reason'] ?? null);
+
+        return back()->with('status', 'completed');
+    }
+
     public function cancel(Request $request, Booking $booking): RedirectResponse
     {
         $data = $request->validate([
